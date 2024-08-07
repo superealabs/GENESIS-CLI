@@ -1,0 +1,15 @@
+public async Task<IActionResult> DeleteConfirmed([primaryType] [primaryNameMin], int indice_actu)
+{
+    if (_context.[classNameMaj] == null)
+    {
+        return Problem("Entity set '[projectNameMin]Context.[classNameMaj]'  is null.");
+    }
+    var o = await _context.[classNameMaj].FindAsync([primaryNameMin]);
+    if (o != null)
+    {
+        _context.[classNameMaj].Remove(o);
+    }
+
+    await _context.SaveChangesAsync();
+    return Redirect("Index?indice_actu="+indice_actu);
+}

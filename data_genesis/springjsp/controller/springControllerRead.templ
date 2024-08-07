@@ -1,0 +1,50 @@
+public Object crudpage(ModelMap model, Integer indice_actu, String messageUrl, HttpServletRequest req) throws Exception{
+    try(Connection connex=DAOConnexion.getConnexion("[databaseDriver]", "[databaseSgbd]", "[databaseHost]", "[databasePort]", "[databaseName]", "[user]", "[pwd]", [databaseUseSSL], [databaseAllowKey])){
+        HttpSession session=req.getSession();
+        if(session.getAttribute("token")==null){
+            return new RedirectView("login.do");
+        }
+        String token=session.getAttribute("token").toString();
+        boolean exists=dao.exists(connex, "v_genesis_token_active", String.format("token='%s'", token), "authority=10");
+        String crudButton="disabled";
+        if(exists){
+            crudButton="";
+        }
+        String tokenDecode=new String(Base64.getDecoder().decode(token));
+        String username=tokenDecode.split("!!")[0];
+        if(indice_actu==null){
+            indice_actu=1;
+        }
+        boolean avec_suivant=true;
+        int nb_entrees=dao.count(connex, [classNameMaj].class);
+        if(nb_entrees-indice_actu*Constantes.PAGINATION_LIMIT<=0){
+            avec_suivant=false;
+        }
+        int indice_premier=1;
+        int indice_precedent=indice_actu-1;
+        int indice_suivant=indice_actu+1;
+        int indice_dernier=((Double)Math.ceil(Double.valueOf(nb_entrees)/Constantes.PAGINATION_LIMIT)).intValue();
+        String bouton_precedent=indice_precedent==0?"disabled":"";
+        String bouton_suivant=avec_suivant?"":"disabled";
+        String message="";
+        if(messageUrl!=null){
+            message=URLDecoder.decode(messageUrl, StandardCharsets.UTF_8);
+        }
+        [classNameMaj][] o=dao.select(connex, [classNameMaj].class, Constantes.PAGINATION_LIMIT, (indice_actu-1)*Constantes.PAGINATION_LIMIT);
+        model.addAttribute("o", o);
+        model.addAttribute("viewpage", "[classNameMin]");
+        model.addAttribute("title", "[classNameMaj]");
+        [controllerForeignList]
+        model.addAttribute("indice_premier", indice_premier);
+        model.addAttribute("indice_dernier", indice_dernier);
+        model.addAttribute("indice_precedent", indice_precedent);
+        model.addAttribute("indice_suivant", indice_suivant);
+        model.addAttribute("indice_actu", indice_actu);
+        model.addAttribute("bouton_precedent", bouton_precedent);
+        model.addAttribute("bouton_suivant", bouton_suivant);
+        model.addAttribute("message", message);
+        model.addAttribute("crud_button", crudButton);
+        model.addAttribute("username", username);
+        return "layout/layout";
+    }
+}

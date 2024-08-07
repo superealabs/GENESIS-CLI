@@ -1,0 +1,12 @@
+<div className="form-floating mb-3"> 
+    <select className="form-select" id="[fieldNameMin]Select" name="[fieldNameMin]">
+        {data[foreignNameMin].map((f,index)=>{
+            return(<option key={index} value={f.[foreignPrimaryNameMin]}>
+                {f.label}
+            </option>);
+        })}
+    </select> 
+    <label htmlFor="[fieldNameMin]Select">
+        [foreignNameFormattedMaj]
+    </label> 
+</div>

@@ -1,0 +1,276 @@
+"use client";
+import {useEffect, useState} from "react";
+export default function Page() {
+  const [data, setData]=useState([]);
+  const [nb_entrees, setNbEntrees]=useState(0);
+  const [limit, setLimit]=useState(0);
+  const [indice_actu, setIndiceActu]=useState(1);
+  const indice_premier=1;
+  const [indice_dernier, setIndiceDernier]=useState(1);
+  const [indice_precedent, setIndicePrecedent]=useState(0);
+  const [indice_suivant, setIndiceSuivant]=useState(2);
+  const [bouton_precedent, setBoutonPrec]=useState("disabled");
+  const [bouton_suivant, setBoutonSuiv]=useState("");
+  [viewForeignList]
+  function toFetchListe(offset){
+    fetch("http://localhost:8080/[classNameMin]s?indice_actu="+offset)
+    .then((res)=>{
+      return res.json();
+    })
+    .then((data)=>{
+      setData(data);
+    });
+  }
+
+  function toFetchNbEntrees(){
+    fetch("http://localhost:8080/[classNameMin]count")
+    .then((res)=>{
+      return res.json();
+    }).then((data)=>{
+      setNbEntrees(data);
+    });
+  }
+
+  function toFetchLimit(){
+    fetch("http://localhost:8080/[classNameMin]limit")
+    .then((res)=>{
+      return res.json();
+    }).then((data)=>{
+      setLimit(data);
+    });
+  }
+  useEffect(()=>{
+    toFetchListe(1);
+    toFetchLimit();
+    toFetchNbEntrees();
+  },[]);
+
+  useEffect(()=>{
+    if(nb_entrees-(indice_actu*limit)<=0){
+      setBoutonSuiv("disabled");
+    }else{
+      setBoutonSuiv("");
+    }
+  }, [nb_entrees, indice_actu, limit]);
+
+  function changePage(new_indice_actu){
+    setIndicePrecedent(new_indice_actu-1);
+    setIndiceSuivant(new_indice_actu+1);
+    toFetchListe(new_indice_actu);
+    setIndiceDernier(Math.ceil(nb_entrees/limit));
+    if(new_indice_actu==1){
+      setBoutonPrec("disabled");
+    }else{
+      setBoutonPrec("");
+    }
+  }
+
+  function precedent(){
+    const newIndiceActu=indice_actu-1;
+    setIndiceActu(newIndiceActu);
+    changePage(newIndiceActu);
+  }
+  function suivant(){
+    const newIndiceActu=indice_actu+1;
+    setIndiceActu(newIndiceActu);
+    changePage(newIndiceActu);
+  }
+  function premier(){
+    const newIndiceActu=indice_premier;
+    setIndiceActu(newIndiceActu);
+    changePage(newIndiceActu);
+  }
+  function dernier(){
+    const newIndiceActu=indice_dernier;
+    setIndiceActu(newIndiceActu);
+    changePage(newIndiceActu);
+  }
+
+  function onUpdate(event){
+    event.preventDefault();
+    const formData=new FormData(event.currentTarget);
+    fetch("http://localhost:8080/[classNameMin]",{
+      method:"PUT",
+      body:formData
+    }).then(()=>{
+      toFetchListe(indice_actu);
+      alert("Updated successfully");
+    });
+  }
+
+  function onDelete(event){
+    event.preventDefault();
+    const formData=new FormData(event.currentTarget);
+    fetch("http://localhost:8080/[classNameMin]",{
+      method:"DELETE",
+      body:formData
+    }).then(()=>{
+      toFetchListe(indice_actu);
+      toFetchNbEntrees();
+    });
+  }
+
+  function onInsert(event){
+    event.preventDefault();
+    const formData=new FormData(event.currentTarget);
+    fetch("http://localhost:8080/[classNameMin]",{
+      method:"POST",
+      body:formData
+    }).then(()=>{
+      toFetchListe(indice_actu);
+      toFetchNbEntrees();
+      alert("New entry added successfully");
+    });
+  }
+
+  return (
+    <>
+      <div className="container-fluid pt-4 px-4">
+        <div className="row g-4">
+          <div className="col-sm-12 col-xl-6 offset-3">
+            <div className="bg-secondary rounded h-100 p-4">
+              <h6 className="mb-4">Liste de [classNameMin]</h6>
+              <table className="table">
+                <thead>
+                  <tr>
+                    [viewTableHeader]
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map((o, index)=>{
+                  return(<tr key={index}>
+                      [viewTableLine]
+                      <td>
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          data-bs-toggle="modal"
+                          data-bs-target={"#modifiermodal"+o.[primaryNameMin]}
+                        >
+                          <p>
+                            <i className="bi bi-pencil"></i>Modifier
+                          </p>
+                        </button>
+                        <div
+                          className="modal fade"
+                          id={"modifiermodal"+o.[primaryNameMin]}
+                          tabIndex="-1"
+                          aria-labelledby="modifiermodalLabel"
+                          aria-hidden="true"
+                        >
+                          <div className="modal-dialog modal-dialog-centered">
+                            <div className="modal-content">
+                              <form onSubmit={onUpdate}>
+                                <div className="modal-header">
+                                  <h1
+                                    className="modal-title fs-5"
+                                    id="modifiermodalLabel"
+                                  >
+                                    Modifier un [classNameMin]
+                                  </h1>
+                                  <button
+                                    type="button"
+                                    className="btn-close"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Close"
+                                  ></button>
+                                </div>
+                                <div className="modal-body">
+                                  <input type="hidden" name="[primaryNameMin]" value={o.[primaryNameMin]} />
+                                  [viewUpdateFormField]
+                                </div>
+                                <div className="modal-footer">
+                                  <button type="submit" className="btn btn-primary">
+                                    Valider
+                                  </button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <form onSubmit={onDelete}>
+                          <input type="hidden" name="[primaryNameMin]" value={o.[primaryNameMin]} />
+                          <button type="submit" className="btn btn-danger">
+                            <p>
+                              <i className="bi bi-trash"></i>Supprimer
+                            </p>
+                          </button>
+                        </form>
+                      </td>
+                  </tr>
+                  );
+                })}
+                </tbody>
+              </table>
+              <nav>
+                  <ul className="pagination justify-content-center">
+                      <li className="page-item">
+                          <a className="page-link" href="#" onClick={premier} aria-label="Precedent">
+                              <span aria-hidden="true">&laquo;</span>
+                          </a>
+                      </li>
+                      <li className="page-item disabled"><a className="page-link">...</a></li>
+                      <li className={"page-item "+bouton_precedent}><a className="page-link" href="#" onClick={precedent}>{indice_precedent}</a></li>
+                      <li className="page-item disabled page-active"><a className="page-link">{indice_actu}</a></li>
+                      <li className={"page-item "+bouton_suivant}><a className="page-link" href="#" onClick={suivant}>{indice_suivant}</a></li>
+                      <li className="page-item disabled"><a className="page-link">...</a></li>
+                      <li className="page-item">
+                          <a className="page-link" href="#" onClick={dernier} aria-label="Suivant">
+                              <span aria-hidden="true">&raquo;</span>
+                          </a>
+                      </li>
+                  </ul>
+              </nav>
+              <button
+                type="button"
+                className="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#ajoutmodal"
+              >
+                <p>
+                  <i className="bi bi-plus"></i>Ajouter
+                </p>
+              </button>
+            </div>
+          </div>
+
+          <div
+            className="modal fade"
+            id="ajoutmodal"
+            tabIndex="-1"
+            aria-labelledby="ajoutmodalLabel"
+            aria-hidden="true"
+          >
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <form onSubmit={onInsert}>
+                  <div className="modal-header">
+                    <h1 className="modal-title fs-5" id="ajoutmodalLabel">
+                      Ajouter un [classNameMin]
+                    </h1>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div className="modal-body">
+                    [viewInsertFormField]
+                  </div>
+                  <div className="modal-footer">
+                    <button type="submit" className="btn btn-primary">
+                      Valider
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

@@ -1,0 +1,16 @@
+using Microsoft.EntityFrameworkCore;
+namespace [projectNameMaj].Models
+{
+    public class [classNameMaj]Context : DbContext
+    {
+        public [classNameMaj]Context (DbContextOptions<[classNameMaj]Context> options)
+            : base(options)
+        {
+        }
+
+        public DbSet<[classNameMaj]> [classNameMaj] { get; set; }
+        [modelForeignContextAttr]
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseNpgsql("Host=[databaseHost];Database=[databaseName];Username=[user];Password=[pwd]");
+    }
+}

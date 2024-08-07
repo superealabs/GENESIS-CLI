@@ -1,0 +1,18 @@
+<div class="form-floating mb-3"> 
+    <select class="form-select" id="[fieldNameMin]Select" name="[fieldNameMin]">
+        @foreach(var f in [foreignNameMin]){
+        @if(f.[foreignPrimaryNameMaj]==o.[fieldNameMaj].[foreignPrimaryNameMaj]){
+        <option value="@f.[foreignPrimaryNameMaj]" selected>
+            @f.Label
+        </option>
+        }else{
+            <option value="@f.[foreignPrimaryNameMaj]">
+                @f.Label
+            </option>
+        }
+        }
+    </select> 
+    <label for="[fieldNameMin]Select">
+        [foreignNameFormattedMaj]
+    </label> 
+</div>

@@ -1,0 +1,38 @@
+[
+    {
+        "id":1,
+        "nom":"mysql",
+        "driver":"com.mysql.jdbc.Driver",
+        "port":"3306",
+        "types":{
+            "int":"int",
+            "double":"double",
+            "varchar":"string",
+            "date":"date",
+            "datetime":"timestamp"
+        },
+        "getcolumnsQuery":"SELECT information_schema.columns.table_name, information_schema.columns.column_name, data_type, REFERENCED_TABLE_NAME as foreign_table_name, REFERENCED_COLUMN_NAME as foreign_column_name, case when COLUMN_KEY='PRI' then 'true' else 'false' end as is_primary, case when COLUMN_KEY='MUL' then 'true' else 'false' end as is_foreign FROM information_schema.columns LEFT JOIN information_schema.key_column_usage ON information_schema.columns.TABLE_NAME = information_schema.key_column_usage.TABLE_NAME AND information_schema.columns.COLUMN_NAME = information_schema.key_column_usage.COLUMN_NAME WHERE information_schema.columns.TABLE_NAME = '[tableName]' order by information_schema.columns.ORDINAL_POSITION",
+        "gettablesQuery":"SELECT TABLE_NAME as table_name FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '[databaseName]' and TABLE_NAME not like '%_seq%'",
+        "loginScript":""
+    },
+    {
+        "id":2,
+        "nom":"postgresql",
+        "driver":"org.postgresql.Driver",
+        "port":"5432",
+        "types":{
+            "integer":"int",
+            "character varying":"string",
+            "real":"double",
+            "double":"double",
+            "double precision":"double",
+            "decimal":"double",
+            "numeric":"double",
+            "date":"date",
+            "timestamp without time zone":"timestamp"
+        },
+        "getcolumnsQuery":"select cols.table_name, cols.column_name, cols.data_type, fk.foreign_table_name, fk.foreign_column_name, coalesce(fk.is_primary, 'false') as is_primary, coalesce(fk.is_foreign, 'false') as is_foreign from information_schema.columns as cols left join (SELECT tc.table_name, kcu.column_name, ccu.table_name AS foreign_table_name, ccu.column_name AS foreign_column_name, case when tc.constraint_type='PRIMARY KEY' then 'true' else 'false' end as is_primary, case when tc.constraint_type='FOREIGN KEY' then 'true' else 'false' end as is_foreign FROM information_schema.table_constraints AS tc JOIN information_schema.key_column_usage AS kcu ON tc.constraint_name = kcu.constraint_name AND tc.table_schema = kcu.table_schema JOIN information_schema.constraint_column_usage AS ccu ON ccu.constraint_name = tc.constraint_name WHERE tc.table_schema='public' AND tc.table_name='[tableName]') as fk on cols.column_name=fk.column_name and cols.table_name=fk.table_name where cols.table_name='[tableName]'",
+        "gettablesQuery":"SELECT tablename as table_name FROM pg_catalog.pg_tables WHERE schemaname = 'public'",
+        "loginScript":"create table if not exists genesis_user( id serial primary key, username varchar not null, password varchar not null, authority int not null ); create table if not exists genesis_token( id serial primary key, token varchar not null unique, authority int not null, expiration timestamp not null, active int not null ); create or replace view v_genesis_token_active as select * from genesis_token where expiration>current_timestamp and active=10; CREATE OR REPLACE FUNCTION insertDefault() RETURNS VOID AS $$ BEGIN IF NOT EXISTS (SELECT 1 FROM genesis_user WHERE username = 'admin') THEN INSERT INTO genesis_user VALUES (default, 'admin', 'root', 10); END IF; RETURN; END; $$ LANGUAGE plpgsql; select insertDefault();"
+    }
+]

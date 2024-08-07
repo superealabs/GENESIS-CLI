@@ -1,0 +1,6 @@
+public int count() throws SQLException, Exception{
+    try(Connection connex=DAOConnexion.getConnexion("org.postgresql.Driver", "postgresql", "localhost", "5432", "scott", "eriq", "root", false, true)){
+        int nb_entrees=dao.count(connex, [classNameMaj].class);
+        return nb_entrees;
+    }
+}

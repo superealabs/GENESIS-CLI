@@ -1,0 +1,9 @@
+public async Task<IActionResult> CreateNew([controllerMethodParameter], int indice_actu) {
+
+                [classNameMaj] o = new [classNameMaj]();
+                [controllerChangeInstanciation]
+                _context.Add(o);
+                await _context.SaveChangesAsync();
+                return Redirect("Index?indice_actu="+indice_actu);
+
+        }

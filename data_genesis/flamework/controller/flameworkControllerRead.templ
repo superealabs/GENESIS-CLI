@@ -1,0 +1,53 @@
+public ModelMethod crudpage(ServletEntity entity) throws Exception{
+    try(Connection connex=DAOConnexion.getConnexion("[databaseDriver]", "[databaseSgbd]", "[databaseHost]", "[databasePort]", "[databaseName]", "[user]", "[pwd]", [databaseUseSSL], [databaseAllowKey])){
+        if(entity.getSession().containsKey("token")==false){
+            return new ModelRedirect("login.do");
+        }
+        String token=entity.getSession().get("token").toString();
+        boolean exists=dao.exists(connex, "v_genesis_token_active", String.format("token='%s'", token), "authority=10");
+        String crudButton="disabled";
+        if(exists){
+            crudButton="";
+        }
+        String tokenDecode=new String(Base64.getDecoder().decode(token));
+        String username=tokenDecode.split("!!")[0];
+        String req_indice=entity.getData().get("indice_actu");
+        Integer indice_actu=1;
+        if(req_indice!=null){
+            indice_actu=Integer.parseInt(req_indice);
+        }
+        boolean avec_suivant=true;
+        int nb_entrees=dao.count(connex, [classNameMaj].class);
+        if(nb_entrees-indice_actu*Constantes.PAGINATION_LIMIT<=0){
+            avec_suivant=false;
+        }
+        int indice_premier=1;
+        int indice_precedent=indice_actu-1;
+        int indice_suivant=indice_actu+1;
+        int indice_dernier=((Double)Math.ceil(Double.valueOf(nb_entrees)/Constantes.PAGINATION_LIMIT)).intValue();
+        String bouton_precedent=indice_precedent==0?"disabled":"";
+        String bouton_suivant=avec_suivant?"":"disabled";
+        String message="";
+        if(entity.getData().containsKey("message")){
+            message=URLDecoder.decode(entity.getData().get("message"), StandardCharsets.UTF_8);
+        }
+        ModelView model=new ModelView();
+        model.setView("pages/layout/layout.jsp");
+        [classNameMaj][] o=dao.select(connex, [classNameMaj].class, Constantes.PAGINATION_LIMIT, (indice_actu-1)*Constantes.PAGINATION_LIMIT);
+        model.addItem("viewpage", "[classNameMin].jsp");
+        model.addItem("title", "[classNameMaj]");
+        model.addItem("o", o);
+        [controllerForeignList]
+        model.addItem("indice_premier", indice_premier);
+        model.addItem("indice_dernier", indice_dernier);
+        model.addItem("indice_precedent", indice_precedent);
+        model.addItem("indice_suivant", indice_suivant);
+        model.addItem("indice_actu", indice_actu);
+        model.addItem("bouton_precedent", bouton_precedent);
+        model.addItem("bouton_suivant", bouton_suivant);
+        model.addItem("message", message);
+        model.addItem("crud_button", crudButton);
+        model.addItem("username", username);
+        return model;
+    }
+}

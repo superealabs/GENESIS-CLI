@@ -1,0 +1,29 @@
+public async Task<IActionResult> Index(int indice_actu) 
+{
+   if (indice_actu == 0)
+   {
+       indice_actu = 1;
+   }
+   Boolean avec_suivant = true;
+   int nb_entrees = _context.[classNameMaj].Count();
+   if(nb_entrees-indice_actu* Constantes.PAGINATION_LIMIT<=0)
+   {
+      avec_suivant = false;
+   }
+   int indice_premier = 1;
+   int indice_precedent = indice_actu - 1;
+   int indice_suivant = indice_actu + 1;
+   int indice_dernier = (int)(Math.Ceiling((double)nb_entrees) / Constantes.PAGINATION_LIMIT);
+   string bouton_precedent = indice_precedent == 0 ? "disabled" : "";
+   string bouton_suivant = avec_suivant ? "" : "disabled";
+   ViewData["o"]=_context.[classNameMaj][controllerForeignInclude].Skip((indice_actu-1)*Constantes.PAGINATION_LIMIT).Take(Constantes.PAGINATION_LIMIT).ToList();
+   ViewData["indice_premier"] = indice_premier;
+   ViewData["indice_dernier"] = indice_dernier;
+   ViewData["indice_precedent"] = indice_precedent;
+   ViewData["indice_suivant"] = indice_suivant;
+   ViewData["indice_actu"] = indice_actu;
+   ViewData["bouton_precedent"] = bouton_precedent;
+   ViewData["bouton_suivant"] = bouton_suivant;
+   [controllerForeignList]
+   return View();
+}

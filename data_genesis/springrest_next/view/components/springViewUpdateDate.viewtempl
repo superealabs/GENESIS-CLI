@@ -1,0 +1,6 @@
+<div className="mb-3">
+    <label htmlFor="[fieldNameMin]input" className="form-label">[fieldNameMaj]</label>
+    <input type="date" className="form-control" id="[fieldNameMin]input"
+        aria-describedby="[fieldNameMin]help" name="[fieldNameMin]"
+        defaultValue={o.[fieldNameMin]}/>
+</div>

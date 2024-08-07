@@ -1,0 +1,12 @@
+<div class="form-floating mb-3"> 
+    <select class="form-select" id="[fieldNameMin]Select" name="[fieldNameMin]">
+        <% for([foreignType] f:[foreignNameMin]){ %>
+        <option value="<%= f.get[foreignPrimaryNameMaj]() %>">
+            <%= f.getLabel() %>
+        </option>
+        <% } %>
+    </select> 
+    <label for="[fieldNameMin]Select">
+        [foreignNameFormattedMaj]
+    </label> 
+</div>

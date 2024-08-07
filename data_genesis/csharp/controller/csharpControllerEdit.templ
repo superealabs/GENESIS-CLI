@@ -1,0 +1,24 @@
+public async Task<IActionResult> EditYou([controllerMethodParameter], int indice_actu)
+{
+    [classNameMaj] o = new [classNameMaj]();
+    o.[primaryNameMaj] = [primaryParse];
+    [controllerChangeInstanciation]
+    try
+        {
+            _context.Update(o);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (![classNameMaj]Exists(o.[primaryNameMaj]))
+            {
+                return NotFound();
+            }
+            else
+            {
+                throw;
+            }
+        }
+    return Redirect("Index?indice_actu="+indice_actu);
+    
+}

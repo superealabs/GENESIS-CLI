@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="data_genesis">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/data_genesis/csharppsql_skeleton.zip!/" />
+      <root url="jar://$PROJECT_DIR$/data_genesis/springpsql_skeleton.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

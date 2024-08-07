@@ -1,0 +1,22 @@
+public RedirectView update([controllerMethodParameter], Integer indice_actu, HttpServletRequest req) throws Exception{
+    [classNameMaj] o=new [classNameMaj]();
+    o.set[primaryNameMaj]([primaryParse]);
+    [controllerChangeInstanciation]
+    String message="Vous n'etes pas autorise a modifier les donnees.";
+    try(Connection connex=DAOConnexion.getConnexion("[databaseDriver]", "[databaseSgbd]", "[databaseHost]", "[databasePort]", "[databaseName]", "[user]", "[pwd]", [databaseUseSSL], [databaseAllowKey])){
+        HttpSession session=req.getSession();
+        if(session.getAttribute("token")==null){
+            return new RedirectView("login.do");
+        }
+        String token=session.getAttribute("token").toString();
+        boolean exists=dao.exists(connex, "v_genesis_token_active", String.format("token='%s'", token), "authority=10");
+        if(exists){
+            repo.save(o);
+            message="";
+        }
+        return new RedirectView("tocrud[classNameMin].do?indice_actu="+indice_actu+"&messageUrl="+URLEncoder.encode(message, StandardCharsets.UTF_8));
+    }catch(Exception e){
+        message=e.getMessage();
+        return new RedirectView("tocrud[classNameMin].do?indice_actu="+indice_actu+"&messageUrl="+URLEncoder.encode(message, StandardCharsets.UTF_8));
+    }
+}
