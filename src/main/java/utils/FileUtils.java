@@ -1,4 +1,4 @@
-package handyMan;
+package utils;
 
 import com.google.gson.GsonBuilder;
 
@@ -14,7 +14,7 @@ import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class HandyManUtils {
+public class FileUtils {
 
     public static void extractDir(String sourcedir, String target) {
         byte[] buffer = new byte[4096];

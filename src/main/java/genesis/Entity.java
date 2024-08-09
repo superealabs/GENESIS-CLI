@@ -1,6 +1,6 @@
 package genesis;
 
-import handyMan.HandyManUtils;
+import utils.FileUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -71,7 +71,7 @@ public class Entity {
             EntityColumn column;
             EntityField field;
             try (ResultSet result = statement.executeQuery()) {
-                setClassName(HandyManUtils.majStart(HandyManUtils.toCamelCase(getTableName())));
+                setClassName(FileUtils.majStart(FileUtils.toCamelCase(getTableName())));
                 while (result.next()) {
                     column = new EntityColumn();
                     column.setName(result.getString("column_name"));
@@ -82,11 +82,11 @@ public class Entity {
                     column.setReferencedColumn(result.getString("foreign_column_name"));
                     field = new EntityField();
                     if (column.isForeign()) {
-                        field.setName(HandyManUtils.minStart(HandyManUtils.toCamelCase(column.getReferencedTable())));
-                        field.setType(HandyManUtils.majStart(HandyManUtils.toCamelCase(column.getReferencedTable())));
-                        field.setReferencedField(HandyManUtils.toCamelCase(column.getReferencedColumn()));
+                        field.setName(FileUtils.minStart(FileUtils.toCamelCase(column.getReferencedTable())));
+                        field.setType(FileUtils.majStart(FileUtils.toCamelCase(column.getReferencedTable())));
+                        field.setReferencedField(FileUtils.toCamelCase(column.getReferencedColumn()));
                     } else {
-                        field.setName(HandyManUtils.toCamelCase(column.getName()));
+                        field.setName(FileUtils.toCamelCase(column.getName()));
                         field.setType(language.getTypes().get(database.getTypes().get(column.getType())));
                     }
                     field.setPrimary(column.isPrimary());

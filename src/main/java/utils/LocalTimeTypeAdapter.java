@@ -3,7 +3,7 @@
 // (powered by FernFlower decompiler)
 //
 
-package handyMan;
+package utils;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

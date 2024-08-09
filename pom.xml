@@ -36,9 +36,9 @@
             <version>1.0</version>
         </dependency>
 
-                mvn install:install-file -Dfile=/Users/nomena/STAGE/GENESIS/lib/handyMan.jar -DgroupId=handyman.lib -DartifactId=handyman -Dversion=1.0 -Dpackaging=jar
+                mvn install:install-file -Dfile=/Users/nomena/STAGE/GENESIS/lib/utils.jar -DgroupId=handyman.lib -DartifactId=handyman -Dversion=1.0 -Dpackaging=jar
 
-         handyMan dependency
+         utils dependency
         <dependency>
             <groupId>handyman.lib</groupId>
             <artifactId>handyman</artifactId>

@@ -1,6 +1,6 @@
 package genesis;
 
-import handyMan.HandyManUtils;
+import utils.FileUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -125,7 +125,7 @@ public class Language {
     }
 
     public String generateModel(Entity entity, String projectName) throws IOException {
-        String content = HandyManUtils.getFileContent(Constantes.DATA_PATH + "/" + getModel().getModelTemplate() + "." + Constantes.MODEL_TEMPLATE_EXT);
+        String content = FileUtils.getFileContent(Constantes.DATA_PATH + "/" + getModel().getModelTemplate() + "." + Constantes.MODEL_TEMPLATE_EXT);
         content = content.replace("[namespace]", getSyntax().get("namespace"));
         content = content.replace("[namespaceStart]", getSyntax().get("namespaceStart"));
         content = content.replace("[namespaceEnd]", getSyntax().get("namespaceEnd"));
@@ -157,8 +157,8 @@ public class Language {
             } else if (entity.getFields()[i].isForeign()) {
                 for (String forAnnote : getModel().getModelForeignFieldAnnotations()) {
                     fieldAnnotes.append(forAnnote).append("\n");
-                    fieldAnnotes = new StringBuilder(fieldAnnotes.toString().replace("[referencedFieldNameMin]", HandyManUtils.minStart(entity.getFields()[i].getReferencedField())));
-                    fieldAnnotes = new StringBuilder(fieldAnnotes.toString().replace("[referencedFieldNameMaj]", HandyManUtils.majStart(entity.getFields()[i].getReferencedField())));
+                    fieldAnnotes = new StringBuilder(fieldAnnotes.toString().replace("[referencedFieldNameMin]", FileUtils.minStart(entity.getFields()[i].getReferencedField())));
+                    fieldAnnotes = new StringBuilder(fieldAnnotes.toString().replace("[referencedFieldNameMaj]", FileUtils.majStart(entity.getFields()[i].getReferencedField())));
                 }
             }
             for (String fa : getModel().getModelFieldAnnotations()) {
@@ -171,23 +171,23 @@ public class Language {
             fields = new StringBuilder(fields.toString().replace("[columnName]", entity.getColumns()[i].getName()));
             fields = new StringBuilder(fields.toString().replace("[fieldType]", entity.getFields()[i].getType()));
             fields = new StringBuilder(fields.toString().replace("[modelFieldCase]", getModel().getModelFieldCase()));
-            fields = new StringBuilder(fields.toString().replace("[fieldNameMin]", HandyManUtils.minStart(entity.getFields()[i].getName())));
-            fields = new StringBuilder(fields.toString().replace("[fieldNameMaj]", HandyManUtils.majStart(entity.getFields()[i].getName())));
+            fields = new StringBuilder(fields.toString().replace("[fieldNameMin]", FileUtils.minStart(entity.getFields()[i].getName())));
+            fields = new StringBuilder(fields.toString().replace("[fieldNameMaj]", FileUtils.majStart(entity.getFields()[i].getName())));
         }
         content = content.replace("[fields]", fields.toString());
-        content = content.replace("[projectNameMin]", HandyManUtils.minStart(projectName));
-        content = content.replace("[projectNameMaj]", HandyManUtils.majStart(projectName));
-        content = content.replace("[classNameMaj]", HandyManUtils.majStart(entity.getClassName()));
+        content = content.replace("[projectNameMin]", FileUtils.minStart(projectName));
+        content = content.replace("[projectNameMaj]", FileUtils.majStart(projectName));
+        content = content.replace("[classNameMaj]", FileUtils.majStart(entity.getClassName()));
         content = content.replace("[modelFieldCase]", getModel().getModelFieldCase());
         content = content.replace("[primaryFieldType]", entity.getPrimaryField().getType());
-        content = content.replace("[primaryFieldNameMin]", HandyManUtils.minStart(entity.getPrimaryField().getName()));
-        content = content.replace("[primaryFieldNameMaj]", HandyManUtils.majStart(entity.getPrimaryField().getName()));
+        content = content.replace("[primaryFieldNameMin]", FileUtils.minStart(entity.getPrimaryField().getName()));
+        content = content.replace("[primaryFieldNameMaj]", FileUtils.majStart(entity.getPrimaryField().getName()));
         content = content.replace("[tableName]", entity.getTableName());
         return content;
     }
 
     public String generateController(Entity entity, Database database, Credentials credentials, String projectName) throws IOException {
-        String content = HandyManUtils.getFileContent(Constantes.DATA_PATH + "/" + getController().getControllerTemplate() + "." + Constantes.CONTROLLER_TEMPLATE_EXT);
+        String content = FileUtils.getFileContent(Constantes.DATA_PATH + "/" + getController().getControllerTemplate() + "." + Constantes.CONTROLLER_TEMPLATE_EXT);
         content = content.replace("[namespace]", getSyntax().get("namespace"));
         content = content.replace("[namespaceStart]", getSyntax().get("namespaceStart"));
         content = content.replace("[namespaceEnd]", getSyntax().get("namespaceEnd"));
@@ -221,8 +221,8 @@ public class Language {
                 }
                 fields.append(fieldAnnotes);
                 fields.append(getController().getControllerFieldsForeign().getControllerFieldContent()).append("\n");
-                fields = new StringBuilder(fields.toString().replace("[foreignNameMaj]", HandyManUtils.majStart(ef.getType())));
-                fields = new StringBuilder(fields.toString().replace("[foreignNameMin]", HandyManUtils.minStart(ef.getType())));
+                fields = new StringBuilder(fields.toString().replace("[foreignNameMaj]", FileUtils.majStart(ef.getType())));
+                fields = new StringBuilder(fields.toString().replace("[foreignNameMin]", FileUtils.minStart(ef.getType())));
             }
         }
         content = content.replace("[fields]", fields.toString());
@@ -235,9 +235,9 @@ public class Language {
             for (EntityField ef : entity.getFields()) {
                 if (ef.isForeign()) {
                     constructorParameter.append(",").append(getController().getControllerForeignContextParam());
-                    constructorParameter = new StringBuilder(constructorParameter.toString().replace("[foreignNameMaj]", HandyManUtils.majStart(ef.getName())));
+                    constructorParameter = new StringBuilder(constructorParameter.toString().replace("[foreignNameMaj]", FileUtils.majStart(ef.getName())));
                     foreignInstanciation.append(getController().getControllerForeignContextInstanciation());
-                    foreignInstanciation = new StringBuilder(foreignInstanciation.toString().replace("[foreignNameMaj]", HandyManUtils.majStart(ef.getName())) + "\n");
+                    foreignInstanciation = new StringBuilder(foreignInstanciation.toString().replace("[foreignNameMaj]", FileUtils.majStart(ef.getName())) + "\n");
                 }
             }
             constructors.append(c).append("\n");
@@ -265,12 +265,12 @@ public class Language {
                     methodParameters.append(",");
                 }
                 methodParameters = new StringBuilder(methodParameters.toString().replace("[fieldType]", ef.getType()));
-                methodParameters = new StringBuilder(methodParameters.toString().replace("[fieldNameMin]", HandyManUtils.minStart(ef.getName())));
+                methodParameters = new StringBuilder(methodParameters.toString().replace("[fieldNameMin]", FileUtils.minStart(ef.getName())));
             }
             if (methodParameters.isEmpty() == false) {
                 methodParameters = new StringBuilder(methodParameters.substring(0, methodParameters.length() - 1));
             }
-            methods.append(HandyManUtils.getFileContent(Constantes.DATA_PATH + "/" + m.getControllerMethodContent() + "." + Constantes.CONTROLLER_TEMPLATE_EXT));
+            methods.append(FileUtils.getFileContent(Constantes.DATA_PATH + "/" + m.getControllerMethodContent() + "." + Constantes.CONTROLLER_TEMPLATE_EXT));
             methods = new StringBuilder(methods.toString().replace("[controllerMethodParameter]", methodParameters.toString()));
             changeInstanciation = new StringBuilder();
             foreignList = new StringBuilder();
@@ -282,23 +282,23 @@ public class Language {
                     changeInstanciation.append(getController().getControllerForeignInstanciation().get("template"));
                     changeInstanciation = new StringBuilder(changeInstanciation.toString().replace("[content]", getTypeParsers().get(getTypes().get(database.getTypes().get(entity.getColumns()[i].getType())))));
                     changeInstanciation = new StringBuilder(changeInstanciation.toString().replace("[value]", getController().getControllerForeignInstanciation().get("value")));
-                    changeInstanciation = new StringBuilder(changeInstanciation.toString().replace("[fieldNameMin]", HandyManUtils.minStart(entity.getFields()[i].getName())));
-                    changeInstanciation = new StringBuilder(changeInstanciation.toString().replace("[fieldNameMaj]", HandyManUtils.majStart(entity.getFields()[i].getName())));
+                    changeInstanciation = new StringBuilder(changeInstanciation.toString().replace("[fieldNameMin]", FileUtils.minStart(entity.getFields()[i].getName())));
+                    changeInstanciation = new StringBuilder(changeInstanciation.toString().replace("[fieldNameMaj]", FileUtils.majStart(entity.getFields()[i].getName())));
                     changeInstanciation = new StringBuilder(changeInstanciation.toString().replace("[foreignType]", entity.getFields()[i].getType()));
-                    changeInstanciation = new StringBuilder(changeInstanciation.toString().replace("[referencedFieldNameMaj]", HandyManUtils.majStart(entity.getFields()[i].getReferencedField())));
-                    changeInstanciation = new StringBuilder(changeInstanciation.toString().replace("[foreignNameMin]", HandyManUtils.minStart(entity.getFields()[i].getName())));
+                    changeInstanciation = new StringBuilder(changeInstanciation.toString().replace("[referencedFieldNameMaj]", FileUtils.majStart(entity.getFields()[i].getReferencedField())));
+                    changeInstanciation = new StringBuilder(changeInstanciation.toString().replace("[foreignNameMin]", FileUtils.minStart(entity.getFields()[i].getName())));
                     foreignList.append(getController().getControllerForeignList());
                     foreignList = new StringBuilder(foreignList.toString().replace("[foreignType]", entity.getFields()[i].getType()));
-                    foreignList = new StringBuilder(foreignList.toString().replace("[foreignNameMin]", HandyManUtils.minStart(entity.getFields()[i].getName())));
+                    foreignList = new StringBuilder(foreignList.toString().replace("[foreignNameMin]", FileUtils.minStart(entity.getFields()[i].getName())));
                     foreignInclude.append(getController().getControllerForeignInclude());
-                    foreignInclude = new StringBuilder(foreignInclude.toString().replace("[foreignNameMaj]", HandyManUtils.majStart(entity.getFields()[i].getName())));
+                    foreignInclude = new StringBuilder(foreignInclude.toString().replace("[foreignNameMaj]", FileUtils.majStart(entity.getFields()[i].getName())));
                     continue;
                 }
                 changeInstanciation.append(getController().getControllerChangeInstanciation().get("template"));
                 changeInstanciation = new StringBuilder(changeInstanciation.toString().replace("[content]", getTypeParsers().get(entity.getFields()[i].getType())));
                 changeInstanciation = new StringBuilder(changeInstanciation.toString().replace("[value]", getController().getControllerChangeInstanciation().get("value")));
-                changeInstanciation = new StringBuilder(changeInstanciation.toString().replace("[fieldNameMin]", HandyManUtils.minStart(entity.getFields()[i].getName())));
-                changeInstanciation = new StringBuilder(changeInstanciation.toString().replace("[fieldNameMaj]", HandyManUtils.majStart(entity.getFields()[i].getName())));
+                changeInstanciation = new StringBuilder(changeInstanciation.toString().replace("[fieldNameMin]", FileUtils.minStart(entity.getFields()[i].getName())));
+                changeInstanciation = new StringBuilder(changeInstanciation.toString().replace("[fieldNameMaj]", FileUtils.majStart(entity.getFields()[i].getName())));
             }
             whereInstanciation = "";
             whereInstanciation += getController().getControllerWhereInstanciation().get("template");
@@ -309,11 +309,11 @@ public class Language {
             methods = new StringBuilder(methods.toString().replace("[controllerWhereInstanciation]", whereInstanciation));
             methods = new StringBuilder(methods.toString().replace("[controllerForeignList]", foreignList.toString()));
             methods = new StringBuilder(methods.toString().replace("[controllerForeignInclude]", foreignInclude.toString()));
-            methods = new StringBuilder(methods.toString().replace("[classNameMin]", HandyManUtils.minStart(entity.getClassName())));
-            methods = new StringBuilder(methods.toString().replace("[classNameMaj]", HandyManUtils.majStart(entity.getClassName())));
-            methods = new StringBuilder(methods.toString().replace("[primaryNameMaj]", HandyManUtils.majStart(entity.getPrimaryField().getName())));
+            methods = new StringBuilder(methods.toString().replace("[classNameMin]", FileUtils.minStart(entity.getClassName())));
+            methods = new StringBuilder(methods.toString().replace("[classNameMaj]", FileUtils.majStart(entity.getClassName())));
+            methods = new StringBuilder(methods.toString().replace("[primaryNameMaj]", FileUtils.majStart(entity.getPrimaryField().getName())));
             methods = new StringBuilder(methods.toString().replace("[primaryType]", entity.getPrimaryField().getType()));
-            methods = new StringBuilder(methods.toString().replace("[primaryNameMin]", HandyManUtils.minStart(entity.getPrimaryField().getName())));
+            methods = new StringBuilder(methods.toString().replace("[primaryNameMin]", FileUtils.minStart(entity.getPrimaryField().getName())));
             methods = new StringBuilder(methods.toString().replace("[databaseDriver]", database.getDriver()));
             methods = new StringBuilder(methods.toString().replace("[databaseSgbd]", database.getNom()));
             methods = new StringBuilder(methods.toString().replace("[databaseHost]", credentials.getHost()));
@@ -326,10 +326,10 @@ public class Language {
         }
         content = content.replace("[methods]", methods.toString());
         content = content.replace("[controllerNameMaj]", getController().getControllerName());
-        content = content.replace("[classNameMaj]", HandyManUtils.majStart(entity.getClassName()));
-        content = content.replace("[classNameMin]", HandyManUtils.minStart(entity.getClassName()));
-        content = content.replace("[projectNameMin]", HandyManUtils.minStart(projectName));
-        content = content.replace("[projectNameMaj]", HandyManUtils.majStart(projectName));
+        content = content.replace("[classNameMaj]", FileUtils.majStart(entity.getClassName()));
+        content = content.replace("[classNameMin]", FileUtils.minStart(entity.getClassName()));
+        content = content.replace("[projectNameMin]", FileUtils.minStart(projectName));
+        content = content.replace("[projectNameMaj]", FileUtils.majStart(projectName));
         content = content.replace("[databaseDriver]", database.getDriver());
         content = content.replace("[databaseSgbd]", database.getNom());
         content = content.replace("[databaseHost]", credentials.getHost());
@@ -344,7 +344,7 @@ public class Language {
     }
 
     public String generateView(Entity entity, String projectName) throws IOException {
-        String content = HandyManUtils.getFileContent(Constantes.DATA_PATH + "/" + getView().getViewContent() + "." + Constantes.VIEW_TEMPLATE_EXT);
+        String content = FileUtils.getFileContent(Constantes.DATA_PATH + "/" + getView().getViewContent() + "." + Constantes.VIEW_TEMPLATE_EXT);
         StringBuilder foreignList = new StringBuilder();
         StringBuilder tableHeader = new StringBuilder();
         StringBuilder tableLine = new StringBuilder();
@@ -354,64 +354,64 @@ public class Language {
         for (EntityField ef : entity.getFields()) {
             foreignGet = "";
             tableHeader.append(getView().getViewTableHeader());
-            tableHeader = new StringBuilder(tableHeader.toString().replace("[fieldNameFormattedMaj]", HandyManUtils.formatReadable(ef.getName())));
-            tableHeader = new StringBuilder(tableHeader.toString().replace("[fieldNameMaj]", HandyManUtils.majStart(ef.getName())));
-            tableHeader = new StringBuilder(tableHeader.toString().replace("[fieldNameMin]", HandyManUtils.minStart(ef.getName())));
+            tableHeader = new StringBuilder(tableHeader.toString().replace("[fieldNameFormattedMaj]", FileUtils.formatReadable(ef.getName())));
+            tableHeader = new StringBuilder(tableHeader.toString().replace("[fieldNameMaj]", FileUtils.majStart(ef.getName())));
+            tableHeader = new StringBuilder(tableHeader.toString().replace("[fieldNameMin]", FileUtils.minStart(ef.getName())));
             tableLine.append(getView().getViewTableLine());
-            tableLine = new StringBuilder(tableLine.toString().replace("[fieldNameMaj]", HandyManUtils.majStart(ef.getName())));
-            tableLine = new StringBuilder(tableLine.toString().replace("[fieldNameMin]", HandyManUtils.minStart(ef.getName())));
+            tableLine = new StringBuilder(tableLine.toString().replace("[fieldNameMaj]", FileUtils.majStart(ef.getName())));
+            tableLine = new StringBuilder(tableLine.toString().replace("[fieldNameMin]", FileUtils.minStart(ef.getName())));
             if (ef.isPrimary()) {
                 tableLine = new StringBuilder(tableLine.toString().replace("[foreignFieldGet]", foreignGet));
                 continue;
             }
             if (ef.isForeign() == false) {
-                updateForm.append(HandyManUtils.getFileContent(Constantes.DATA_PATH + "/" + getView().getViewUpdateFormField().get(ef.getType()) + "." + Constantes.VIEW_TEMPLATE_EXT));
-                updateForm = new StringBuilder(updateForm.toString().replace("[fieldNameMin]", HandyManUtils.minStart(ef.getName())));
-                updateForm = new StringBuilder(updateForm.toString().replace("[fieldNameFormattedMaj]", HandyManUtils.formatReadable(ef.getName())));
-                updateForm = new StringBuilder(updateForm.toString().replace("[fieldNameMaj]", HandyManUtils.majStart(ef.getName())));
-                insertForm.append(HandyManUtils.getFileContent(Constantes.DATA_PATH + "/" + getView().getViewInsertFormField().get(ef.getType()) + "." + Constantes.VIEW_TEMPLATE_EXT));
-                insertForm = new StringBuilder(insertForm.toString().replace("[fieldNameMin]", HandyManUtils.minStart(ef.getName())));
-                insertForm = new StringBuilder(insertForm.toString().replace("[fieldNameMaj]", HandyManUtils.majStart(ef.getName())));
-                insertForm = new StringBuilder(insertForm.toString().replace("[fieldNameFormattedMaj]", HandyManUtils.formatReadable(ef.getName())));
+                updateForm.append(FileUtils.getFileContent(Constantes.DATA_PATH + "/" + getView().getViewUpdateFormField().get(ef.getType()) + "." + Constantes.VIEW_TEMPLATE_EXT));
+                updateForm = new StringBuilder(updateForm.toString().replace("[fieldNameMin]", FileUtils.minStart(ef.getName())));
+                updateForm = new StringBuilder(updateForm.toString().replace("[fieldNameFormattedMaj]", FileUtils.formatReadable(ef.getName())));
+                updateForm = new StringBuilder(updateForm.toString().replace("[fieldNameMaj]", FileUtils.majStart(ef.getName())));
+                insertForm.append(FileUtils.getFileContent(Constantes.DATA_PATH + "/" + getView().getViewInsertFormField().get(ef.getType()) + "." + Constantes.VIEW_TEMPLATE_EXT));
+                insertForm = new StringBuilder(insertForm.toString().replace("[fieldNameMin]", FileUtils.minStart(ef.getName())));
+                insertForm = new StringBuilder(insertForm.toString().replace("[fieldNameMaj]", FileUtils.majStart(ef.getName())));
+                insertForm = new StringBuilder(insertForm.toString().replace("[fieldNameFormattedMaj]", FileUtils.formatReadable(ef.getName())));
                 tableLine = new StringBuilder(tableLine.toString().replace("[foreignFieldGet]", foreignGet));
                 continue;
             }
-            updateForm.append(HandyManUtils.getFileContent(Constantes.DATA_PATH + "/" + getView().getViewUpdateFormForeignField() + "." + Constantes.VIEW_TEMPLATE_EXT));
+            updateForm.append(FileUtils.getFileContent(Constantes.DATA_PATH + "/" + getView().getViewUpdateFormForeignField() + "." + Constantes.VIEW_TEMPLATE_EXT));
             updateForm = new StringBuilder(updateForm.toString().replace("[foreignType]", ef.getType()));
-            updateForm = new StringBuilder(updateForm.toString().replace("[foreignNameMin]", HandyManUtils.minStart(ef.getName())));
-            updateForm = new StringBuilder(updateForm.toString().replace("[foreignNameMaj]", HandyManUtils.majStart(ef.getName())));
-            updateForm = new StringBuilder(updateForm.toString().replace("[foreignPrimaryNameMaj]", HandyManUtils.majStart(ef.getReferencedField())));
-            updateForm = new StringBuilder(updateForm.toString().replace("[foreignPrimaryNameMin]", HandyManUtils.minStart(ef.getReferencedField())));
-            updateForm = new StringBuilder(updateForm.toString().replace("[fieldNameMaj]", HandyManUtils.majStart(ef.getName())));
-            updateForm = new StringBuilder(updateForm.toString().replace("[fieldNameMin]", HandyManUtils.minStart(ef.getName())));
-            updateForm = new StringBuilder(updateForm.toString().replace("[foreignNameFormattedMaj]", HandyManUtils.formatReadable(ef.getName())));
-            insertForm.append(HandyManUtils.getFileContent(Constantes.DATA_PATH + "/" + getView().getViewInsertFormForeignField() + "." + Constantes.VIEW_TEMPLATE_EXT));
+            updateForm = new StringBuilder(updateForm.toString().replace("[foreignNameMin]", FileUtils.minStart(ef.getName())));
+            updateForm = new StringBuilder(updateForm.toString().replace("[foreignNameMaj]", FileUtils.majStart(ef.getName())));
+            updateForm = new StringBuilder(updateForm.toString().replace("[foreignPrimaryNameMaj]", FileUtils.majStart(ef.getReferencedField())));
+            updateForm = new StringBuilder(updateForm.toString().replace("[foreignPrimaryNameMin]", FileUtils.minStart(ef.getReferencedField())));
+            updateForm = new StringBuilder(updateForm.toString().replace("[fieldNameMaj]", FileUtils.majStart(ef.getName())));
+            updateForm = new StringBuilder(updateForm.toString().replace("[fieldNameMin]", FileUtils.minStart(ef.getName())));
+            updateForm = new StringBuilder(updateForm.toString().replace("[foreignNameFormattedMaj]", FileUtils.formatReadable(ef.getName())));
+            insertForm.append(FileUtils.getFileContent(Constantes.DATA_PATH + "/" + getView().getViewInsertFormForeignField() + "." + Constantes.VIEW_TEMPLATE_EXT));
             insertForm = new StringBuilder(insertForm.toString().replace("[foreignType]", ef.getType()));
-            insertForm = new StringBuilder(insertForm.toString().replace("[foreignNameMin]", HandyManUtils.minStart(ef.getName())));
-            insertForm = new StringBuilder(insertForm.toString().replace("[foreignNameMaj]", HandyManUtils.majStart(ef.getName())));
-            insertForm = new StringBuilder(insertForm.toString().replace("[foreignPrimaryNameMaj]", HandyManUtils.majStart(ef.getReferencedField())));
-            insertForm = new StringBuilder(insertForm.toString().replace("[foreignPrimaryNameMin]", HandyManUtils.minStart(ef.getReferencedField())));
-            insertForm = new StringBuilder(insertForm.toString().replace("[fieldNameMin]", HandyManUtils.minStart(ef.getName())));
-            insertForm = new StringBuilder(insertForm.toString().replace("[fieldNameMaj]", HandyManUtils.majStart(ef.getName())));
-            insertForm = new StringBuilder(insertForm.toString().replace("[foreignNameFormattedMaj]", HandyManUtils.formatReadable(ef.getName())));
+            insertForm = new StringBuilder(insertForm.toString().replace("[foreignNameMin]", FileUtils.minStart(ef.getName())));
+            insertForm = new StringBuilder(insertForm.toString().replace("[foreignNameMaj]", FileUtils.majStart(ef.getName())));
+            insertForm = new StringBuilder(insertForm.toString().replace("[foreignPrimaryNameMaj]", FileUtils.majStart(ef.getReferencedField())));
+            insertForm = new StringBuilder(insertForm.toString().replace("[foreignPrimaryNameMin]", FileUtils.minStart(ef.getReferencedField())));
+            insertForm = new StringBuilder(insertForm.toString().replace("[fieldNameMin]", FileUtils.minStart(ef.getName())));
+            insertForm = new StringBuilder(insertForm.toString().replace("[fieldNameMaj]", FileUtils.majStart(ef.getName())));
+            insertForm = new StringBuilder(insertForm.toString().replace("[foreignNameFormattedMaj]", FileUtils.formatReadable(ef.getName())));
             foreignGet = getView().getForeignFieldGet();
             tableLine = new StringBuilder(tableLine.toString().replace("[foreignFieldGet]", foreignGet));
             foreignList.append(getView().getViewForeignList());
             foreignList = new StringBuilder(foreignList.toString().replace("[foreignType]", ef.getType()));
-            foreignList = new StringBuilder(foreignList.toString().replace("[foreignNameMin]", HandyManUtils.minStart(ef.getName())));
-            foreignList = new StringBuilder(foreignList.toString().replace("[foreignNameMaj]", HandyManUtils.majStart(ef.getName())));
+            foreignList = new StringBuilder(foreignList.toString().replace("[foreignNameMin]", FileUtils.minStart(ef.getName())));
+            foreignList = new StringBuilder(foreignList.toString().replace("[foreignNameMaj]", FileUtils.majStart(ef.getName())));
         }
         content = content.replace("[viewForeignList]", foreignList.toString());
         content = content.replace("[viewTableHeader]", tableHeader.toString());
         content = content.replace("[viewTableLine]", tableLine.toString());
         content = content.replace("[viewUpdateFormField]", updateForm.toString());
         content = content.replace("[viewInsertFormField]", insertForm.toString());
-        content = content.replace("[projectNameMin]", HandyManUtils.minStart(projectName));
-        content = content.replace("[projectNameMaj]", HandyManUtils.majStart(projectName));
-        content = content.replace("[classNameMaj]", HandyManUtils.majStart(entity.getClassName()));
-        content = content.replace("[classNameMin]", HandyManUtils.minStart(entity.getClassName()));
-        content = content.replace("[primaryNameMaj]", HandyManUtils.majStart(entity.getPrimaryField().getName()));
-        content = content.replace("[primaryNameMin]", HandyManUtils.minStart(entity.getPrimaryField().getName()));
+        content = content.replace("[projectNameMin]", FileUtils.minStart(projectName));
+        content = content.replace("[projectNameMaj]", FileUtils.majStart(projectName));
+        content = content.replace("[classNameMaj]", FileUtils.majStart(entity.getClassName()));
+        content = content.replace("[classNameMin]", FileUtils.minStart(entity.getClassName()));
+        content = content.replace("[primaryNameMaj]", FileUtils.majStart(entity.getPrimaryField().getName()));
+        content = content.replace("[primaryNameMin]", FileUtils.minStart(entity.getPrimaryField().getName()));
         return content;
     }
 }
