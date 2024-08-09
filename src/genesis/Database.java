@@ -81,7 +81,7 @@ public class Database {
             opened=true;
         }
         String query=getGettablesQuery().replace("[databaseName]", credentials.getDatabaseName());
-        if(entityName.equals("*")==false){
+        if(!entityName.equals("*")){
             query+=String.format(" and pg_tables.tablename='%s'",entityName);
         }
         try (PreparedStatement statement = connect.prepareStatement(query)) {

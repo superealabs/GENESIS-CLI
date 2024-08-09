@@ -101,8 +101,8 @@ public class App {
                 obj.setProjectName(projectName);
                 obj.setCredentials(credentials);
                 obj.setEntities(entities);
-                for(int i=0;i<entities.length;i++){
-                    entities[i].initialize(connect, credentials, database, language);
+                for (Entity entity : entities) {
+                    entity.initialize(connect, credentials, database, language);
                 }
                 File genesisObj=new File(project, Constantes.GENESISOBJ_FILE);
                 HandyManUtils.overwriteFileContent(genesisObj.getPath(), HandyManUtils.toJson(obj));
@@ -165,7 +165,7 @@ public class App {
                     navLink = new StringBuilder(navLink.toString().replace("[classNameformattedMin]", HandyManUtils.minStart(HandyManUtils.formatReadable(entities[i].getClassName()).trim())));
                     navLink = new StringBuilder(navLink.toString().replace("[classNameformattedMaj]", HandyManUtils.majStart(HandyManUtils.formatReadable(entities[i].getClassName()).trim())));
                 }
-                navLink.append("\n"+language.getView().getViewCommentStart()+"[navbarLinks]"+language.getView().getViewCommentEnd());
+                navLink.append("\n").append(language.getView().getViewCommentStart()).append("[navbarLinks]").append(language.getView().getViewCommentEnd());
                 navLinkPath=language.getNavbarLinks().getPath().replace("[projectNameMaj]", HandyManUtils.majStart(projectName));
                 navLinkPath=navLinkPath.replace("[projectNameMin]", HandyManUtils.minStart(projectName));
                 HandyManUtils.overwriteFileContent(navLinkPath, HandyManUtils.getFileContent(navLinkPath).replace("[navbarLinks]", navLink.toString()));
@@ -183,7 +183,7 @@ public class App {
                         customChanges = new StringBuilder(customChanges.toString().replace("[databaseName]", credentials.getDatabaseName()));
                         customChanges = new StringBuilder(customChanges.toString().replace("[pwd]", credentials.getPwd()));
                     }
-                    if(c.isWithEndComma()==false){
+                    if(!c.isWithEndComma()){
                         customChanges = new StringBuilder(customChanges.substring(0, customChanges.length() - 1));
                     }
                     customChanges.append("\n//[customChanges]");
