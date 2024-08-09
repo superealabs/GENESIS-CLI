@@ -2,6 +2,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.util.Scanner;
 
+import connexion.SQLRunner;
 import genesis.Constantes;
 import genesis.Credentials;
 import genesis.CustomChanges;
@@ -11,11 +12,10 @@ import genesis.Entity;
 import genesis.EntityField;
 import genesis.GenesisObject;
 import genesis.Language;
-import handyman.HandyManUtils;
-import veda.godao.DAO;
+import handyMan.HandyManUtils;
 
 public class App {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Throwable {
         Database[] databases = HandyManUtils.fromJson(Database[].class, HandyManUtils.getFileContent(Constantes.DATABASE_JSON));
         Language[] languages = HandyManUtils.fromJson(Language[].class, HandyManUtils.getFileContent(Constantes.LANGUAGE_JSON));
         Database database;
@@ -191,8 +191,7 @@ public class App {
                     changesFile = c.getPath().replace("[projectNameMaj]", HandyManUtils.majStart(projectName));
                     HandyManUtils.overwriteFileContent(changesFile, HandyManUtils.getFileContent(changesFile).replace("[customChanges]", customChanges.toString()));
                 }
-                DAO dao = new DAO(database.getDriver(), database.getNom(), databaseName, host, database.getPort(), user, pwd, useSSL, allowPublicKeyRetrieval, database.getId());
-                dao.execute(connect, database.getLoginScript());
+                SQLRunner.execute(connect, database.getLoginScript());
                 connect.commit();
             }
         }

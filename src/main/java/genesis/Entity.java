@@ -1,12 +1,13 @@
 package genesis;
 
+import handyMan.HandyManUtils;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
-import handyman.HandyManUtils;
 
 public class Entity {
     private String tableName;

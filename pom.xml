@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Project Metadata -->
+    <groupId>org.genesis</groupId>
+    <artifactId>GENESIS</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>GENESIS</name>
+    <description>GENESIS Command Line Application</description>
+    <packaging>jar</packaging>
+
+
+    <properties>
+        <java.version>21</java.version> <!-- Adjust to your required Java version -->
+    </properties>
+
+    <dependencies>
+
+        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+
+        <!--
+                mvn install:install-file -Dfile=/Users/nomena/STAGE/GENESIS/lib/Veda.jar -DgroupId=veda.godao -DartifactId=veda -Dversion=1.0 -Dpackaging=jar
+
+         Veda dependency
+        <dependency>
+            <groupId>veda.godao</groupId>
+            <artifactId>veda</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+                mvn install:install-file -Dfile=/Users/nomena/STAGE/GENESIS/lib/handyMan.jar -DgroupId=handyman.lib -DartifactId=handyman -Dversion=1.0 -Dpackaging=jar
+
+         handyMan dependency
+        <dependency>
+            <groupId>handyman.lib</groupId>
+            <artifactId>handyman</artifactId>
+            <version>1.0</version>
+        </dependency>
+        -->
+
+        <!-- MySQL Connector -->
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
+        </dependency>
+
+
+        <!-- PostgreSQL Connector -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.3</version>
+        </dependency>
+
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Maven Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+
+            <!-- Maven Assembly Plugin for creating a runnable JAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>App</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <!-- Exec Maven Plugin -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <mainClass>App</mainClass>
+                </configuration>
+            </plugin>
+
+
+        </plugins>
+    </build>
+
+</project>

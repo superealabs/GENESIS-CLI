@@ -1,9 +1,10 @@
 package genesis;
 
+import handyMan.HandyManUtils;
+
 import java.io.IOException;
 import java.util.HashMap;
 
-import handyman.HandyManUtils;
 
 public class Language {
     private int id;
