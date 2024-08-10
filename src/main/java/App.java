@@ -2,16 +2,16 @@ import java.io.File;
 import java.sql.Connection;
 import java.util.Scanner;
 
-import connexion.SQLRunner;
-import genesis.Constantes;
-import genesis.Credentials;
-import genesis.CustomChanges;
-import genesis.CustomFile;
-import genesis.Database;
-import genesis.Entity;
-import genesis.EntityField;
-import genesis.GenesisObject;
-import genesis.Language;
+import genesis.connexion.SQLRunner;
+import genesis.config.Constantes;
+import genesis.config.Credentials;
+import genesis.config.CustomChanges;
+import genesis.config.CustomFile;
+import genesis.connexion.Database;
+import genesis.model.Entity;
+import genesis.model.EntityField;
+import genesis.config.GenesisObject;
+import genesis.config.Language;
 import utils.FileUtils;
 
 public class App {
