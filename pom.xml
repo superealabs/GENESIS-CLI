@@ -13,11 +13,14 @@
 
 
     <properties>
-        <java.version>21</java.version> <!-- Adjust to your required Java version -->
+        <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
+        <!-- Dependencies for your main application -->
 
+        <!-- Google Gson -->
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -25,60 +28,84 @@
             <version>2.11.0</version>
         </dependency>
 
-
-        <!--
-                mvn install:install-file -Dfile=/Users/nomena/STAGE/GENESIS/lib/Veda.jar -DgroupId=veda.godao -DartifactId=veda -Dversion=1.0 -Dpackaging=jar
-
-         Veda dependency
-        <dependency>
-            <groupId>veda.godao</groupId>
-            <artifactId>veda</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-                mvn install:install-file -Dfile=/Users/nomena/STAGE/GENESIS/lib/utils.jar -DgroupId=handyman.lib -DartifactId=handyman -Dversion=1.0 -Dpackaging=jar
-
-         utils dependency
-        <dependency>
-            <groupId>handyman.lib</groupId>
-            <artifactId>handyman</artifactId>
-            <version>1.0</version>
-        </dependency>
-        -->
-
         <!-- MySQL Connector -->
-        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>9.0.0</version>
         </dependency>
-
 
         <!-- PostgreSQL Connector -->
+        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.7.3</version>
         </dependency>
 
+        <!-- JUnit 5 -->
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.10.3</version>
+            <scope>test</scope>
+        </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.10.3</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Mockito -->
+        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.11.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- AssertJ -->
+        <!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.25.3</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
 
     <build>
         <plugins>
+
             <!-- Maven Compiler Plugin -->
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.13.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
 
+            <!-- Maven Surefire Plugin -->
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+            </plugin>
+
             <!-- Maven Assembly Plugin for creating a runnable JAR -->
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -104,17 +131,16 @@
                 </executions>
             </plugin>
 
-
             <!-- Exec Maven Plugin -->
+            <!-- https://mvnrepository.com/artifact/org.codehaus.mojo/exec-maven-plugin -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.4.0</version>
                 <configuration>
                     <mainClass>App</mainClass>
                 </configuration>
             </plugin>
-
 
         </plugins>
     </build>
