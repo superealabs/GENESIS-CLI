@@ -1,4 +1,4 @@
-package connexion;
+package genesis.connexion;
 
 
 import java.sql.Connection;

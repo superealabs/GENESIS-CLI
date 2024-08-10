@@ -1,4 +1,4 @@
-package genesis;
+package genesis.model;
 
 import lombok.Getter;
 import lombok.Setter;

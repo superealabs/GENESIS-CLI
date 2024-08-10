@@ -1,4 +1,4 @@
-package genesis;
+package genesis.config;
 
 public class Constantes {
     public static final String DATABASE_JSON = "data_genesis/databases.json";

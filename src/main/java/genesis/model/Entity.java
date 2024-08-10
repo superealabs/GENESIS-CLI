@@ -1,5 +1,8 @@
-package genesis;
+package genesis.model;
 
+import genesis.config.Language;
+import genesis.config.Credentials;
+import genesis.connexion.Database;
 import lombok.Getter;
 import lombok.Setter;
 import utils.FileUtils;

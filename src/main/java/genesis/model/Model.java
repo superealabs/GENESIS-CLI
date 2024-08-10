@@ -1,5 +1,6 @@
-package genesis;
+package genesis.model;
 
+import genesis.config.CustomFile;
 import lombok.Getter;
 import lombok.Setter;
 

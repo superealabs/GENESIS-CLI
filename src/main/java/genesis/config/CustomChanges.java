@@ -1,4 +1,4 @@
-package genesis;
+package genesis.config;
 
 import lombok.Getter;
 import lombok.Setter;

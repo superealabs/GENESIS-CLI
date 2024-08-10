@@ -1,5 +1,7 @@
-package genesis;
+package genesis.connexion;
 
+import genesis.config.Credentials;
+import genesis.model.Entity;
 import lombok.Getter;
 import lombok.Setter;
 

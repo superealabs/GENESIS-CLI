@@ -1,4 +1,4 @@
-package genesis;
+package genesis.view;
 
 import lombok.Getter;
 import lombok.Setter;

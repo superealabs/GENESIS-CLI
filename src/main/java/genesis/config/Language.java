@@ -1,5 +1,14 @@
-package genesis;
+package genesis.config;
 
+import genesis.connexion.Database;
+import genesis.model.Model;
+import genesis.view.NavbarLink;
+import genesis.view.View;
+import genesis.controller.Controller;
+import genesis.controller.ControllerField;
+import genesis.controller.ControllerMethod;
+import genesis.model.Entity;
+import genesis.model.EntityField;
 import lombok.Getter;
 import lombok.Setter;
 import utils.FileUtils;

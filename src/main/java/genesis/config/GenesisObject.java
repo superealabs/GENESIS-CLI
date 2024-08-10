@@ -1,5 +1,6 @@
-package genesis;
+package genesis.config;
 
+import genesis.model.Entity;
 import lombok.Getter;
 import lombok.Setter;
 
