@@ -1,5 +1,7 @@
 package genesis;
 
+import lombok.Getter;
+import lombok.Setter;
 import utils.FileUtils;
 
 import java.sql.Connection;
@@ -9,52 +11,14 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 
+@Setter
+@Getter
 public class Entity {
     private String tableName;
     private EntityColumn[] columns;
     private String className;
     private EntityField[] fields;
     private EntityField primaryField;
-
-    public EntityField getPrimaryField() {
-        return primaryField;
-    }
-
-    public void setPrimaryField(EntityField primaryField) {
-        this.primaryField = primaryField;
-    }
-
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
-    public EntityColumn[] getColumns() {
-        return columns;
-    }
-
-    public void setColumns(EntityColumn[] columns) {
-        this.columns = columns;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    public EntityField[] getFields() {
-        return fields;
-    }
-
-    public void setFields(EntityField[] fields) {
-        this.fields = fields;
-    }
 
     public void initialize(Connection connex, Credentials credentials, Database database, Language language) throws ClassNotFoundException, SQLException {
         boolean opened = false;

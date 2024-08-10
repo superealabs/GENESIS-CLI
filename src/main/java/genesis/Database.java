@@ -1,5 +1,8 @@
 package genesis;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,6 +11,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Vector;
 
+@Setter
+@Getter
 public class Database {
     private int id;
     private String nom;
@@ -17,70 +22,6 @@ public class Database {
     private String getcolumnsQuery;
     private String gettablesQuery;
     private String loginScript;
-
-    public String getLoginScript() {
-        return loginScript;
-    }
-
-    public void setLoginScript(String loginScript) {
-        this.loginScript = loginScript;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public String getDriver() {
-        return driver;
-    }
-
-    public void setDriver(String driver) {
-        this.driver = driver;
-    }
-
-    public String getPort() {
-        return port;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
-    }
-
-    public HashMap<String, String> getTypes() {
-        return types;
-    }
-
-    public void setTypes(HashMap<String, String> types) {
-        this.types = types;
-    }
-
-    public String getGetcolumnsQuery() {
-        return getcolumnsQuery;
-    }
-
-    public void setGetcolumnsQuery(String getcolumnsQuery) {
-        this.getcolumnsQuery = getcolumnsQuery;
-    }
-
-    public String getGettablesQuery() {
-        return gettablesQuery;
-    }
-
-    public void setGettablesQuery(String gettablesQuery) {
-        this.gettablesQuery = gettablesQuery;
-    }
 
     public Connection getConnexion(Credentials credentials) throws ClassNotFoundException, SQLException {
         Class.forName(driver);

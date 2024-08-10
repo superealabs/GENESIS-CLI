@@ -1,11 +1,15 @@
 package genesis;
 
+import lombok.Getter;
+import lombok.Setter;
 import utils.FileUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
 
 
+@Setter
+@Getter
 public class Language {
     private int id;
     private String nom;
@@ -19,110 +23,6 @@ public class Language {
     private View view;
     private CustomChanges[] customChanges;
     private NavbarLink navbarLinks;
-
-    public NavbarLink getNavbarLinks() {
-        return navbarLinks;
-    }
-
-    public void setNavbarLinks(NavbarLink navbarLinks) {
-        this.navbarLinks = navbarLinks;
-    }
-
-    public CustomChanges[] getCustomChanges() {
-        return customChanges;
-    }
-
-    public void setCustomChanges(CustomChanges[] customChanges) {
-        this.customChanges = customChanges;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public HashMap<String, String> getSyntax() {
-        return syntax;
-    }
-
-    public void setSyntax(HashMap<String, String> syntax) {
-        this.syntax = syntax;
-    }
-
-    public HashMap<String, String> getTypes() {
-        return types;
-    }
-
-    public void setTypes(HashMap<String, String> types) {
-        this.types = types;
-    }
-
-    public HashMap<String, String> getTypeParsers() {
-        return typeParsers;
-    }
-
-    public void setTypeParsers(HashMap<String, String> typeParsers) {
-        this.typeParsers = typeParsers;
-    }
-
-    public String getSkeleton() {
-        return skeleton;
-    }
-
-    public void setSkeleton(String skeleton) {
-        this.skeleton = skeleton;
-    }
-
-    public String[] getProjectNameTags() {
-        return projectNameTags;
-    }
-
-    public void setProjectNameTags(String[] projectNameTags) {
-        this.projectNameTags = projectNameTags;
-    }
-
-    public CustomFile[] getAdditionnalFiles() {
-        return additionnalFiles;
-    }
-
-    public void setAdditionnalFiles(CustomFile[] additionnalFiles) {
-        this.additionnalFiles = additionnalFiles;
-    }
-
-    public Model getModel() {
-        return model;
-    }
-
-    public void setModel(Model model) {
-        this.model = model;
-    }
-
-    public Controller getController() {
-        return controller;
-    }
-
-    public void setController(Controller controller) {
-        this.controller = controller;
-    }
-
-    public View getView() {
-        return view;
-    }
-
-    public void setView(View view) {
-        this.view = view;
-    }
 
     public String generateModel(Entity entity, String projectName) throws IOException {
         String content = FileUtils.getFileContent(Constantes.DATA_PATH + "/" + getModel().getModelTemplate() + "." + Constantes.MODEL_TEMPLATE_EXT);
