@@ -1,7 +1,7 @@
 [
     {
         "id":1,
-        "nom":"mysql",
+        "name":"mysql",
         "driver":"com.mysql.jdbc.Driver",
         "port":"3306",
         "types":{
@@ -20,7 +20,7 @@
     },
     {
         "id":2,
-        "nom":"postgresql",
+        "name":"postgresql",
         "driver":"org.postgresql.Driver",
         "port":"5432",
         "types":{
@@ -40,7 +40,7 @@
     },
     {
         "id": 3,
-        "nom": "sqlServer",
+        "name": "sqlServer",
         "driver": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
         "port": "1433",
         "types": {
@@ -60,7 +60,7 @@
     },
     {
         "id": 4,
-        "nom": "oracle",
+        "name": "oracle",
         "driver": "oracle.jdbc.driver.OracleDriver",
         "port": "1521",
         "types": {

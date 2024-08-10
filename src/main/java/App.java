@@ -7,9 +7,7 @@ import genesis.connexion.SQLRunner;
 import genesis.connexion.Database;
 import genesis.model.Entity;
 import genesis.model.EntityField;
-import handler.ApplicationHandler;
-import handler.DatabaseHandler;
-import handler.ProjectSetup;
+import handler.*;
 import utils.FileUtils;
 
 public class App {
@@ -194,7 +192,9 @@ public class App {
 //            }
 //        }
         try (Scanner scanner = new Scanner(System.in)) {
+            ApplicationTypeHandler applicationTypeHandler = new ApplicationTypeHandler();
             ApplicationHandler applicationHandler = new ApplicationHandler();
+            LanguageHandler languageHandler = new LanguageHandler();
             DatabaseHandler databaseHandler = new DatabaseHandler();
             ProjectSetup projectSetup = new ProjectSetup();
 
@@ -206,7 +206,11 @@ public class App {
             Credentials credentials = databaseHandler.inputCredentials(scanner);
 
             /*---Choosing the right language for your project---*/
-            application = applicationHandler.chooseTypeApplication(scanner);
+            ApplicationType applicationType = applicationTypeHandler.chooseTypeApplication(scanner);
+
+            /*---Choosing the programming language---*/
+            Language language = languageHandler.chooseLanguage(scanner,applicationType);
+
         }
     }
 }

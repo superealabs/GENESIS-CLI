@@ -1,8 +1,8 @@
 [
     {
         "id":1,
-        "nom":"Java",
-        "application": [1,2],
+        "name":"Java",
+        "applicationId": [1,2],
         "syntax":{
             "namespace":"package",
             "namespaceStart":";",
@@ -25,7 +25,8 @@
     },
     {
         "id": 2,
-        "nom": "C# .NET",
+        "name": "C#",
+        "applicationId": [1,2],
         "syntax": {
             "namespace": "namespace",
             "namespaceStart": "{",
@@ -48,7 +49,8 @@
     },
     {
         "id": 3,
-        "nom": "PHP Laravel",
+        "name": "PHP",
+        "applicationId": [1],
         "syntax": {
             "namespace": "namespace",
             "namespaceStart": "{",
@@ -58,15 +60,38 @@
             "int": "int",
             "double": "float",
             "string": "string",
-            "date": "Carbon\\Carbon",
-            "timestamp": "Carbon\\Carbon"
+            "date": "Carbon",
+            "timestamp": "Carbon"
         },
         "typeParsers": {
             "int": "intval([value])",
             "double": "floatval([value])",
             "string": "strval([value])",
-            "Carbon\\Carbon": "Carbon::parse([value])",
-            "Carbon\\Carbon": "Carbon::parse([value])"
+            "Carbon": "Carbon::parse([value])"
+        }
+    },
+    {
+        "id": 4,
+        "name": "Python",
+        "applicationId": [2],
+        "syntax": {
+            "namespace": "from",
+            "namespaceStart": "",
+            "namespaceEnd": ""
+        },
+        "types": {
+            "int": "int",
+            "double": "float",
+            "string": "str",
+            "date": "datetime.date",
+            "timestamp": "datetime.datetime"
+        },
+        "typeParsers": {
+            "int": "int([value])",
+            "float": "float([value])",
+            "str": "str([value])",
+            "datetime.date": "datetime.date.strptime([value], '%Y-%m-%d')",
+            "datetime.datetime": "datetime.datetime.strptime([value], '%Y-%m-%d %H:%M:%S')"
         }
     }
 ]

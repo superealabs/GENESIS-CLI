@@ -15,13 +15,15 @@ import utils.FileUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 
 @Setter
 @Getter
 public class Language {
     private int id;
-    private String nom;
+    private String name;
+    private List<Integer> applicationId;
     private HashMap<String, String> syntax;
     private HashMap<String, String> types, typeParsers;
     private String skeleton;
@@ -224,7 +226,7 @@ public class Language {
             methods = new StringBuilder(methods.toString().replace("[primaryType]", entity.getPrimaryField().getType()));
             methods = new StringBuilder(methods.toString().replace("[primaryNameMin]", FileUtils.minStart(entity.getPrimaryField().getName())));
             methods = new StringBuilder(methods.toString().replace("[databaseDriver]", database.getDriver()));
-            methods = new StringBuilder(methods.toString().replace("[databaseSgbd]", database.getNom()));
+            methods = new StringBuilder(methods.toString().replace("[databaseSgbd]", database.getName()));
             methods = new StringBuilder(methods.toString().replace("[databaseHost]", credentials.getHost()));
             methods = new StringBuilder(methods.toString().replace("[databasePort]", database.getPort()));
             methods = new StringBuilder(methods.toString().replace("[databaseName]", credentials.getDatabaseName()));
@@ -240,7 +242,7 @@ public class Language {
         content = content.replace("[projectNameMin]", FileUtils.minStart(projectName));
         content = content.replace("[projectNameMaj]", FileUtils.majStart(projectName));
         content = content.replace("[databaseDriver]", database.getDriver());
-        content = content.replace("[databaseSgbd]", database.getNom());
+        content = content.replace("[databaseSgbd]", database.getName());
         content = content.replace("[databaseHost]", credentials.getHost());
         content = content.replace("[databaseName]", credentials.getDatabaseName());
         content = content.replace("[databasePort]", database.getPort());

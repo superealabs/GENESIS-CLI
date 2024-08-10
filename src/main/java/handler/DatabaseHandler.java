@@ -14,7 +14,7 @@ public class DatabaseHandler {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
         System.out.println("Choose a database engine:");
         for (int i = 0; i < databases.length; i++) {
-            System.out.println((i + 1) + ") " + databases[i].getNom());
+            System.out.println((i + 1) + ") " + databases[i].getName());
         }
         System.out.print("> ");
         return databases[scanner.nextInt() - 1];

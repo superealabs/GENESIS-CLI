@@ -17,7 +17,7 @@ import java.util.Vector;
 @Getter
 public class Database {
     private int id;
-    private String nom;
+    private String name;
     private String driver;
     private String port;
     private HashMap<String, String> types;
@@ -28,7 +28,7 @@ public class Database {
     public Connection getConnexion(Credentials credentials) throws ClassNotFoundException, SQLException {
         Class.forName(driver);
         String url = "jdbc:%s://%s:%s/%s?user=%s&password=%s&useSSL=%s&allowPublicKeyRetrieval=%s";
-        url = String.format(url, getNom(), credentials.getHost(), getPort(), credentials.getDatabaseName(), credentials.getUser(), credentials.getPwd(), credentials.isUseSSL(), credentials.isAllowPublicKeyRetrieval());
+        url = String.format(url, getName(), credentials.getHost(), getPort(), credentials.getDatabaseName(), credentials.getUser(), credentials.getPwd(), credentials.isUseSSL(), credentials.isAllowPublicKeyRetrieval());
         Connection connex = DriverManager.getConnection(url);
         connex.setAutoCommit(false);
         return connex;

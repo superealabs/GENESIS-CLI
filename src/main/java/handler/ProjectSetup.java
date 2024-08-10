@@ -13,7 +13,7 @@ public class ProjectSetup {
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
         System.out.println("Choose a langage:");
         for (int i = 0; i < languages.length; i++) {
-            System.out.println((i + 1) + ") " + languages[i].getNom());
+            System.out.println((i + 1) + ") " + languages[i].getName());
         }
         System.out.print("> ");
         return languages[scanner.nextInt() - 1];
@@ -23,7 +23,7 @@ public class ProjectSetup {
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
         System.out.println("Choose a framework:");
         for (int i = 0; i < languages.length; i++) {
-            System.out.println((i + 1) + ") " + languages[i].getNom());
+            System.out.println((i + 1) + ") " + languages[i].getName());
         }
         System.out.print("> ");
         return languages[scanner.nextInt() - 1];
