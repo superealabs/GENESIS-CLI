@@ -1,7 +1,7 @@
 package handler;
 
 import genesis.config.Constantes;
-import genesis.config.Language;
+import genesis.config.langage.Language;
 import utils.FileUtils;
 
 import java.io.IOException;

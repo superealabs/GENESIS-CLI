@@ -1,5 +1,6 @@
 package genesis.config;
 
+import genesis.connexion.Credentials;
 import genesis.model.Entity;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,5 +13,4 @@ public class GenesisObject {
     private int languageId;
     private Credentials credentials;
     private Entity[] entities;
-
 }

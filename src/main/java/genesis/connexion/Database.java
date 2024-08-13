@@ -1,9 +1,10 @@
 package genesis.connexion;
 
-import genesis.config.Credentials;
+import genesis.config.langage.Language;
 import genesis.model.Entity;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,6 +16,7 @@ import java.util.Vector;
 
 @Setter
 @Getter
+@ToString
 public class Database {
     private int id;
     private String name;
@@ -22,6 +24,7 @@ public class Database {
     private String port;
     private HashMap<String, String> types;
     private String getcolumnsQuery;
+    private String addEntitiesQuery;
     private String gettablesQuery;
     private String loginScript;
 
@@ -42,8 +45,9 @@ public class Database {
             opened = true;
         }
         String query = getGettablesQuery().replace("[databaseName]", credentials.getDatabaseName());
+
         if (!entityName.equals("*")) {
-            query += String.format(" and pg_tables.tablename='%s'", entityName);
+            query += String.format(getAddEntitiesQuery(), entityName);
         }
         try (PreparedStatement statement = connect.prepareStatement(query)) {
             Vector<Entity> liste = new Vector<>();
