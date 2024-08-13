@@ -15,30 +15,27 @@
     "additionnalFiles":[],
     "model":{
       "modelImports":[
-        "import jakarta.persistence.Entity;",
-        "import jakarta.persistence.GeneratedValue;",
-        "import jakarta.persistence.GenerationType;",
-        "import jakarta.persistence.Id;",
-        "import veda.godao.annotations.PrimaryKey;",
-        "import veda.godao.annotations.Table;"
+        "import jakarta.persistence.*;",
+        "import lombok.Getter;",
+        "import lombok.Setter;"
       ],
       "modelExtends":"",
       "modelAnnotations":[
+        "@Getter",
+        "@Setter",
         "@Entity",
-        "@Table(\"[tableName]\")"
+        "@Table(name=\"[tableName]\")"
       ],
       "modelPrimaryFieldAnnotations":[
         "@Id",
-        "@GeneratedValue(strategy=GenerationType.IDENTITY)",
-        "@PrimaryKey"
+        "@GeneratedValue(strategy=GenerationType.IDENTITY)"
       ],
       "modelForeignFieldAnnotations":[
-        "@jakarta.persistence.ManyToOne",
-        "@jakarta.persistence.JoinColumn(name=\"[columnName]\")",
-        "@veda.godao.annotations.ForeignKey(recursive=true)"
+        "@ManyToOne",
+        "@JoinColumn(name=\"[columnName]\")"
       ],
       "modelFieldAnnotations":[
-        "@veda.godao.annotations.Column(\"[columnName]\")"
+        "@Column(name=\"[columnName]\")"
       ],
       "modelFieldCase":"Min",
       "modelFieldContent":"private [fieldType] [columnName];",

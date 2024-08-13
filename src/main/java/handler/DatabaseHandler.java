@@ -1,7 +1,7 @@
 package handler;
 
 import genesis.config.Constantes;
-import genesis.config.Credentials;
+import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import utils.FileUtils;
 

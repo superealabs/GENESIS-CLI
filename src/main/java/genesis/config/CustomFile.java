@@ -8,5 +8,4 @@ import lombok.Setter;
 public class CustomFile {
     private String name;
     private String content;
-
 }

@@ -3,6 +3,8 @@ package genesis.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.swing.*;
+
 @Setter
 @Getter
 public class EntityField {
@@ -11,5 +13,4 @@ public class EntityField {
     private boolean primary;
     private boolean foreign;
     private String referencedField;
-
 }

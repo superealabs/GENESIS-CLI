@@ -1,9 +1,10 @@
 package genesis.model;
 
-import genesis.config.Language;
-import genesis.config.Credentials;
+import genesis.config.langage.Language;
+import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import utils.FileUtils;
 
@@ -16,12 +17,17 @@ import java.util.Vector;
 
 @Setter
 @Getter
+@NoArgsConstructor
 public class Entity {
     private String tableName;
     private EntityColumn[] columns;
     private String className;
     private EntityField[] fields;
     private EntityField primaryField;
+
+    public Entity(Connection connex, Credentials credentials, Database database, Language language) throws SQLException, ClassNotFoundException {
+        initialize(connex, credentials, database, language);
+    }
 
     public void initialize(Connection connex, Credentials credentials, Database database, Language language) throws ClassNotFoundException, SQLException {
         boolean opened = false;
@@ -31,8 +37,7 @@ public class Entity {
             opened = true;
         }
         String query = database.getGetcolumnsQuery().replace("[tableName]", getTableName());
-        PreparedStatement statement = connect.prepareStatement(query);
-        try {
+        try (PreparedStatement statement = connect.prepareStatement(query)) {
             Vector<EntityColumn> listeCols = new Vector<>();
             Vector<EntityField> listeFields = new Vector<>();
             EntityColumn column;
@@ -76,7 +81,6 @@ public class Entity {
                 setFields(fiels);
             }
         } finally {
-            statement.close();
             if (opened) {
                 connect.close();
             }
