@@ -17,8 +17,11 @@ public class MVCGenerator implements GenesisGenerator {
 
     @Override
     public String generateModel(Framework framework, Language language, Entity entity, String projectName) throws IOException {
-        String templateContent = loadModelTemplate(framework);
+        if (language.getId() != framework.getLangageId()) {
+            throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
+        }
 
+        String templateContent = loadModelTemplate(framework);
         StringBuilder content = new StringBuilder(templateContent);
 
         // Remplacer les placeholders
@@ -96,6 +99,8 @@ public class MVCGenerator implements GenesisGenerator {
 
     private void generateFieldContent(StringBuilder content, Framework framework, EntityField field, EntityColumn column) {
         String indent = INDENT;
+        String fieldCase = framework.getModel().getModelFieldCase();
+        String fieldName = field.getName();
 
         if (field.isPrimary()) {
             for (String annotation : framework.getModel().getModelPrimaryFieldAnnotations()) {
@@ -107,17 +112,27 @@ public class MVCGenerator implements GenesisGenerator {
 
         if (!field.isForeign()) {
             for (String annotation : framework.getModel().getModelFieldAnnotations()) {
-                content.append(indent).append(annotation.replace("[columnName]", field.getName())).append("\n");
+                content.append(indent).append(annotation.replace("[columnName]", fieldName)).append("\n");
             }
         }
-
+        fieldName = getFieldName(fieldName, fieldCase);
         String fieldDeclaration = framework.getModel().getModelFieldContent()
                 .replace("[fieldType]", field.getType())
-                .replace("[modelFieldCase]", framework.getModel().getModelFieldCase())
-                .replace("[fieldNameMin]", FileUtils.minStart(field.getName()))
-                .replace("[columnName]", field.getName());
+                .replace("[modelFieldCase]", fieldCase)
+                .replace("[fieldNameMin]", FileUtils.minStart(fieldName))
+                .replace("[fieldNameMaj]", FileUtils.majStart(fieldName))
+                .replace("[columnName]", fieldName);
 
         content.append(indent).append(fieldDeclaration);
+    }
+
+    public String getFieldName(String fieldName, String fieldCase) {
+        if ("Min".equalsIgnoreCase(fieldCase)) {
+            fieldName = FileUtils.minStart(fieldName);
+        } else if ("Maj".equalsIgnoreCase(fieldCase)) {
+            fieldName = FileUtils.majStart(fieldName);
+        }
+        return fieldName;
     }
 
     private void insertConstructors(StringBuilder content, int index, Framework framework) {

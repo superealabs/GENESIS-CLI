@@ -12,7 +12,7 @@ import java.util.Map;
 public class Framework {
     private int id;
     private int langageId;
-    private String nom;
+    private String name;
     private String skeleton;
     private String[] projectNameTags;
     private CustomFile[] additionnalFiles;

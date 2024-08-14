@@ -1,97 +1,111 @@
 [
-    {
-        "id":1,
-        "name":"Java",
-        "applicationId": [1,2],
-        "syntax":{
-            "namespace":"package",
-            "namespaceStart":";",
-            "namespaceEnd":""
-        },
-        "types":{
-            "int":"Integer",
-            "double":"Double",
-            "string":"String",
-            "date":"java.time.LocalDate",
-            "timestamp":"java.time.LocalDateTime"
-        },
-        "typeParsers":{
-            "Integer":"Integer.parseInt([value])",
-            "Double":"Double.parseDouble([value])",
-            "String":"[value]",
-            "java.time.LocalDate":"java.time.LocalDate.parse([value])",
-            "java.time.LocalDateTime":"java.time.LocalDateTime.parse([value])"
-        }
+  {
+    "id": 1,
+    "name": "Java",
+    "applicationId": [
+      1,
+      2
+    ],
+    "syntax": {
+      "namespace": "package",
+      "namespaceStart": ";",
+      "namespaceEnd": ""
     },
-    {
-        "id": 2,
-        "name": "C#",
-        "applicationId": [1,2],
-        "syntax": {
-            "namespace": "namespace",
-            "namespaceStart": "{",
-            "namespaceEnd": "}"
-        },
-        "types": {
-            "int": "int",
-            "double": "double",
-            "string": "string?",
-            "date": "DateOnly",
-            "timestamp": "DateTime"
-        },
-        "typeParsers": {
-            "int": "int.Parse([value])",
-            "double": "Double.Parse([value])",
-            "string?": "[value]",
-            "DateOnly": "DateOnly.Parse([value])",
-            "DateTime": "DateTime.SpecifyKind(DateTime.Parse([value]), DateTimeKind.Utc)"
-        }
+    "types": {
+      "int": "Integer",
+      "long": "Long",
+      "double": "Double",
+      "string": "String",
+      "date": "java.time.LocalDate",
+      "timestamp": "java.time.LocalDateTime"
     },
-    {
-         "id": 3,
-        "name": "PHP",
-        "applicationId": [1],
-        "syntax": {
-            "namespace": "namespace",
-            "namespaceStart": "{",
-            "namespaceEnd": "}"
-        },
-        "types": {
-            "int": "int",
-            "double": "float",
-            "string": "string",
-            "date": "Carbon",
-            "timestamp": "Carbon"
-        },
-        "typeParsers": {
-            "int": "intval([value])",
-            "double": "floatval([value])",
-            "string": "strval([value])",
-            "Carbon": "Carbon::parse([value])"
-        }
-    },
-    {
-        "id": 4,
-        "name": "Python",
-        "applicationId": [2],
-        "syntax": {
-            "namespace": "from",
-            "namespaceStart": "",
-            "namespaceEnd": ""
-        },
-        "types": {
-            "int": "int",
-            "double": "float",
-            "string": "str",
-            "date": "datetime.date",
-            "timestamp": "datetime.datetime"
-        },
-        "typeParsers": {
-            "int": "int([value])",
-            "float": "float([value])",
-            "str": "str([value])",
-            "datetime.date": "datetime.date.strptime([value], '%Y-%m-%d')",
-            "datetime.datetime": "datetime.datetime.strptime([value], '%Y-%m-%d %H:%M:%S')"
-        }
+    "typeParsers": {
+      "Integer": "Integer.parseInt([value])",
+      "Long": "Long.parseInt([value])",
+      "Double": "Double.parseDouble([value])",
+      "String": "[value]",
+      "java.time.LocalDate": "java.time.LocalDate.parse([value])",
+      "java.time.LocalDateTime": "java.time.LocalDateTime.parse([value])"
     }
+  },
+  {
+    "id": 2,
+    "name": "C#",
+    "applicationId": [
+      1,
+      2
+    ],
+    "syntax": {
+      "namespace": "namespace",
+      "namespaceStart": ";",
+      "namespaceEnd": ""
+    },
+    "types": {
+      "int": "int",
+      "long": "long",
+      "double": "double",
+      "string": "string?",
+      "date": "DateOnly",
+      "timestamp": "DateTime"
+    },
+    "typeParsers": {
+      "int": "int.Parse([value])",
+      "long": "long.Parse([value])",
+      "double": "Double.Parse([value])",
+      "string?": "[value]",
+      "DateOnly": "DateOnly.Parse([value])",
+      "DateTime": "DateTime.SpecifyKind(DateTime.Parse([value]), DateTimeKind.Utc)"
+    }
+  },
+  {
+    "id": 3,
+    "name": "PHP",
+    "applicationId": [
+      1
+    ],
+    "syntax": {
+      "namespace": "namespace",
+      "namespaceStart": "{",
+      "namespaceEnd": "}"
+    },
+    "types": {
+      "int": "int",
+      "double": "float",
+      "string": "string",
+      "date": "Carbon",
+      "timestamp": "Carbon"
+    },
+    "typeParsers": {
+      "int": "intval([value])",
+      "double": "floatval([value])",
+      "string": "strval([value])",
+      "Carbon": "Carbon::parse([value])"
+    }
+  },
+  {
+    "id": 4,
+    "name": "Python",
+    "applicationId": [
+      2
+    ],
+    "syntax": {
+      "namespace": "from",
+      "namespaceStart": "",
+      "namespaceEnd": ""
+    },
+    "types": {
+      "int": "int",
+      "double": "float",
+      "string": "str",
+      "date": "datetime.date",
+      "timestamp": "datetime.datetime"
+    },
+    "typeParsers": {
+      "int": "int([value])",
+      "float": "float([value])",
+      "str": "str([value])",
+      "datetime.date": "datetime.date.strptime([value], '%Y-%m-%d')",
+      "datetime.datetime": "datetime.datetime.strptime([value], '%Y-%m-%d %H:%M:%S')"
+    }
+  }
 ]
