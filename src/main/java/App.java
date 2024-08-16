@@ -1,10 +1,11 @@
 import java.util.Scanner;
 
-import genesis.config.*;
-import genesis.connexion.Credentials;
-import genesis.connexion.Database;
-import genesis.config.langage.Language;
 import handler.*;
+import genesis.config.*;
+import genesis.connexion.Database;
+import genesis.connexion.Credentials;
+import genesis.config.langage.Language;
+import genesis.config.langage.Framework;
 
 public class App {
     public static void main(String[] args) throws Throwable {
@@ -193,6 +194,7 @@ public class App {
         try (Scanner scanner = new Scanner(System.in)) {
             ApplicationTypeHandler applicationTypeHandler = new ApplicationTypeHandler();
             ApplicationHandler applicationHandler = new ApplicationHandler();
+            FrameworkHandler frameworkHandler = new FrameworkHandler();
             LanguageHandler languageHandler = new LanguageHandler();
             DatabaseHandler databaseHandler = new DatabaseHandler();
             ProjectSetup projectSetup = new ProjectSetup();
@@ -211,8 +213,10 @@ public class App {
             Language language = languageHandler.chooseLanguage(scanner, applicationType);
 
             /*---Choosing the framework---*/
+            Framework framework = frameworkHandler.chooseFramework(scanner,applicationType,language);
 
-
+            /*---Project configuration---*/
+            String projectName = projectSetup.setupProject(scanner, framework);
         }
     }
 }

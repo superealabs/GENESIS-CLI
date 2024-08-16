@@ -1,13 +1,13 @@
 package handler;
 
-import genesis.config.ApplicationType;
-import genesis.config.Constantes;
-import genesis.config.langage.Language;
 import utils.FileUtils;
+import genesis.config.Constantes;
+import genesis.config.ApplicationType;
+import genesis.config.langage.Language;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.io.IOException;
 
 public class LanguageHandler {
 
@@ -23,6 +23,6 @@ public class LanguageHandler {
             }
         }
         System.out.print("> ");
-        return languages[counterLangageIdHashMap.get(scanner.nextInt() - 1)];
+        return languages[counterLangageIdHashMap.get(scanner.nextInt())];
     }
 }

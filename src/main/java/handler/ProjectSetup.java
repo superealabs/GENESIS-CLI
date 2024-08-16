@@ -1,31 +1,29 @@
 package handler;
 
 import genesis.config.Constantes;
+import genesis.config.CustomFile;
+import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import utils.FileUtils;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.Scanner;
 
 public class ProjectSetup {
+    public String setupProject(Scanner scanner, Framework framework) throws Exception {
+        System.out.print("Enter your project name: ");
+        String projectName = scanner.nextLine();
 
-    public Language chooseLanguage(Scanner scanner) throws IOException {
-        Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-        System.out.println("Choose a langage:");
-        for (int i = 0; i < languages.length; i++) {
-            System.out.println((i + 1) + ") " + languages[i].getName());
-        }
-        System.out.print("> ");
-        return languages[scanner.nextInt() - 1];
-    }
+        File project = new File(projectName);
+        project.mkdir();
 
-    public Language chooseFramework(Scanner scanner) throws IOException {
-        Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-        System.out.println("Choose a framework:");
-        for (int i = 0; i < languages.length; i++) {
-            System.out.println((i + 1) + ") " + languages[i].getName());
+        for (CustomFile c : framework.getAdditionnalFiles()) {
+            String customFilePath = c.getName().replace("[projectNameMaj]", FileUtils.majStart(projectName));
+            FileUtils.createFile(customFilePath);
+            String customFileContent = FileUtils.getFileContent(Constantes.DATA_PATH + "/" + c.getContent())
+                    .replace("[projectNameMaj]", FileUtils.majStart(projectName));
+            FileUtils.overwriteFileContent(customFilePath, customFileContent);
         }
-        System.out.print("> ");
-        return languages[scanner.nextInt() - 1];
+        return projectName;
     }
 }

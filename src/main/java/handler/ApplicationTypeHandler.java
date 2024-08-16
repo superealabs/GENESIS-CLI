@@ -1,12 +1,11 @@
 package handler;
 
-import genesis.config.Application;
-import genesis.config.ApplicationType;
-import genesis.config.Constantes;
 import utils.FileUtils;
+import genesis.config.Constantes;
+import genesis.config.ApplicationType;
 
-import java.io.IOException;
 import java.util.Scanner;
+import java.io.IOException;
 
 public class ApplicationTypeHandler {
 

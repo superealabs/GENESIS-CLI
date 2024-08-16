@@ -1,7 +1,7 @@
 package handler;
 
-import genesis.config.Application;
 import java.util.Scanner;
+import genesis.config.Application;
 
 public class ApplicationHandler {
 

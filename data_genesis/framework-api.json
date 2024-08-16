@@ -2,7 +2,7 @@
   {
     "id":1,
     "langageId":1,
-    "name":"Spring MVC",
+    "nom":"Spring MVC",
     "skeleton":"springmvc_skeleton",
     "projectNameTags":[
       "[projectNameMaj]/settings.gradle",
@@ -187,7 +187,7 @@
   },
   {
     "id":2,
-    "name":".NET MVC with EF",
+    "nom":".NET MVC with EF",
     "skeleton":"csharppsql_skeleton",
     "projectNameTags":[
       "[projectNameMaj]/Controllers/HomeController.cs",
