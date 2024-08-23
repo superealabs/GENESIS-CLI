@@ -68,6 +68,7 @@ public class MVCGenerator implements GenesisGenerator {
         replace(content, "[extends]", framework.getModel().getModelExtends());
         replace(content, "[projectNameMin]", FileUtils.minStart(projectName));
         replace(content, "[projectNameMaj]", FileUtils.majStart(projectName));
+
         replace(content, "[classNameMaj]", FileUtils.majStart(entity.getClassName()));
         replace(content, "[tableName]", entity.getTableName());
     }

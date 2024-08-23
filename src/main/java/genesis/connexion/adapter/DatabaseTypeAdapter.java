@@ -12,8 +12,6 @@ import genesis.connexion.providers.OracleDatabase;
 import genesis.connexion.providers.PostgreSQLDatabase;
 import genesis.connexion.providers.SQLServerDatabase;
 
-import java.io.IOException;
-
 public class DatabaseTypeAdapter extends TypeAdapter<Database> {
     @Override
     public void write(JsonWriter out, Database value) {

@@ -34,7 +34,7 @@ public abstract class Database {
         String url = getJdbcUrl(credentials);
         Connection connection;
 
-        if ("Oracle".equalsIgnoreCase(name)) {
+        if ("oracle".equalsIgnoreCase(name)) {
             connection = DriverManager.getConnection(url, credentials.getUser(), credentials.getPwd());
         } else {
             connection = DriverManager.getConnection(url);
