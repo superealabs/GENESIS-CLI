@@ -18,14 +18,14 @@ import java.util.Vector;
 @Setter
 @Getter
 @NoArgsConstructor
-public class Entity {
+public class TableMetadata {
     private String tableName;
-    private EntityColumn[] columns;
+    private ColumnMetadata[] columns;
     private String className;
-    private EntityField[] fields;
-    private EntityField primaryField;
+    private FieldMetadata[] fields;
+    private FieldMetadata primaryField;
 
-    public Entity(Connection connex, Credentials credentials, Database database, Language language) throws SQLException, ClassNotFoundException {
+    public TableMetadata(Connection connex, Credentials credentials, Database database, Language language) throws SQLException, ClassNotFoundException {
         initialize(connex, credentials, database, language);
     }
 
@@ -45,12 +45,12 @@ public class Entity {
         try (PreparedStatement statement = connect.prepareStatement(query);
              ResultSet result = statement.executeQuery()) {
 
-            Vector<EntityColumn> listeCols = new Vector<>();
-            Vector<EntityField> listeFields = new Vector<>();
+            Vector<ColumnMetadata> listeCols = new Vector<>();
+            Vector<FieldMetadata> listeFields = new Vector<>();
             setClassName(FileUtils.majStart(FileUtils.toCamelCase(getTableName())));
 
             while (result.next()) {
-                EntityColumn column = new EntityColumn();
+                ColumnMetadata column = new ColumnMetadata();
                 column.setName(result.getString("column_name"));
                 column.setType(result.getString("data_type"));
                 column.setPrimary(result.getBoolean("is_primary"));
@@ -58,7 +58,7 @@ public class Entity {
                 column.setReferencedTable(result.getString("foreign_table_name"));
                 column.setReferencedColumn(result.getString("foreign_column_name"));
 
-                EntityField field = new EntityField();
+                FieldMetadata field = new FieldMetadata();
                 if (column.isForeign()) {
                     field.setName(FileUtils.minStart(FileUtils.toCamelCase(column.getReferencedTable())));
                     field.setType(FileUtils.majStart(FileUtils.toCamelCase(column.getReferencedTable())));
@@ -79,8 +79,8 @@ public class Entity {
                 listeFields.add(field);
             }
 
-            setColumns(listeCols.toArray(new EntityColumn[0]));
-            setFields(listeFields.toArray(new EntityField[0]));
+            setColumns(listeCols.toArray(new ColumnMetadata[0]));
+            setFields(listeFields.toArray(new FieldMetadata[0]));
 
         } finally {
             if (opened && !connect.isClosed()) {

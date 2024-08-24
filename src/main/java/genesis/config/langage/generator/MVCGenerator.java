@@ -5,9 +5,9 @@ import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
-import genesis.model.Entity;
-import genesis.model.EntityColumn;
-import genesis.model.EntityField;
+import genesis.model.TableMetadata;
+import genesis.model.ColumnMetadata;
+import genesis.model.FieldMetadata;
 import utils.FileUtils;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ public class MVCGenerator implements GenesisGenerator {
     private static final String INDENT = "    "; // 4 espaces pour l'indentation
 
     @Override
-    public String generateModel(Framework framework, Language language, Entity entity, String projectName) throws IOException {
+    public String generateModel(Framework framework, Language language, TableMetadata tableMetadata, String projectName) throws IOException {
         if (language.getId() != framework.getLangageId()) {
             throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
         }
@@ -25,13 +25,13 @@ public class MVCGenerator implements GenesisGenerator {
         StringBuilder content = new StringBuilder(templateContent);
 
         // Remplacer les placeholders
-        replaceModelPlaceholders(content, framework, language, entity, projectName);
+        replaceModelPlaceholders(content, framework, language, tableMetadata, projectName);
 
         // Remplacer [fields]
         int fieldsIndex = content.indexOf("[fields]");
         if (fieldsIndex != -1) {
             content.delete(fieldsIndex, fieldsIndex + "[fields]".length());
-            insertFields(content, fieldsIndex, framework, entity);
+            insertFields(content, fieldsIndex, framework, tableMetadata);
         }
 
         // Remplacer [constructors]
@@ -45,12 +45,12 @@ public class MVCGenerator implements GenesisGenerator {
     }
 
     @Override
-    public String generateController(Framework framework, Language language, Entity entity, Database database, Credentials credentials, String projectName) throws IOException {
+    public String generateController(Framework framework, Language language, TableMetadata tableMetadata, Database database, Credentials credentials, String projectName) throws IOException {
         return "";
     }
 
     @Override
-    public String generateView(Framework framework, Language language, Entity entity, Database database, Credentials credentials, String projectName) throws IOException {
+    public String generateView(Framework framework, Language language, TableMetadata tableMetadata, Database database, Credentials credentials, String projectName) throws IOException {
         return "";
     }
 
@@ -58,7 +58,7 @@ public class MVCGenerator implements GenesisGenerator {
         return FileUtils.getFileContent(Constantes.DATA_PATH + "/" + framework.getModel().getModelTemplate() + "." + Constantes.MODEL_TEMPLATE_EXT);
     }
 
-    private void replaceModelPlaceholders(StringBuilder content, Framework framework, Language language, Entity entity, String projectName) {
+    private void replaceModelPlaceholders(StringBuilder content, Framework framework, Language language, TableMetadata tableMetadata, String projectName) {
         replace(content, "[namespace]", language.getSyntax().get("namespace"));
         replace(content, "[namespaceStart]", language.getSyntax().get("namespaceStart"));
         replace(content, "[namespaceEnd]", language.getSyntax().get("namespaceEnd"));
@@ -69,11 +69,11 @@ public class MVCGenerator implements GenesisGenerator {
         replace(content, "[projectNameMin]", FileUtils.minStart(projectName));
         replace(content, "[projectNameMaj]", FileUtils.majStart(projectName));
 
-        replace(content, "[classNameMaj]", FileUtils.majStart(entity.getClassName()));
-        replace(content, "[tableName]", entity.getTableName());
+        replace(content, "[classNameMaj]", FileUtils.majStart(tableMetadata.getClassName()));
+        replace(content, "[tableName]", tableMetadata.getTableName());
     }
 
-    private void generateForeignFieldAnnotations(StringBuilder content, Framework framework, EntityField field, EntityColumn column, String indent) {
+    private void generateForeignFieldAnnotations(StringBuilder content, Framework framework, FieldMetadata field, ColumnMetadata column, String indent) {
         for (String annotation : framework.getModel().getModelForeignFieldAnnotations()) {
             String formattedAnnotation = annotation
                     .replace("[referencedFieldNameMin]", FileUtils.minStart(field.getReferencedField()))
@@ -82,15 +82,15 @@ public class MVCGenerator implements GenesisGenerator {
         }
     }
 
-    private void insertFields(StringBuilder content, int index, Framework framework, Entity entity) {
+    private void insertFields(StringBuilder content, int index, Framework framework, TableMetadata tableMetadata) {
         StringBuilder fields = new StringBuilder();
-        EntityField[] entityFields = entity.getFields();
-        EntityColumn[] entityColumns = entity.getColumns();
+        FieldMetadata[] fieldMetadata = tableMetadata.getFields();
+        ColumnMetadata[] columnMetadata = tableMetadata.getColumns();
 
-        for (int i = 0; i < entityFields.length; i++) {
+        for (int i = 0; i < fieldMetadata.length; i++) {
             fields.append("\n");
-            generateFieldContent(fields, framework, entityFields[i], entityColumns[i]);
-            if (i < entityFields.length - 1) {
+            generateFieldContent(fields, framework, fieldMetadata[i], columnMetadata[i]);
+            if (i < fieldMetadata.length - 1) {
                 fields.append("\n");
             }
         }
@@ -98,7 +98,7 @@ public class MVCGenerator implements GenesisGenerator {
         content.insert(index, fields);
     }
 
-    private void generateFieldContent(StringBuilder content, Framework framework, EntityField field, EntityColumn column) {
+    private void generateFieldContent(StringBuilder content, Framework framework, FieldMetadata field, ColumnMetadata column) {
         String indent = INDENT;
         String fieldCase = framework.getModel().getModelFieldCase();
         String fieldName = field.getName();

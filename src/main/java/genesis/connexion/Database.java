@@ -1,6 +1,6 @@
 package genesis.connexion;
 
-import genesis.model.Entity;
+import genesis.model.TableMetadata;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -13,7 +13,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
 
 @Setter
 @Getter
@@ -29,34 +28,21 @@ public abstract class Database {
     private String getTablesQuery;
     private String loginScript;
 
-    public Connection getConnection(Credentials credentials) throws ClassNotFoundException, SQLException {
-        Class.forName(driver);
-        String url = getJdbcUrl(credentials);
-        Connection connection;
-
-        if ("oracle".equalsIgnoreCase(name)) {
-            connection = DriverManager.getConnection(url, credentials.getUser(), credentials.getPwd());
-        } else {
-            connection = DriverManager.getConnection(url);
-        }
-
-        connection.setAutoCommit(false);
-        return connection;
-    }
+    public abstract Connection getConnection(Credentials credentials) throws ClassNotFoundException, SQLException;
 
     protected abstract String getJdbcUrl(Credentials credentials);
 
-    public Entity[] getEntities(Connection connection, Credentials credentials, String entityName) throws SQLException {
+    public TableMetadata[] getEntities(Connection connection, Credentials credentials, String entityName) throws SQLException {
         try (Connection connect = getOrCreateConnection(connection, credentials);
              PreparedStatement statement = prepareStatement(connect, credentials, entityName);
              ResultSet result = statement.executeQuery()) {
 
-            List<Entity> entities = new ArrayList<>();
+            List<TableMetadata> entities = new ArrayList<>();
             while (result.next()) {
                 entities.add(createEntityFromResult(result));
             }
 
-            return entities.toArray(new Entity[0]);
+            return entities.toArray(new TableMetadata[0]);
         }
     }
 
@@ -84,9 +70,10 @@ public abstract class Database {
         return query;
     }
 
-    private Entity createEntityFromResult(ResultSet result) throws SQLException {
-        Entity entity = new Entity();
-        entity.setTableName(result.getString("table_name"));
-        return entity;
+    private TableMetadata createEntityFromResult(ResultSet result) throws SQLException {
+        TableMetadata tableMetadata = new TableMetadata();
+        tableMetadata.setTableName(result.getString("table_name"));
+        return tableMetadata;
     }
+
 }

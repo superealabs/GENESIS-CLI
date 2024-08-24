@@ -7,9 +7,8 @@ import genesis.config.langage.generator.GenesisGenerator;
 import genesis.config.langage.generator.MVCGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
-import genesis.connexion.providers.MySQLDatabase;
 import genesis.connexion.providers.PostgreSQLDatabase;
-import genesis.model.Entity;
+import genesis.model.TableMetadata;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 
@@ -17,7 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
 
-public class PostgreSQLSQLTest {
+public class PostgreSQLTest {
 
     Credentials credentials = new Credentials("test_db", "nomena", "root", "localhost", true, true);
 
@@ -37,13 +36,13 @@ public class PostgreSQLSQLTest {
         Framework framework = frameworks[0];                                // Spring MVC
 
         try (Connection connection = database.getConnection(credentials)) {
-            Entity[] entities = database.getEntities(connection, credentials, "employe");
-            Entity entity = entities[0];
-            entity.initialize(connection, credentials, database, language);
+            TableMetadata[] entities = database.getEntities(connection, credentials, "employe");
+            TableMetadata tableMetadata = entities[0];
+            tableMetadata.initialize(connection, credentials, database, language);
 
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, entity, "Test");
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "Test");
 
             System.out.println(database);
             System.out.println(language);
@@ -67,13 +66,13 @@ public class PostgreSQLSQLTest {
         Framework framework = frameworks[1];                                // .NET
 
         try (Connection connection = database.getConnection(credentials)) {
-            Entity[] entities = database.getEntities(connection, credentials, "employe");
-            Entity entity = entities[0];
-            entity.initialize(connection, credentials, database, language);
+            TableMetadata[] entities = database.getEntities(connection, credentials, "employe");
+            TableMetadata tableMetadata = entities[0];
+            tableMetadata.initialize(connection, credentials, database, language);
             ;
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, entity, "Test");
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "Test");
 
             System.out.println(database);
             System.out.println(language);
@@ -117,8 +116,6 @@ public class PostgreSQLSQLTest {
 
                     System.out.println("\t" + columnName + " (" + dataTypeName + "), Size: " + columnSize + ", Nullable: " + nullable);
                 }
-
-
 
 
                 // Obtenir les contraintes de clé primaire

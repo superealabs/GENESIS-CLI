@@ -8,7 +8,7 @@ import genesis.config.langage.generator.MVCGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.connexion.providers.MySQLDatabase;
-import genesis.model.Entity;
+import genesis.model.TableMetadata;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 
@@ -36,12 +36,12 @@ public class MySQLTest {
         Credentials credentials = new Credentials("test_db", "root", "Nomena321@", "localhost", true, true);
 
         try (Connection connection = database.getConnection(credentials)) {
-            Entity[] entities = database.getEntities(connection, credentials, "employe");
-            Entity entity = entities[0];
-            entity.initialize(connection, credentials, database, language); ;
+            TableMetadata[] entities = database.getEntities(connection, credentials, "employe");
+            TableMetadata tableMetadata = entities[0];
+            tableMetadata.initialize(connection, credentials, database, language); ;
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, entity, "Test");
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "Test");
 
             System.out.println(database);
             System.out.println(language);
@@ -67,12 +67,12 @@ public class MySQLTest {
         Credentials credentials = new Credentials("test_db", "root", "Nomena321@", "localhost", true, true);
 
         try (Connection connection = database.getConnection(credentials)) {
-            Entity[] entities = database.getEntities(connection, credentials, "employe");
-            Entity entity = entities[0];
-            entity.initialize(connection, credentials, database, language); ;
+            TableMetadata[] entities = database.getEntities(connection, credentials, "employe");
+            TableMetadata tableMetadata = entities[0];
+            tableMetadata.initialize(connection, credentials, database, language); ;
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, entity, "Test");
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "Test");
 
             System.out.println(database);
             System.out.println(language);

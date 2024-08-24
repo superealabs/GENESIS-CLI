@@ -1,9 +1,9 @@
-public ModelMethod crudpage(ServletEntity entity) throws Exception{
+public ModelMethod crudpage(ServletEntity tableMetadata) throws Exception{
     try(Connection connex=DAOConnexion.getConnexion("[databaseDriver]", "[databaseSgbd]", "[databaseHost]", "[databasePort]", "[databaseName]", "[user]", "[pwd]", [databaseUseSSL], [databaseAllowKey])){
-        if(entity.getSession().containsKey("token")==false){
+        if(tableMetadata.getSession().containsKey("token")==false){
             return new ModelRedirect("login.do");
         }
-        String token=entity.getSession().get("token").toString();
+        String token=tableMetadata.getSession().get("token").toString();
         boolean exists=dao.exists(connex, "v_genesis_token_active", String.format("token='%s'", token), "authority=10");
         String crudButton="disabled";
         if(exists){
@@ -11,7 +11,7 @@ public ModelMethod crudpage(ServletEntity entity) throws Exception{
         }
         String tokenDecode=new String(Base64.getDecoder().decode(token));
         String username=tokenDecode.split("!!")[0];
-        String req_indice=entity.getData().get("indice_actu");
+        String req_indice=tableMetadata.getData().get("indice_actu");
         Integer indice_actu=1;
         if(req_indice!=null){
             indice_actu=Integer.parseInt(req_indice);
@@ -28,8 +28,8 @@ public ModelMethod crudpage(ServletEntity entity) throws Exception{
         String bouton_precedent=indice_precedent==0?"disabled":"";
         String bouton_suivant=avec_suivant?"":"disabled";
         String message="";
-        if(entity.getData().containsKey("message")){
-            message=URLDecoder.decode(entity.getData().get("message"), StandardCharsets.UTF_8);
+        if(tableMetadata.getData().containsKey("message")){
+            message=URLDecoder.decode(tableMetadata.getData().get("message"), StandardCharsets.UTF_8);
         }
         ModelView model=new ModelView();
         model.setView("pages/layout/layout.jsp");
