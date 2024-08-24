@@ -1,7 +1,6 @@
 package genesis.config.langage;
 
 import lombok.*;
-
 import java.util.List;
 
 import lombok.Getter;

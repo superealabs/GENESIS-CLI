@@ -1,0 +1,367 @@
+[
+  {
+    "id":1,
+    "langageId":1,
+    "nom":"Spring MVC",
+    "skeleton":"springmvc_skeleton",
+    "projectNameTags":[
+      "[projectNameMaj]/settings.gradle",
+      "[projectNameMaj]/src/main/resources/templates/layout/layout.html",
+      "[projectNameMaj]/src/main/resources/templates/login.html",
+      "[projectNameMaj]/src/main/resources/application.properties",
+      "[projectNameMaj]/src/main/java/com/controllers/LoginController.java",
+      "[projectNameMaj]/src/main/java/com/controllers/HelloController.java"
+    ],
+    "additionnalFiles":[],
+    "model":{
+      "modelImports":[
+        "import jakarta.persistence.*;",
+        "import lombok.Getter;",
+        "import lombok.Setter;"
+      ],
+      "modelExtends":"",
+      "modelAnnotations":[
+        "@Getter",
+        "@Setter",
+        "@Entity",
+        "@Table(name=\"[tableName]\")"
+      ],
+      "modelPrimaryFieldAnnotations":[
+        "@Id",
+        "@GeneratedValue(strategy=GenerationType.IDENTITY)"
+      ],
+      "modelForeignFieldAnnotations":[
+        "@ManyToOne",
+        "@JoinColumn(name=\"[columnName]\")"
+      ],
+      "modelFieldAnnotations":[
+        "@Column(name=\"[columnName]\")"
+      ],
+      "modelFieldCase":"Min",
+      "modelFieldContent":"private [fieldType] [columnName];",
+      "modelGetter":"public [fieldType] get[fieldNameMaj](){ return [columnName]; }",
+      "modelSetter":"public void set[fieldNameMaj]([fieldType] o){ [columnName]=o; }",
+      "modelConstructors":[],
+      "modelSavePath":"[projectNameMaj]/src/main/java/com/[projectNameMin]/entities",
+      "modelAdditionnalFiles":[
+        {
+          "name":"[classNameMaj]Repository.java",
+          "content":"spring/Repository.templ"
+        }
+      ],
+      "modelExtension":"java",
+      "modelPackage":"com.[projectNameMin].entities",
+      "modelTemplate":"ModelTemplate"
+    },
+    "controller":{
+      "controllerImports":[
+        "import org.springframework.beans.factory.annotation.Autowired;",
+        "import org.springframework.stereotype.Controller;",
+        "import org.springframework.ui.Model;",
+        "import org.springframework.web.bind.annotation.GetMapping;",
+        "import org.springframework.web.bind.annotation.PostMapping;",
+        "import org.springframework.web.servlet.view.RedirectView;",
+        "import com.[projectNameMin].entities.[classNameMaj];",
+        "import com.[projectNameMin].entities.[classNameMaj]Repository;",
+        "import com.config.Constantes;",
+        "import veda.godao.DAO;",
+        "import veda.godao.utils.DAOConnexion;",
+        "import jakarta.servlet.http.HttpServletRequest;",
+        "import jakarta.servlet.http.HttpSession;",
+        "import java.sql.Connection;",
+        "import java.sql.SQLException;",
+        "import java.net.URLDecoder;",
+        "import java.net.URLEncoder;",
+        "import java.nio.charset.StandardCharsets;",
+        "import java.util.Base64;"
+      ],
+      "controllerAnnotations":[
+        "@Controller"
+      ],
+      "controllerExtends":"",
+      "controllerName":"[classNameMaj]Controller",
+      "controllerFields":[
+        {
+          "controllerFieldAnnotations":[],
+          "controllerFieldContent":"private DAO dao=new DAO(\"[databaseDriver]\", \"[databaseSgbd]\", \"[databaseHost]\", \"[databasePort]\", \"[databaseName]\", \"[user]\", \"[pwd]\", [databaseUseSSL], [databaseAllowKey], [databaseID]);"
+        },
+        {
+          "controllerFieldAnnotations":[
+            "@Autowired"
+          ],
+          "controllerFieldContent":"private [classNameMaj]Repository repo;"
+        }
+      ],
+      "controllerFieldsForeign":{
+        "controllerFieldAnnotations":[
+          "@Autowired"
+        ],
+        "controllerFieldContent":"private com.[projectNameMin].entities.[foreignNameMaj]Repository repo[foreignNameMaj];"
+      },
+      "controllerChangeInstanciation":{
+        "template":"o.set[fieldNameMaj]([content]);",
+        "value":"[fieldNameMin]"
+      },
+      "controllerWhereInstanciation":{
+        "template":"where.set[primaryNameMaj]([content]);",
+        "value":"[primaryNameMin]"
+      },
+      "controllerForeignInstanciation":{
+        "template":"o.set[fieldNameMaj](repo[foreignType].findById([content]).orElseThrow());",
+        "value":"[fieldNameMin]"
+      },
+      "controllerForeignList":"model.addAttribute(\"[foreignNameMin]s\", repo[foreignType].findAll());",
+      "controllerForeignContextParam" : "",
+      "controllerForeignContextInstanciation" : "",
+      "controllerConstructors":[],
+      "controllerForeignInclude":"",
+      "controllerMethods":[
+        {
+          "controllerMethodAnnotations":[
+            "@PostMapping(\"/insert[classNameMin].do\")"
+          ],
+          "controllerMethodParameter":"String [fieldNameMin]",
+          "controllerMethodContent":"spring/controller/springControllerInsert"
+        },
+        {
+          "controllerMethodAnnotations":[
+            "@GetMapping(\"/tocrud[classNameMin].do\")"
+          ],
+          "controllerMethodParameter":"",
+          "controllerMethodContent":"spring/controller/springControllerRead"
+        },
+        {
+          "controllerMethodAnnotations":[
+            "@PostMapping(\"/update[classNameMin].do\")"
+          ],
+          "controllerMethodParameter":"String [fieldNameMin]",
+          "controllerMethodContent":"spring/controller/springControllerUpdate"
+        },
+        {
+          "controllerMethodAnnotations":[
+            "@PostMapping(\"/delete[classNameMin].do\")"
+          ],
+          "controllerMethodParameter":"",
+          "controllerMethodContent":"spring/controller/springControllerDelete"
+        }
+      ],
+      "controllerSavepath":"[projectNameMaj]/src/main/java/com/[projectNameMin]/controllers",
+      "controllerExtension":"java",
+      "controllerPackage":"com.[projectNameMin].controllers",
+      "controllerTemplate":"ControllerTemplate",
+      "controllerNameSuffix":"Controller"
+    },
+    "view":{
+      "viewForeignList":"",
+      "viewTableHeader":"<th scope=\"col\">[fieldNameFormattedMaj]</th>",
+      "foreignFieldGet":".label",
+      "viewTableLine":"<td th:text=\"${e.get[fieldNameMaj]()[foreignFieldGet]}\"></td>",
+      "viewUpdateFormForeignField":"spring/view/components/springViewUpdateForeign",
+      "viewUpdateFormField":{
+        "Integer":"spring/view/components/springViewUpdateInt",
+        "Double":"spring/view/components/springViewUpdateDouble",
+        "String":"spring/view/components/springViewUpdateString",
+        "java.time.LocalDate":"spring/view/components/springViewUpdateDate",
+        "java.time.LocalDateTime":"spring/view/components/springViewUpdateTimestamp"
+      },
+      "viewInsertFormForeignField":"spring/view/components/springViewInsertForeign",
+      "viewInsertFormField":{
+        "Integer":"spring/view/components/springViewInsertInt",
+        "Double":"spring/view/components/springViewInsertDouble",
+        "String":"spring/view/components/springViewInsertString",
+        "java.time.LocalDate":"spring/view/components/springViewInsertDate",
+        "java.time.LocalDateTime":"spring/view/components/springViewInsertTimestamp"
+      },
+      "viewName":"[classNameMin]",
+      "viewContent":"spring/view/springView",
+      "viewSavePath":"[projectNameMaj]/src/main/resources/templates",
+      "viewExtension":"html",
+      "viewCommentStart":"<!-- ",
+      "viewCommentEnd":" -->"
+    },
+    "customChanges":[],
+    "navbarLinks":{
+      "path":"[projectNameMaj]/src/main/resources/templates/layout/layout.html",
+      "link":"<a href=\"/tocrud[classNameMin].do\" class=\"nav-item nav-link\"><i class=\"fa fa-tachometer-alt me-2\"></i>[classNameformattedMaj]</a>"
+    }
+  },
+  {
+    "id":2,
+    "nom":".NET MVC with EF",
+    "skeleton":"csharppsql_skeleton",
+    "projectNameTags":[
+      "[projectNameMaj]/Controllers/HomeController.cs",
+      "[projectNameMaj]/Models/ErrorViewModel.cs",
+      "[projectNameMaj]/Views/Shared/_Layout.cshtml",
+      "[projectNameMaj]/Views/_ViewImports.cshtml",
+      "[projectNameMaj]/Program.cs"
+    ],
+    "additionnalFiles":[
+      {
+        "name":"[projectNameMaj].sln",
+        "content":"csharp/data/solution.templ"
+      },
+      {
+        "name":"[projectNameMaj]/[projectNameMaj].csproj",
+        "content":"csharp/data/csprojmysql.templ"
+      }
+    ],
+    "model":{
+      "modelImports":[
+        "using System.ComponentModel.DataAnnotations;",
+        "using System.ComponentModel.DataAnnotations.Schema;"
+
+      ],
+      "modelExtends":"",
+      "modelAnnotations":[
+        "[Table(\"[tableName]\")]"
+      ],
+      "modelPrimaryFieldAnnotations":[
+        "[Key]"
+      ],
+      "modelForeignFieldAnnotations":[
+        "[ForeignKey(\"[columnName]\")]"
+      ],
+      "modelFieldAnnotations":[
+        "[Column(\"[columnName]\")]"
+      ],
+      "modelFieldCase":"Maj",
+      "modelFieldContent":"public [fieldType] [fieldName[modelFieldCase]]{ get; set; }",
+      "modelGetter":"",
+      "modelSetter":"",
+      "modelConstructors":[],
+      "modelSavePath":"[projectNameMaj]/Models",
+      "modelForeignContextAttr":"public DbSet<[classNameMaj]> [classNameMaj] { get; set; }",
+      "modelAdditionnalFiles":[
+        {
+          "name" : "[classNameMaj]Context.cs",
+          "content" : "csharp/data/contextmysql.templ"
+        }
+      ],
+      "modelExtension":"cs",
+      "modelPackage":"[projectNameMaj].Models",
+      "modelTemplate":"ModelTemplate"
+    },
+    "controller":{
+      "controllerImports":[
+        "using Microsoft.AspNetCore.Mvc;",
+        "using Microsoft.EntityFrameworkCore;",
+        "using [projectNameMaj].Models;"
+      ],
+      "controllerAnnotations":[],
+      "controllerExtends":" : Controller",
+      "controllerName":"[classNameMaj]Controller",
+      "controllerFields":[
+        {
+          "controllerFieldAnnotations":[],
+          "controllerFieldContent":"private readonly [classNameMaj]Context _context;"
+        }
+      ],
+      "controllerFieldsForeign": {
+        "controllerFieldAnnotations":[],
+        "controllerFieldContent":"private readonly [foreignNameMaj]Context _context[foreignNameMaj];"
+      },
+      "controllerChangeInstanciation":{
+        "template":"o.[fieldNameMaj]=[content];",
+        "value":"[fieldNameMin]"
+      },
+      "controllerWhereInstanciation":{
+        "template":"",
+        "value":""
+      },
+      "controllerForeignInstanciation":{
+        "template":"o.[fieldNameMaj]=await _context.[foreignType].FirstOrDefaultAsync(o => o.[referencedFieldNameMaj] == [content]);",
+        "value":"[foreignNameMin]"
+      },
+      "controllerForeignList":"ViewData[\"[foreignNameMin]\"] = await _context[foreignType].[foreignType].ToListAsync();",
+      "controllerForeignContextParam" : "[foreignNameMaj]Context context[foreignNameMaj]",
+      "controllerForeignContextInstanciation" : "_context[foreignNameMaj] = context[foreignNameMaj];",
+      "controllerConstructors":[
+        "public [classNameMaj]Controller([classNameMaj]Context context[controllerForeignContextParam]){_context = context; [controllerForeignContextInstanciation]}"
+      ],
+      "controllerForeignInclude":".Include(e=>e.[foreignNameMaj])",
+      "controllerMethods":[
+        {
+          "controllerMethodAnnotations":[],
+          "controllerMethodParameter":"",
+          "controllerMethodContent":"csharp/controller/csharpControllerRead"
+        },
+        {
+          "controllerMethodAnnotations":[
+            "[HttpPost]"
+          ],
+          "controllerMethodParameter":"string [fieldNameMin]",
+          "controllerMethodContent":"csharp/controller/csharpControllerCreate"
+        },
+        {
+          "controllerMethodAnnotations":[
+            "[HttpPost]"
+          ],
+          "controllerMethodParameter":"string [fieldNameMin]",
+          "controllerMethodContent":"csharp/controller/csharpControllerEdit"
+        },
+        {
+          "controllerMethodAnnotations":[
+            "[HttpPost]"
+          ],
+          "controllerMethodParameter":"",
+          "controllerMethodContent":"csharp/controller/csharpControllerDelete"
+        },
+        {
+          "controllerMethodAnnotations":[],
+          "controllerMethodParameter":"",
+          "controllerMethodContent":"csharp/controller/csharpControllerExists"
+        }
+      ],
+      "controllerSavepath":"[projectNameMaj]/Controllers",
+      "controllerExtension":"cs",
+      "controllerPackage":"[projectNameMaj].Controllers",
+      "controllerTemplate":"ControllerTemplate",
+      "controllerNameSuffix":"Controller"
+    },
+    "view":{
+      "viewForeignList":"var [foreignNameMin]=(List<[foreignNameMaj]>)ViewData[\"[foreignNameMin]\"];",
+      "viewTableHeader":"<th scope=\"col\">[fieldNameFormattedMaj]</th>",
+      "foreignFieldGet":".Label",
+      "viewTableLine":"<td>@o.[fieldNameMaj][foreignFieldGet]</td>",
+      "viewUpdateFormForeignField":"csharp/view/components/csharpViewUpdateForeign",
+      "viewUpdateFormField":{
+        "int":"csharp/view/components/csharpViewUpdateInt",
+        "double":"csharp/view/components/csharpViewUpdateDouble",
+        "string?":"csharp/view/components/csharpViewUpdateString",
+        "DateOnly":"csharp/view/components/csharpViewUpdateDate",
+        "DateTime":"csharp/view/components/csharpViewUpdateTimestamp"
+      },
+      "viewInsertFormForeignField":"csharp/view/components/csharpViewInsertForeign",
+      "viewInsertFormField":{
+        "int":"csharp/view/components/csharpViewInsertInt",
+        "double":"csharp/view/components/csharpViewInsertDouble",
+        "string?":"csharp/view/components/csharpViewInsertString",
+        "DateOnly":"csharp/view/components/csharpViewInsertDate",
+        "DateTime":"csharp/view/components/csharpViewInsertTimestamp"
+      },
+      "viewName":"Index",
+      "viewContent":"csharp/view/csharpView",
+      "viewSavePath":"[projectNameMaj]/Views/[classNameMaj]",
+      "viewExtension":"cshtml",
+      "viewCommentStart":"<!-- ",
+      "viewCommentEnd":" -->"
+    },
+    "customChanges":[
+      {
+        "path":"[projectNameMaj]/appsettings.json",
+        "changes":"\"[classNameMaj]Context\": \"server=[databaseHost];uid=[user];database=[databaseName];pwd=[pwd]\",",
+        "withEndComma":false
+      },
+      {
+        "path":"[projectNameMaj]/Program.cs",
+        "changes":"builder.Services.AddDbContext<[classNameMaj]Context>(options => options.UseMySQL(builder.Configuration.GetConnectionString(\"[classNameMaj]Context\") ?? throw new InvalidOperationException(\"Connection string '[classNameMaj]Context' not found.\")));",
+        "withEndComma":true
+      }
+    ],
+    "navbarLinks":{
+      "path":"[projectNameMaj]/Views/Shared/_Layout.cshtml",
+      "link":"<a href=\"/[classNameMaj]\" class=\"nav-item nav-link\"><i class=\"fa fa-tachometer-alt me-2\"></i>[classNameformattedMaj]</a>"
+    }
+  }
+]

@@ -6,6 +6,8 @@ import lombok.ToString;
 
 import java.util.Map;
 
+import genesis.config.CustomFile;
+
 @Getter
 @Setter
 @ToString
@@ -21,14 +23,6 @@ public class Framework {
     private View view;
     private CustomChanges[] customChanges;
     private NavbarLink navbarLinks;
-
-
-    @Getter
-    @Setter
-    public static class CustomFile {
-        private String name;
-        private String content;
-    }
 
     @Getter
     @Setter

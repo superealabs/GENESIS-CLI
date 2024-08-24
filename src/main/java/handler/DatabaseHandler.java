@@ -1,12 +1,12 @@
 package handler;
 
-import genesis.config.Constantes;
-import genesis.connexion.Credentials;
-import genesis.connexion.Database;
 import utils.FileUtils;
+import genesis.config.Constantes;
+import genesis.connexion.Database;
+import genesis.connexion.Credentials;
 
-import java.io.IOException;
 import java.util.Scanner;
+import java.io.IOException;
 
 public class DatabaseHandler {
 
