@@ -67,8 +67,8 @@ public class Person {
     // Constructor
     public Person({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
         {{#each fields}}
-        this.${this.name} = ${this.name};
-        {{/each}}
+        this.${this.name} = ${this.name};{{#if !@last}}
+        {{/if}}{{/each}}
     }
 
     // Getters and Setters
