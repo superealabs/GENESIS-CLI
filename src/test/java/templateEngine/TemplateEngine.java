@@ -192,5 +192,6 @@ public class TemplateEngine {
         replaceAllOccurrences(template, TAB_TAG, "\t");
     }
 
-    private record LoopInfo(String loopVarName, String loopContent, int start) {}
+    private record LoopInfo(String loopVarName, String loopContent, int start) {
+    }
 }

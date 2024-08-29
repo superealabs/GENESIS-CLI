@@ -58,7 +58,7 @@ public class StringTemplateTest {
     void templateEngineRender() throws Exception {
 
         String template = """
-public class Person {
+public class ${className} {
     // Fields
     {{#each fields}}
     private ${this.type} ${this.name};
@@ -80,11 +80,12 @@ public class Person {
         this.${this.name} = ${this.name};
     }
     {{/each}}
-
+    {{#if hasAdditionalMethod }}
     // Additional method
     public void additionalMethod() {
         System.out.println("This is an additional method.");
     }
+    {{/if}}
 }
 """;
 
@@ -106,7 +107,7 @@ public class Person {
             metadata.put("fields", fields);
 
             // Toggle to add or remove the additional method
-            metadata.put("hasAdditionalMethod", true);
+            metadata.put("hasAdditionalMethod", false);
 
             String result = engine.render(template, metadata);
             System.out.println(result);
