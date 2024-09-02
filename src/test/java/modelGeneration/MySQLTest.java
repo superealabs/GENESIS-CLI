@@ -79,7 +79,8 @@ public class MySQLTest {
             System.out.println(framework);
 
             System.out.println("\n====== GENERATED ======\n"+model);
-        } catch (SQLException | ClassNotFoundException | IOException e) {
+        }
+        catch (SQLException | ClassNotFoundException | IOException e) {
             throw new RuntimeException(e);
         }
     }
