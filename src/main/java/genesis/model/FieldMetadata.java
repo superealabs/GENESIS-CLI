@@ -5,12 +5,10 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class EntityColumn {
+public class FieldMetadata {
     private String name;
     private String type;
     private boolean primary;
     private boolean foreign;
-    private String referencedTable;
-    private String referencedColumn;
-
+    private String referencedField;
 }

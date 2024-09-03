@@ -1,6 +1,8 @@
 package utils;
 
 import com.google.gson.GsonBuilder;
+import genesis.connexion.Database;
+import genesis.connexion.adapter.DatabaseTypeAdapter;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -160,8 +162,12 @@ public class FileUtils {
         GsonBuilder builder = (new GsonBuilder()).registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter());
         builder.registerTypeAdapter(LocalTime.class, new LocalTimeTypeAdapter());
         builder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter());
+
+        builder.registerTypeAdapter(Database.class, new DatabaseTypeAdapter());
+
         return builder.create().fromJson(json, clazz);
     }
+
 
     public static String toJson(Object source) {
         GsonBuilder builder = (new GsonBuilder()).registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter());

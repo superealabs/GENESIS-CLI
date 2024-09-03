@@ -1,7 +1,6 @@
 package genesis.connexion;
 
-import genesis.config.langage.Language;
-import genesis.model.Entity;
+import genesis.model.TableMetadata;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -11,63 +10,70 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
 @Setter
 @Getter
 @ToString
-public class Database {
+public abstract class Database {
     private int id;
     private String name;
     private String driver;
     private String port;
     private HashMap<String, String> types;
-    private String getcolumnsQuery;
+    private String getColumnsQuery;
     private String addEntitiesQuery;
-    private String gettablesQuery;
+    private String getTablesQuery;
     private String loginScript;
 
-    public Connection getConnexion(Credentials credentials) throws ClassNotFoundException, SQLException {
-        Class.forName(driver);
-        String url = "jdbc:%s://%s:%s/%s?user=%s&password=%s&useSSL=%s&allowPublicKeyRetrieval=%s";
-        url = String.format(url, getName(), credentials.getHost(), getPort(), credentials.getDatabaseName(), credentials.getUser(), credentials.getPwd(), credentials.isUseSSL(), credentials.isAllowPublicKeyRetrieval());
-        Connection connex = DriverManager.getConnection(url);
-        connex.setAutoCommit(false);
-        return connex;
+    public abstract Connection getConnection(Credentials credentials) throws ClassNotFoundException, SQLException;
+
+    protected abstract String getJdbcUrl(Credentials credentials);
+
+    public TableMetadata[] getEntities(Connection connection, Credentials credentials, String entityName) throws SQLException {
+        try (Connection connect = getOrCreateConnection(connection, credentials);
+             PreparedStatement statement = prepareStatement(connect, credentials, entityName);
+             ResultSet result = statement.executeQuery()) {
+
+            List<TableMetadata> entities = new ArrayList<>();
+            while (result.next()) {
+                entities.add(createEntityFromResult(result));
+            }
+
+            return entities.toArray(new TableMetadata[0]);
+        }
     }
 
-    public Entity[] getEntities(Connection connex, Credentials credentials, String entityName) throws ClassNotFoundException, SQLException {
-        boolean opened = false;
-        Connection connect = connex;
-        if (connect == null) {
-            connect = getConnexion(credentials);
-            opened = true;
+    private Connection getOrCreateConnection(Connection connection, Credentials credentials) throws SQLException {
+        if (connection != null) {
+            return connection;
         }
-        String query = getGettablesQuery().replace("[databaseName]", credentials.getDatabaseName());
+        try {
+            return getConnection(credentials);
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("Failed to create database connection", e);
+        }
+    }
 
+    private PreparedStatement prepareStatement(Connection connection, Credentials credentials, String entityName) throws SQLException {
+        String query = buildQuery(credentials, entityName);
+        return connection.prepareStatement(query);
+    }
+
+    private String buildQuery(Credentials credentials, String entityName) {
+        String query = getTablesQuery.replace("[databaseName]", credentials.getDatabaseName());
         if (!entityName.equals("*")) {
-            query += String.format(getAddEntitiesQuery(), entityName);
+            query += String.format(addEntitiesQuery, entityName);
         }
-        try (PreparedStatement statement = connect.prepareStatement(query)) {
-            Vector<Entity> liste = new Vector<>();
-            Entity entity;
-            try (ResultSet result = statement.executeQuery()) {
-                while (result.next()) {
-                    entity = new Entity();
-                    entity.setTableName(result.getString("table_name"));
-                    liste.add(entity);
-                }
-            }
-            Entity[] entities = new Entity[liste.size()];
-            for (int i = 0; i < entities.length; i++) {
-                entities[i] = liste.get(i);
-            }
-            return entities;
-        } finally {
-            if (opened) {
-                connect.close();
-            }
-        }
+        return query;
     }
+
+    private TableMetadata createEntityFromResult(ResultSet result) throws SQLException {
+        TableMetadata tableMetadata = new TableMetadata();
+        tableMetadata.setTableName(result.getString("table_name"));
+        return tableMetadata;
+    }
+
 }
