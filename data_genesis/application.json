@@ -1,10 +1,12 @@
 [
   {
     "id":1,
-    "name": "MVC"
+    "name": "MVC",
+    "path": "data_genesis/framework-mvc.json"
   },
   {
     "id":2,
-    "name": "Microservice"
+    "name": "Microservice",
+    "path": "data_genesis/framework-api.json"
   }
 ]

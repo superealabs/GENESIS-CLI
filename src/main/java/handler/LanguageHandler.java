@@ -15,14 +15,16 @@ public class LanguageHandler {
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
         System.out.println("Choose your language: ");
         HashMap<Integer, Integer> counterLangageIdHashMap = new HashMap<>();
-        for (int i = 0, j=1; i < languages.length; i++) {
+        for (int i = 0, j = 1; i < languages.length; i++) {
             if (languages[i].getApplicationId().contains(application.getId())) {
-                counterLangageIdHashMap.put(j, i+1);
-                System.out.println(j + ") " + languages[i].getName());
+                counterLangageIdHashMap.put(j, languages[i].getId());
+                System.out.println(j + ")  " + languages[i].getName());
                 j++;
             }
         }
         System.out.print("> ");
-        return languages[counterLangageIdHashMap.get(scanner.nextInt())];
+        int choice = scanner.nextInt();
+        System.out.println(counterLangageIdHashMap.get(choice).toString());
+        return languages[counterLangageIdHashMap.get(choice)];
     }
 }

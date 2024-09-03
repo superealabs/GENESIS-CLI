@@ -187,6 +187,7 @@
   },
   {
     "id":2,
+    "langageId":2,
     "name":".NET MVC with EF",
     "skeleton":"csharppsql_skeleton",
     "projectNameTags":[

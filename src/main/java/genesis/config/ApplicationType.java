@@ -12,4 +12,5 @@ import lombok.AllArgsConstructor;
 public class ApplicationType {
     private int id;
     private String name;
+    private String path;
 }
