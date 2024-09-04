@@ -26,16 +26,17 @@ public class TemplateModelRepo {
 
                     // Getters and Setters
                     {{#each fields}}
-                    public ${this.type} get${this.name}() {
+                    public ${this.type} get${majStart(this.name)}() {
                         return ${this.name};
                     }
-                    public void set${this.name}(${this.type} ${this.name}) {
+                    public void set${majStart(this.name)}(${this.type} ${this.name}) {
                         this.${this.name} = ${this.name};
                     }
                     {{/each}}{{#if hasAdditionalMethod }}
                     // Additional method
                     public void additionalMethod() {
-                        System.out.println("This is an additional method.");
+                        System.out.println("${lowerCase(mess)}");
+                        System.out.println("${upperCase(mess)}");
                     }
                 {{/if}}
                 }
@@ -58,7 +59,9 @@ public class TemplateModelRepo {
         metadata.put("fields", fields);
 
         // Toggle to add or remove the additional method
-        metadata.put("hasAdditionalMethod", false);
+        metadata.put("hasAdditionalMethod", true);
+        metadata.put("mess", "This is an additional method");
+
 
         String result = engine.render(template, metadata);
         System.out.println(result);
@@ -69,8 +72,10 @@ public class TemplateModelRepo {
     /*
 
     Modif Moteur :
-        - fonctions : majStart(str), upperCase(str), lowerCase(str)
-        - évaluation conditionnelle : ex: if var=Min
+        - fonctions : majStart(str), upperCase(str), lowerCase(str) OK
+        - évaluation conditionnelle si null considérer false si non-null et uniquement la variable considérer comme true
+        ex : if
+        - dans boucle each si null ou indéfini, ne rien faire
 
     1) 1er Render template intermédiaire :
     ex :

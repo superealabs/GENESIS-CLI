@@ -1,10 +1,10 @@
 package templateEngine;
 
-import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class TemplateEngine {
 
@@ -19,6 +19,14 @@ public class TemplateEngine {
     private static final String NEWLINE_TAG = "{{newline}}";
     private static final String TAB_TAG = "{{tab}}";
 
+    // Map to hold available functions
+    private static final Map<String, Function<String, String>> FUNCTIONS_MAP = new HashMap<>();
+
+    static {
+        FUNCTIONS_MAP.put("upperCase", String::toUpperCase);
+        FUNCTIONS_MAP.put("lowerCase", String::toLowerCase);
+        FUNCTIONS_MAP.put("majStart", str -> str.substring(0, 1).toUpperCase() + str.substring(1));
+    }
 
     public String render(String template, HashMap<String, Object> variables) throws Exception {
         if (template == null || template.isEmpty()) {
@@ -37,7 +45,7 @@ public class TemplateEngine {
         // Evaluate if-else blocks
         evaluateConditionals(result, variables);
 
-        // Replace simple variables
+        // Replace variables and evaluate function calls
         replaceVariables(result, variables);
 
         // Process special tags like {{newline}} and {{tab}}
@@ -118,9 +126,7 @@ public class TemplateEngine {
 
             int contentStartIdx = conditionEndIdx + 2;
             int elseIdx = template.indexOf(ELSE_TOKEN, contentStartIdx);
-            String trueContent = elseIdx == -1 ?
-                    template.substring(contentStartIdx, ifEndIdx) :
-                    template.substring(contentStartIdx, elseIdx);
+            String trueContent = elseIdx == -1 ? template.substring(contentStartIdx, ifEndIdx) : template.substring(contentStartIdx, elseIdx);
             String falseContent = elseIdx == -1 ? "" : template.substring(elseIdx + ELSE_TOKEN.length(), ifEndIdx);
 
             template.delete(start, ifEndIdx + IF_END.length());
@@ -131,10 +137,39 @@ public class TemplateEngine {
     }
 
     private void replaceVariables(StringBuilder template, HashMap<String, Object> variables) {
-        for (Map.Entry<String, Object> entry : variables.entrySet()) {
-            String variablePlaceholder = VARIABLE_PLACEHOLDER_PREFIX + entry.getKey() + VARIABLE_PLACEHOLDER_SUFFIX;
-            String value = entry.getValue() != null ? entry.getValue().toString() : "";
-            replaceAllOccurrences(template, variablePlaceholder, value);
+        int start;
+        while ((start = template.indexOf(VARIABLE_PLACEHOLDER_PREFIX)) != -1) {
+            int end = template.indexOf(VARIABLE_PLACEHOLDER_SUFFIX, start);
+            if (end == -1) break;
+
+            String placeholder = template.substring(start + VARIABLE_PLACEHOLDER_PREFIX.length(), end).trim();
+            String value = evaluatePlaceholder(placeholder, variables);
+            template.replace(start, end + VARIABLE_PLACEHOLDER_SUFFIX.length(), value);
+        }
+    }
+
+    private String evaluatePlaceholder(String placeholder, HashMap<String, Object> variables) {
+        // Check if it contains a function call
+        int funcStart = placeholder.indexOf("(");
+        int funcEnd = placeholder.indexOf(")");
+
+        if (funcStart != -1 && funcEnd != -1) {
+            String functionName = placeholder.substring(0, funcStart).trim();
+            String variableName = placeholder.substring(funcStart + 1, funcEnd).trim();
+
+            // Evaluate the variable
+            String value = variables.get(variableName) != null ? variables.get(variableName).toString() : "";
+
+            // Apply the function
+            Function<String, String> function = FUNCTIONS_MAP.get(functionName);
+            if (function != null) {
+                return function.apply(value);
+            } else {
+                return value; // Return the original value if the function is not found
+            }
+        } else {
+            // No function, simply return the variable value
+            return variables.get(placeholder) != null ? variables.get(placeholder).toString() : "";
         }
     }
 
@@ -185,10 +220,10 @@ public class TemplateEngine {
     }
 
     private void processSpecialTags(StringBuilder template) {
-        // Remplacer {{newline}} avec '\n'
+        // Replace {{newline}} with '\n'
         replaceAllOccurrences(template, NEWLINE_TAG, "\n");
 
-        // Remplacer {{tab}} avec '\t'
+        // Replace {{tab}} with '\t'
         replaceAllOccurrences(template, TAB_TAG, "\t");
     }
 

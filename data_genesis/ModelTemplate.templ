@@ -7,16 +7,18 @@ public class [classNameMaj] [extends]{
 }
 [namespaceEnd]
 
+
+
+
+
+
+Template intermédiaire cible :
+
 public class ${className} {
-
-
     // Fields
     {{#each fields}}
     private ${this.type} ${this.name};
     {{/each}}
-
-
-
 
     // Constructor
     public Person({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
