@@ -1,5 +1,4 @@
-package templateEngine;
-
+package genesis.engine;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,15 +17,72 @@ public class TemplateEngine {
     private static final String VARIABLE_PLACEHOLDER_SUFFIX = "}";
     private static final String NEWLINE_TAG = "{{newline}}";
     private static final String TAB_TAG = "{{tab}}";
+    private static final String COMMENT_START = "/*";
+    private static final String COMMENT_END = "*/";
+
 
     // Map to hold available functions
     private static final Map<String, Function<String, String>> FUNCTIONS_MAP = new HashMap<>();
 
     static {
-        FUNCTIONS_MAP.put("upperCase", String::toUpperCase);
-        FUNCTIONS_MAP.put("lowerCase", String::toLowerCase);
-        FUNCTIONS_MAP.put("majStart", str -> str.substring(0, 1).toUpperCase() + str.substring(1));
+        FUNCTIONS_MAP.put("upperCase", str -> str == null ? "" : str.toUpperCase());
+        FUNCTIONS_MAP.put("lowerCase", str -> str == null ? "" : str.toLowerCase());
+        FUNCTIONS_MAP.put("majStart", str -> {
+            if (str == null || str.isEmpty()) {
+                return str == null ? "" : str;
+            }
+            return str.substring(0, 1).toUpperCase() + str.substring(1);
+        });
     }
+
+    public String simpleRender(String template, HashMap<String, Object> variables) {
+        if (template == null || template.isEmpty()) {
+            throw new IllegalArgumentException("The template must not be empty.");
+        }
+
+        StringBuilder result = new StringBuilder(template);
+
+        // Remplacer les variables avec leur valeur ou les laisser telles quelles
+        int start = 0;
+        while ((start = result.indexOf(VARIABLE_PLACEHOLDER_PREFIX, start)) != -1) {
+            int end = result.indexOf(VARIABLE_PLACEHOLDER_SUFFIX, start);
+            if (end == -1) break;
+
+            String placeholder = result.substring(start + VARIABLE_PLACEHOLDER_PREFIX.length(), end).trim();
+            String value = evaluatePlaceholderSimple(placeholder, variables);
+            result.replace(start, end + VARIABLE_PLACEHOLDER_SUFFIX.length(), value);
+
+            // Avancer après le remplacement pour éviter de retomber sur le même placeholder
+            start += value.length();
+        }
+
+        return result.toString();
+    }
+
+
+    private String evaluatePlaceholderSimple(String placeholder, HashMap<String, Object> variables) {
+        int funcStart = placeholder.indexOf("(");
+        int funcEnd = placeholder.indexOf(")");
+
+        if (funcStart != -1 && funcEnd != -1 && funcStart < funcEnd) {
+            String functionName = placeholder.substring(0, funcStart).trim();
+            String variableName = placeholder.substring(funcStart + 1, funcEnd).trim();
+
+            Object valueObj = variables.get(variableName);
+            String value = valueObj != null ? valueObj.toString() : VARIABLE_PLACEHOLDER_PREFIX + variableName + VARIABLE_PLACEHOLDER_SUFFIX;
+
+            Function<String, String> function = FUNCTIONS_MAP.get(functionName);
+            if (function != null) {
+                return function.apply(value);
+            } else {
+                return VARIABLE_PLACEHOLDER_PREFIX + placeholder + VARIABLE_PLACEHOLDER_SUFFIX;
+            }
+        } else {
+            Object valueObj = variables.get(placeholder);
+            return valueObj != null ? valueObj.toString() : VARIABLE_PLACEHOLDER_PREFIX + placeholder + VARIABLE_PLACEHOLDER_SUFFIX;
+        }
+    }
+
 
     public String render(String template, HashMap<String, Object> variables) throws Exception {
         if (template == null || template.isEmpty()) {
@@ -90,7 +146,7 @@ public class TemplateEngine {
 
         List<?> loopVar = (List<?>) variables.get(loopVarName);
         if (loopVar == null) {
-            throw new Exception("Loop variable '" + loopVarName + "' is not defined.");
+            return;
         }
 
         StringBuilder loopResult = new StringBuilder();
@@ -107,6 +163,7 @@ public class TemplateEngine {
             loopVariables.put("@index", i);
             loopVariables.put("@last", (i == loopVar.size() - 1));
 
+            // Render loop content with conditionals
             String renderedContent = render(loopContent, loopVariables).stripLeading();
             loopResult.append(renderedContent);
         }
@@ -153,14 +210,15 @@ public class TemplateEngine {
         int funcStart = placeholder.indexOf("(");
         int funcEnd = placeholder.indexOf(")");
 
-        if (funcStart != -1 && funcEnd != -1) {
+        if (funcStart != -1 && funcEnd != -1 && funcStart < funcEnd) {
             String functionName = placeholder.substring(0, funcStart).trim();
             String variableName = placeholder.substring(funcStart + 1, funcEnd).trim();
 
-            // Evaluate the variable
-            String value = variables.get(variableName) != null ? variables.get(variableName).toString() : "";
+            // Retrieve the variable value, and ensure it's not null
+            Object valueObj = variables.get(variableName);
+            String value = valueObj != null ? valueObj.toString() : "";
 
-            // Apply the function
+            // Apply the function if available
             Function<String, String> function = FUNCTIONS_MAP.get(functionName);
             if (function != null) {
                 return function.apply(value);
@@ -168,10 +226,14 @@ public class TemplateEngine {
                 return value; // Return the original value if the function is not found
             }
         } else {
-            // No function, simply return the variable value
-            return variables.get(placeholder) != null ? variables.get(placeholder).toString() : "";
+            // No function, simply return the variable value or an empty string if not found
+            Object valueObj = variables.get(placeholder);
+            return valueObj != null ? valueObj.toString() : "";
         }
     }
+
+
+
 
     private void replaceAllOccurrences(StringBuilder template, String placeholder, String value) {
         int start;
@@ -194,15 +256,52 @@ public class TemplateEngine {
     }
 
     private boolean evaluateCondition(String condition, HashMap<String, Object> variables) throws Exception {
+        // Normalize the condition
+        condition = condition.trim();
+
+        // Check for negation
         if (condition.startsWith("!")) {
             String innerCondition = condition.substring(1).trim();
-            return !evaluateSimpleCondition(innerCondition, variables);
-        } else {
-            return evaluateSimpleCondition(condition, variables);
+            return !evaluateCondition(innerCondition, variables);
         }
+
+        // Evaluate composite conditions
+        return evaluateCompositeCondition(condition, variables);
     }
 
+    private boolean evaluateCompositeCondition(String condition, HashMap<String, Object> variables) throws Exception {
+        // Split by "or" operator
+        String[] orConditions = condition.split("\\s+or\\s+");
+        for (String orCondition : orConditions) {
+            // Split by "and" operator
+            String[] andConditions = orCondition.split("\\s+and\\s+");
+            boolean andResult = true;
+            for (String andCondition : andConditions) {
+                // Trim and evaluate each and condition
+                andCondition = andCondition.trim();
+                boolean result = evaluateSimpleCondition(andCondition, variables);
+                andResult = andResult && result;
+            }
+            // Return true if any "or" condition is true
+            if (andResult) {
+                return true;
+            }
+        }
+        // Return false if no "or" condition was true
+        return false;
+    }
+
+
+
     private boolean evaluateSimpleCondition(String condition, HashMap<String, Object> variables) throws Exception {
+        // Check if the condition is a boolean literal
+        if ("true".equalsIgnoreCase(condition)) {
+            return true;
+        }
+        if ("false".equalsIgnoreCase(condition)) {
+            return false;
+        }
+
         if ("@last".equals(condition)) {
             Object lastFlag = variables.get("@last");
             if (lastFlag instanceof Boolean) {
@@ -213,7 +312,7 @@ public class TemplateEngine {
         } else {
             Object conditionValue = variables.get(condition);
             if (conditionValue == null) {
-                throw new Exception("Condition variable '" + condition + "' is not defined.");
+                return false;
             }
             return conditionValue instanceof Boolean && (Boolean) conditionValue;
         }
