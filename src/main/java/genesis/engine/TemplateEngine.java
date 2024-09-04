@@ -17,9 +17,6 @@ public class TemplateEngine {
     private static final String VARIABLE_PLACEHOLDER_SUFFIX = "}";
     private static final String NEWLINE_TAG = "{{newline}}";
     private static final String TAB_TAG = "{{tab}}";
-    private static final String COMMENT_START = "/*";
-    private static final String COMMENT_END = "*/";
-
 
     // Map to hold available functions
     private static final Map<String, Function<String, String>> FUNCTIONS_MAP = new HashMap<>();
