@@ -11,16 +11,14 @@ import java.io.IOException;
 
 public class LanguageHandler {
 
-    public Language chooseLanguage(Scanner scanner, ApplicationType application) throws IOException {
+    public Language chooseLanguage(Scanner scanner) throws IOException {
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
         System.out.println("Choose your language: ");
         HashMap<Integer, Integer> counterLangageIdHashMap = new HashMap<>();
-        for (int i = 0, j = 1; i < languages.length; i++) {
-            if (languages[i].getApplicationId().contains(application.getId())) {
-                counterLangageIdHashMap.put(j, languages[i].getId());
-                System.out.println(j + ")  " + languages[i].getName());
+        for (int i = 0, j=1; i < languages.length; i++) {
+                counterLangageIdHashMap.put(j, i+1);
+                System.out.println(j + ") " + languages[i].getName());
                 j++;
-            }
         }
         System.out.print("> ");
         int choice = scanner.nextInt();

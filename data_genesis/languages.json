@@ -2,10 +2,6 @@
   {
     "id": 1,
     "name": "Java",
-    "applicationId": [
-      1,
-      2
-    ],
     "syntax": {
       "namespace": "package",
       "namespaceStart": ";",
@@ -31,10 +27,6 @@
   {
     "id": 2,
     "name": "C#",
-    "applicationId": [
-      1,
-      2
-    ],
     "syntax": {
       "namespace": "namespace",
       "namespaceStart": ";",
@@ -60,9 +52,6 @@
   {
     "id": 3,
     "name": "PHP",
-    "applicationId": [
-      1
-    ],
     "syntax": {
       "namespace": "namespace",
       "namespaceStart": "{",
@@ -85,9 +74,6 @@
   {
     "id": 4,
     "name": "Python",
-    "applicationId": [
-      2
-    ],
     "syntax": {
       "namespace": "from",
       "namespaceStart": "",
