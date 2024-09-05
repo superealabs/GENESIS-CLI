@@ -17,37 +17,41 @@
     modelAnnotations: |
       @Entity
       @Table(name="${tableName}")
-    modelPrimaryFieldAnnotations:
-      - "@Id"
-      - "@GeneratedValue(strategy=GenerationType.IDENTITY)"
-    modelForeignFieldAnnotations:
-      - "@ManyToOne"
-      - @JoinColumn(name="${columnName}")
+
+    modelPrimaryFieldAnnotations: |
+      @Id
+      @GeneratedValue(strategy=GenerationType.IDENTITY)
+
+    modelForeignFieldAnnotations: |
+      @ManyToOne
+      @JoinColumn(name="${columnName}")
+
     modelFieldAnnotations:
-      - @Column(name="${columnName}")
+      @Column(name="${columnName}")
+
     modelFieldContent: |
       {{#each fields}}
       private ${this.type} ${this.name};
       {{/each}}
+
     modelGetterSetter: |
-      // Getters and Setters
       {{#each fields}}
-      {{#if this.withGetters or this.withSetters}}// ${majStart(this.name)}{{/if}}{{#if this.withGetters}}
+      {{#if this.withGetters}}
       public ${this.type} get${majStart(this.name)}() {
-       return ${this.name};
+          return ${this.name};
       }{{/if}}{{#if this.withSetters}}
       public void set${majStart(this.name)}(${this.type} ${this.name}) {
-       this.${this.name} = ${this.name};
-      }
-      {{/if}}
-      {{/each}}
+          this.${this.name} = ${this.name};
+      }{{#if !@last}}
+      {{/if}}{{/if}}{{/each}}
+
     modelConstructors: |
-      // Constructor
       public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
           {{#each fields}}
           this.${this.name} = ${this.name};{{#if !@last}}
           {{/if}}{{/each}}
       }
+
     modelSavePath: "[projectNameMaj]/src/main/java/com/[projectNameMin]/entities"
     modelAdditionnalFiles:
       - name: "[classNameMaj]Repository.java"

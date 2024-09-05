@@ -1,8 +1,0 @@
-[namespace] [package][namespaceStart]
-[imports]
-[classAnnotations]
-public class [classNameMaj] [extends]{
-    [fields]
-    [constructors]
-}
-[namespaceEnd]

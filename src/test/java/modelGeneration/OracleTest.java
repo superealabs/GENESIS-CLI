@@ -29,7 +29,7 @@ public class OracleTest {
     void OraclexJavaSpringMVC() throws FileNotFoundException {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_MVC_JSON));
+        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_JSON));
 
         OracleDatabase database = (OracleDatabase) databases[3];    // Oracle
         Language language = languages[0];                                   // Java
@@ -59,7 +59,7 @@ public class OracleTest {
     void OraclexNET() throws FileNotFoundException {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_MVC_JSON));
+        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_JSON));
 
         OracleDatabase database = (OracleDatabase) databases[3];    // Oracle
         Language language = languages[1];                                   // C#

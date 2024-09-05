@@ -11,6 +11,7 @@ public class TemplateEngine {
     private static final String LOOP_START = "{{#each ";
     private static final String LOOP_END = "{{/each}}";
     private static final String IF_START = "{{#if ";
+    private static final String ELSE_IF_TOKEN = "{{else if ";
     private static final String ELSE_TOKEN = "{{else}}";
     private static final String IF_END = "{{/if}}";
     private static final String VARIABLE_PLACEHOLDER_PREFIX = "${";
@@ -136,6 +137,7 @@ public class TemplateEngine {
         return new LoopInfo(loopVarName, loopContent, start);
     }
 
+    @SuppressWarnings("unchecked")
     private void processLoopContent(StringBuilder template, LoopInfo loopInfo, HashMap<String, Object> variables) throws Exception {
         String loopVarName = loopInfo.loopVarName();
         String loopContent = loopInfo.loopContent();

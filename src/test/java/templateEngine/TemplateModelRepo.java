@@ -1,15 +1,18 @@
 package templateEngine;
 
+import genesis.config.Constantes;
 import genesis.engine.TemplateEngine;
 import org.junit.jupiter.api.Test;
+import utils.FileUtils;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TemplateModelRepo {
     TemplateEngine engine = new TemplateEngine();
-    String templatePrimary = """
+    /*String templatePrimary = """
                 ${namespace} ${package}${namespaceStart}
                 
                 ${imports}
@@ -19,7 +22,11 @@ public class TemplateModelRepo {
                 ${fields}${constructors}
                 ${getSets}${bracketEnd}
                 ${namespaceEnd}
-                """;
+                """;*/
+    String templatePrimary = FileUtils.getFileContent("data_genesis/ModelTemplate.templ");
+
+    public TemplateModelRepo() throws FileNotFoundException {
+    }
 
     @Test
     void renderTemplateIntermediaire() {
@@ -62,13 +69,14 @@ public class TemplateModelRepo {
         metadata.put("getSets",
                 """
                     {{#each fields}}
-                    {{#if this.withGetters or this.withSetters}}// ${majStart(this.name)}{{/if}}{{#if this.withGetters}}
+                    {{#if this.withGetters}}
                     public ${this.type} get${majStart(this.name)}() {
                         return ${this.name};
                     }{{/if}}{{#if this.withSetters}}
                     public void set${majStart(this.name)}(${this.type} ${this.name}) {
                         this.${this.name} = ${this.name};
-                    }{{/if}}{{/each}}
+                    }{{#if !@last}}
+                    {{/if}}{{/if}}{{/each}}
                 """);
 
 
@@ -90,22 +98,30 @@ public class TemplateModelRepo {
                 @Table(name="${tableName}")
                 public class Person  {
                     {{#each fields}}
+                    {{#if this.isPrimaryKey}}
+                    @Id
+                    @GeneratedValue(strategy=GenerationType.IDENTITY){{/if}}{{#if this.isForeignKey}}
+                    @ManyToOne
+                    @JoinColumn(name="${this.columnName}"){{/if}}
+                    @Column(name="${this.columnName}")
                     private ${this.type} ${this.name};
+                
                     {{/each}}
                     public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
                         {{#each fields}}
                         this.${this.name} = ${this.name};{{#if !@last}}
                         {{/if}}{{/each}}
                     }
-               
+                
                     {{#each fields}}
-                    {{#if this.withGetters or this.withSetters}}// ${majStart(this.name)}{{/if}}{{#if this.withGetters}}
+                    {{#if this.withGetters}}
                     public ${this.type} get${majStart(this.name)}() {
                         return ${this.name};
                     }{{/if}}{{#if this.withSetters}}
                     public void set${majStart(this.name)}(${this.type} ${this.name}) {
                         this.${this.name} = ${this.name};
-                    }{{/if}}{{/each}}
+                    }{{#if !@last}}
+                    {{/if}}{{/if}}{{/each}}
                 }
                 """;
 
@@ -122,20 +138,43 @@ public class TemplateModelRepo {
         metadata.put("className", "person");
 
         List<Map<String, Object>> fields = List.of(
+                Map.of("type", "Long", // Primary key
+                        "name", "id",
+                        "isPrimaryKey", true,
+                        "withGetters", true,
+                        "withSetters", true,
+                        "columnName", "id"),
+
                 Map.of("type", "String",
                         "name", "firstName",
                         "withGetters", true,
-                        "withSetters", true),
+                        "withSetters", true,
+                        "columnName", "first_name"),
 
                 Map.of("type", "String",
                         "name", "lastName",
                         "withGetters", true,
-                        "withSetters", true),
+                        "withSetters", true,
+                        "columnName", "last_name"),
 
                 Map.of("type", "int",
                         "name", "age",
                         "withGetters", true,
-                        "withSetters", true)
+                        "withSetters", true,
+                        "columnName", "age"),
+
+                Map.of("type", "LocalDate", // New LocalDate field
+                        "name", "dateNaissance",
+                        "withGetters", true,
+                        "withSetters", true,
+                        "columnName", "date_naissance"),
+
+                Map.of("type", "Adresse", // Foreign key to Adresse
+                        "name", "adresse",
+                        "isForeignKey", true,
+                        "withGetters", true,
+                        "withSetters", true,
+                        "columnName", "adresse_id")
         );
 
         metadata.put("fields", fields);
@@ -146,6 +185,7 @@ public class TemplateModelRepo {
 
         return metadata;
     }
+
 
     @Test
     void renderModelFromPrimary() throws Exception {
