@@ -18,7 +18,7 @@ import java.sql.*;
 
 public class PostgreSQLTest {
 
-    Credentials credentials = new Credentials("test_db", "nomena", "root", "localhost", true, true);
+    Credentials credentials = new Credentials("test_db", "postgres", "nikami", "localhost", true, true);
 
     @Test
     void test() {

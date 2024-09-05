@@ -93,16 +93,16 @@ public class SQLServerTest {
         SQLServerDatabase database = (SQLServerDatabase) databases[2];    // SQLServer
 
         try (Connection connection = database.getConnection(credentials)) {
-            DatabaseMetaData metaData = connection.getMetaData();
+            DatabaseMetaData getMetaData = connection.getMetaData();
 
-            ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"});
+            ResultSet tables = getMetaData.getTables(null, null, "%", new String[]{"TABLE"});
 
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
                 System.out.println("Table Name: " + tableName);
 
                 // Obtenir les informations sur les colonnes
-                ResultSet columns = metaData.getColumns(null, null, tableName, null);
+                ResultSet columns = getMetaData.getColumns(null, null, tableName, null);
                 System.out.println("Columns:");
                 while (columns.next()) {
                     String columnName = columns.getString("COLUMN_NAME");
@@ -119,7 +119,7 @@ public class SQLServerTest {
 
 
                 // Obtenir les contraintes de clé primaire
-                ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, tableName);
+                ResultSet primaryKeys = getMetaData.getPrimaryKeys(null, null, tableName);
                 System.out.println("Primary Keys:");
                 while (primaryKeys.next()) {
                     String pkColumnName = primaryKeys.getString("COLUMN_NAME");
@@ -127,7 +127,7 @@ public class SQLServerTest {
                 }
 
                 // Obtenir les contraintes de clé étrangère
-                ResultSet foreignKeys = metaData.getImportedKeys(null, null, tableName);
+                ResultSet foreignKeys = getMetaData.getImportedKeys(null, null, tableName);
                 System.out.println("Foreign Keys:");
                 while (foreignKeys.next()) {
                     String fkColumnName = foreignKeys.getString("FKCOLUMN_NAME");
