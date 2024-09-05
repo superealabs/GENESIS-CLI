@@ -192,7 +192,6 @@ public class App {
 */
 
         try (Scanner scanner = new Scanner(System.in)) {
-            ApplicationTypeHandler applicationTypeHandler = new ApplicationTypeHandler();
             ApplicationHandler applicationHandler = new ApplicationHandler();
             FrameworkHandler frameworkHandler = new FrameworkHandler();
             LanguageHandler languageHandler = new LanguageHandler();
@@ -206,14 +205,11 @@ public class App {
             Database database = databaseHandler.chooseDatabase(scanner);
             Credentials credentials = databaseHandler.inputCredentials(scanner);
 
-            /*---Choosing the right application type for your project---*/
-            ApplicationType applicationType = applicationTypeHandler.chooseTypeApplication(scanner);
-
             /*---Choosing the programming language---*/
-            Language language = languageHandler.chooseLanguage(scanner, applicationType);
+            Language language = languageHandler.chooseLanguage(scanner);
 
             /*---Choosing the framework---*/
-            Framework framework = frameworkHandler.chooseFramework(scanner,applicationType,language);
+            Framework framework = frameworkHandler.chooseFramework(scanner,language);
 
             /*---Project configuration---*/
             String projectName = projectSetup.setupProject(scanner, framework);
