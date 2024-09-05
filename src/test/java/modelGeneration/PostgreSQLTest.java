@@ -18,7 +18,7 @@ import java.sql.*;
 
 public class PostgreSQLTest {
 
-    Credentials credentials = new Credentials("test_db", "nomena", "root", "localhost", true, true);
+    Credentials credentials = new Credentials("test_db", "postgres", "nikami", "localhost", true, true);
 
     @Test
     void test() {
@@ -29,7 +29,7 @@ public class PostgreSQLTest {
     void PostgreSQLxJavaSpringMVC() throws FileNotFoundException {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_MVC_JSON));
+        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_JSON));
 
         PostgreSQLDatabase database = (PostgreSQLDatabase) databases[1];    // PostgreSQL
         Language language = languages[0];                                   // Java
@@ -59,7 +59,7 @@ public class PostgreSQLTest {
     void PostgreSQLxNET() throws FileNotFoundException {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_MVC_JSON));
+        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_JSON));
 
         PostgreSQLDatabase database = (PostgreSQLDatabase) databases[1];    // PostgreSQL
         Language language = languages[1];                                   // C#

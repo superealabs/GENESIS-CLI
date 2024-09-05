@@ -60,7 +60,7 @@ public class TestParse {
 
     @Test
     void frameworkJSON() throws IOException {
-        Framework[] object = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_API_JSON));
+        Framework[] object = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_JSON));
 
         System.out.println(Arrays.toString(object));
     }
