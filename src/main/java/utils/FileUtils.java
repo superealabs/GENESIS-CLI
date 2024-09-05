@@ -1,5 +1,7 @@
 package utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.gson.GsonBuilder;
 import genesis.connexion.Database;
 import genesis.connexion.adapter.DatabaseTypeAdapter;
@@ -166,6 +168,13 @@ public class FileUtils {
         builder.registerTypeAdapter(Database.class, new DatabaseTypeAdapter());
 
         return builder.create().fromJson(json, clazz);
+    }
+
+
+
+    public static <T> T fromYaml(Class<T> clazz, String yamlFilePath) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+        return objectMapper.readValue(new File(yamlFilePath), clazz);
     }
 
 

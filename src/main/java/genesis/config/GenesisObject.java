@@ -4,8 +4,6 @@ import genesis.connexion.Credentials;
 import genesis.model.TableMetadata;
 import lombok.Getter;
 import lombok.Setter;
-import genesis.model.Entity;
-import genesis.connexion.Credentials;
 
 @Setter
 @Getter

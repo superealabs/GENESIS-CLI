@@ -10,4 +10,7 @@ public class Constantes {
     public static final String CONTROLLER_TEMPLATE_EXT = "templ";
     public static final String VIEW_TEMPLATE_EXT = "viewtempl";
     public static final String GENESISOBJ_FILE = "genesisobj.json";
+
+
+    public static final String APPLICATION_YAML = "data_genesis/yaml/application.yaml";
 }

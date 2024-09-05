@@ -44,6 +44,22 @@ public class MVCGenerator implements GenesisGenerator {
         return formatContent(content.toString());
     }
 
+    public String generateModelNextGen(Framework framework, Language language, TableMetadata tableMetadata, String projectName) throws IOException {
+        if (language.getId() != framework.getLangageId()) {
+            throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
+        }
+        String templateContent = loadModelTemplate(framework);
+        StringBuilder content = new StringBuilder(templateContent);
+
+        // Render le template intermédiaire
+
+
+        // Render le template final
+
+
+        return content.toString();
+    }
+
     @Override
     public String generateController(Framework framework, Language language, TableMetadata tableMetadata, Database database, Credentials credentials, String projectName) throws IOException {
         return "";

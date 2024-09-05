@@ -40,7 +40,7 @@
       "modelFieldCase":"Min",
       "modelFieldContent":"private [fieldType] [columnName];",
       "modelGetter":"public [fieldType] get[fieldNameMaj](){ return [columnName]; }",
-      "modelSetter":"public void set[fieldNameMaj]([fieldType] o) { \n[columnName]=o; \n}",
+      "modelSetter":"public void set[fieldNameMaj]([fieldType] o){ [columnName]=o; }",
       "modelConstructors":[],
       "modelSavePath":"[projectNameMaj]/src/main/java/com/[projectNameMin]/entities",
       "modelAdditionnalFiles":[
