@@ -12,7 +12,7 @@ import java.io.FileNotFoundException;
 
 public class TestMetaData {
 
-    Credentials credentials = new Credentials("test_db", "alinexusss", "nikami", "localhost", true, true);
+    Credentials credentials = new Credentials("test_db", "nomena", "root", "localhost", true, true);
 
     @Test
     void postgresMetaData() throws FileNotFoundException {
