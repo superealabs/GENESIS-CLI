@@ -27,7 +27,7 @@ public class MySQLTest {
     void MySQLxJavaSpringMVC() throws FileNotFoundException {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_MVC_JSON));
+        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_JSON));
 
         MySQLDatabase database = (MySQLDatabase) databases[0];  // MySQL
         Language language = languages[0];                       // Java
@@ -58,7 +58,7 @@ public class MySQLTest {
     void MySQLxNET() throws FileNotFoundException {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_MVC_JSON));
+        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_JSON));
 
         MySQLDatabase database = (MySQLDatabase) databases[0];  // MySQL
         Language language = languages[1];                       // C#

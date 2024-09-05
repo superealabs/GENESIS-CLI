@@ -8,10 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import utils.FileUtils;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Vector;
 
 
@@ -24,10 +21,6 @@ public class TableMetadata {
     private String className;
     private FieldMetadata[] fields;
     private FieldMetadata primaryField;
-
-    public TableMetadata(Connection connex, Credentials credentials, Database database, Language language) throws SQLException, ClassNotFoundException {
-        initialize(connex, credentials, database, language);
-    }
 
     public void initialize(Connection connex, Credentials credentials, Database database, Language language) throws ClassNotFoundException, SQLException {
         boolean opened = false;
@@ -86,6 +79,67 @@ public class TableMetadata {
             if (opened && !connect.isClosed()) {
                 connect.close();
             }
+        }
+    }
+
+    private void printColumnsInfo(DatabaseMetaData metaData, String tableName) throws SQLException {
+        ResultSet columns = metaData.getColumns(null, null, tableName, null);
+        System.out.println("columns:");
+
+        while (columns.next()) {
+            String columnName = columns.getString("COLUMN_NAME");
+            int columnType = columns.getInt("DATA_TYPE");
+            String columnTypeName = columns.getString("TYPE_NAME");
+            int columnSize = columns.getInt("COLUMN_SIZE");
+            boolean nullable = columns.getBoolean("NULLABLE");
+
+            String dataTypeName = JDBCType.valueOf(columnType).getName();
+            System.out.println("\t" + columnName + " (" + dataTypeName + "), Size: " + columnSize + ", Nullable: " + nullable);
+        }
+    }
+
+    private void printPrimaryKeys(DatabaseMetaData metaData, String tableName) throws SQLException {
+        ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, tableName);
+        System.out.println("Primary Keys:");
+        while (primaryKeys.next()) {
+            String pkColumnName = primaryKeys.getString("COLUMN_NAME");
+            System.out.println("\t" + pkColumnName);
+        }
+    }
+
+    private void printForeignKeys(DatabaseMetaData metaData, String tableName) throws SQLException {
+        ResultSet foreignKeys = metaData.getImportedKeys(null, null, tableName);
+        System.out.println("Foreign Keys:");
+        while (foreignKeys.next()) {
+            String fkColumnName = foreignKeys.getString("FKCOLUMN_NAME");
+            String fkName = foreignKeys.getString("FK_NAME");
+            String pkTableName = foreignKeys.getString("PKTABLE_NAME");
+            String pkColumnName = foreignKeys.getString("PKCOLUMN_NAME");
+            System.out.println("\t" + fkColumnName + " -> " + pkTableName + "." + pkColumnName + " (" + fkName + ")");
+        }
+    }
+
+    public void getMetaData(Credentials credentials, Database database) {
+        try (Connection connection = database.getConnection(credentials)) {
+            DatabaseMetaData metaData = connection.getMetaData();
+
+            // Obtenir toutes les tables de la base de données
+            ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"});
+
+            while (tables.next()) {
+                String tableName = tables.getString("TABLE_NAME");
+                System.out.println("Table Name: " + tableName);
+
+                // Appel des méthodes pour afficher les informations de la table
+                printColumnsInfo(metaData, tableName);
+                printPrimaryKeys(metaData, tableName);
+                printForeignKeys(metaData, tableName);
+
+                System.out.println(); // Séparation entre les tables
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException("Error while accessing database metadata: ", e);
         }
     }
 
