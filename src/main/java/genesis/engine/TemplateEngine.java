@@ -9,15 +9,23 @@ public class TemplateEngine {
 
     // Static constants for templating keywords
     private static final String LOOP_START = "{{#each ";
+    private static final String LOOP_INDEX = "@index";
+    private static final String IS_LOOP_LAST_INDEX = "@last";
+    private static final String LOOP_ITEM = "this.";
     private static final String LOOP_END = "{{/each}}";
     private static final String IF_START = "{{#if ";
-    private static final String ELSE_IF_TOKEN = "{{else if ";
+    private static final String ELSE_IF_TOKEN = "{{elseIf ";
     private static final String ELSE_TOKEN = "{{else}}";
     private static final String IF_END = "{{/if}}";
     private static final String VARIABLE_PLACEHOLDER_PREFIX = "${";
     private static final String VARIABLE_PLACEHOLDER_SUFFIX = "}";
     private static final String NEWLINE_TAG = "{{newline}}";
     private static final String TAB_TAG = "{{tab}}";
+    private static final String BLOCK_END = "}}";
+    private static final String FUNCTION_OPEN_PARENTHESIS = "(";
+    private static final String FUNCTION_CLOSED_PARENTHESIS = ")";
+
+
 
     // Map to hold available functions
     private static final Map<String, Function<String, String>> FUNCTIONS_MAP = new HashMap<>();
@@ -59,8 +67,8 @@ public class TemplateEngine {
 
 
     private String evaluatePlaceholderSimple(String placeholder, HashMap<String, Object> variables) {
-        int funcStart = placeholder.indexOf("(");
-        int funcEnd = placeholder.indexOf(")");
+        int funcStart = placeholder.indexOf(FUNCTION_OPEN_PARENTHESIS);
+        int funcEnd = placeholder.indexOf(FUNCTION_CLOSED_PARENTHESIS);
 
         if (funcStart != -1 && funcEnd != -1 && funcStart < funcEnd) {
             String functionName = placeholder.substring(0, funcStart).trim();
@@ -126,10 +134,10 @@ public class TemplateEngine {
         }
 
         int loopVarStartIdx = start + LOOP_START.length();
-        int loopVarEndIdx = template.indexOf("}}", loopVarStartIdx);
+        int loopVarEndIdx = template.indexOf(BLOCK_END, loopVarStartIdx);
         String loopVarName = template.substring(loopVarStartIdx, loopVarEndIdx).trim();
 
-        int contentStartIdx = loopVarEndIdx + 2;
+        int contentStartIdx = loopVarEndIdx + BLOCK_END.length();
         String loopContent = template.substring(contentStartIdx, loopEndIdx);
 
         template.delete(start, loopEndIdx + LOOP_END.length());
@@ -156,11 +164,11 @@ public class TemplateEngine {
             if (item instanceof Map) {
                 Map<String, Object> itemMap = (Map<String, Object>) item;
                 for (Map.Entry<String, Object> entry : itemMap.entrySet()) {
-                    loopVariables.put("this." + entry.getKey(), entry.getValue());
+                    loopVariables.put(LOOP_ITEM + entry.getKey(), entry.getValue());
                 }
             }
-            loopVariables.put("@index", i);
-            loopVariables.put("@last", (i == loopVar.size() - 1));
+            loopVariables.put(LOOP_INDEX, i);
+            loopVariables.put(IS_LOOP_LAST_INDEX, (i == loopVar.size() - 1));
 
             // Render loop content with conditionals
             String renderedContent = render(loopContent, loopVariables).stripLeading();
@@ -173,24 +181,105 @@ public class TemplateEngine {
     private void evaluateConditionals(StringBuilder template, HashMap<String, Object> variables) throws Exception {
         int start;
         while ((start = template.indexOf(IF_START)) != -1) {
-            int ifEndIdx = template.indexOf(IF_END, start);
+            int ifEndIdx = findBlockEnd(template, start);
             if (ifEndIdx == -1) break;
 
-            int conditionStartIdx = start + IF_START.length();
-            int conditionEndIdx = template.indexOf("}}", conditionStartIdx);
-            String condition = template.substring(conditionStartIdx, conditionEndIdx).trim();
+            String condition = extractCondition(template, start);
+            int contentStartIdx = findContentStartIdx(template, start);
 
-            int contentStartIdx = conditionEndIdx + 2;
-            int elseIdx = template.indexOf(ELSE_TOKEN, contentStartIdx);
-            String trueContent = elseIdx == -1 ? template.substring(contentStartIdx, ifEndIdx) : template.substring(contentStartIdx, elseIdx);
-            String falseContent = elseIdx == -1 ? "" : template.substring(elseIdx + ELSE_TOKEN.length(), ifEndIdx);
+            StringBuilder resultContent = new StringBuilder();
+            if (evaluateCondition(condition, variables)) {
+                resultContent.append(extractIfContent(template, contentStartIdx, ifEndIdx));
+            } else {
+                processElseIfBlocks(template, variables, contentStartIdx, ifEndIdx, resultContent);
+            }
 
-            template.delete(start, ifEndIdx + IF_END.length());
-
-            boolean conditionResult = evaluateCondition(condition, variables);
-            template.insert(start, conditionResult ? trueContent : falseContent);
+            replaceBlockWithResult(template, start, ifEndIdx, resultContent);
         }
     }
+
+    private int findBlockEnd(StringBuilder template, int start) {
+        return template.indexOf(IF_END, start);
+    }
+
+    private String extractCondition(StringBuilder template, int start) {
+        int conditionStartIdx = start + IF_START.length();
+        int conditionEndIdx = template.indexOf(BLOCK_END, conditionStartIdx);
+        return template.substring(conditionStartIdx, conditionEndIdx).trim();
+    }
+
+    private int findContentStartIdx(StringBuilder template, int start) {
+        int conditionEndIdx = template.indexOf(BLOCK_END, start + IF_START.length());
+        return conditionEndIdx + BLOCK_END.length();
+    }
+
+    private String extractIfContent(StringBuilder template, int contentStartIdx, int ifEndIdx) {
+        int elseIfIdx = template.indexOf(ELSE_IF_TOKEN, contentStartIdx);
+        int elseIdx = template.indexOf(ELSE_TOKEN, contentStartIdx);
+        int ifBlockEnd = determineBlockEnd(elseIfIdx, elseIdx, ifEndIdx);
+        return template.substring(contentStartIdx, ifBlockEnd);
+    }
+
+    private void processElseIfBlocks(StringBuilder template, HashMap<String, Object> variables,
+                                     int contentStartIdx, int ifEndIdx, StringBuilder resultContent) throws Exception {
+        int elseIfIdx = template.indexOf(ELSE_IF_TOKEN, contentStartIdx);
+        int elseIdx = template.indexOf(ELSE_TOKEN, contentStartIdx);
+        boolean conditionMatched = false;
+
+        while (elseIfIdx != -1 && elseIfIdx < ifEndIdx && !conditionMatched) {
+            String elseIfCondition = extractElseIfCondition(template, elseIfIdx);
+            contentStartIdx = findContentStartIdx(template, elseIfIdx);
+
+            int blockEnd = determineNextBlockEnd(template, contentStartIdx, ifEndIdx);
+            String falseContent = template.substring(contentStartIdx, blockEnd);
+
+            if (evaluateCondition(elseIfCondition, variables)) {
+                resultContent.append(falseContent);
+                conditionMatched = true;
+            }
+
+            elseIfIdx = template.indexOf(ELSE_IF_TOKEN, contentStartIdx);
+        }
+
+        if (!conditionMatched) {
+            processElseBlock(template, elseIdx, ifEndIdx, resultContent);
+        }
+    }
+
+    private String extractElseIfCondition(StringBuilder template, int elseIfIdx) {
+        int elseIfConditionEndIdx = template.indexOf(BLOCK_END, elseIfIdx);
+        return template.substring(elseIfIdx + ELSE_IF_TOKEN.length(), elseIfConditionEndIdx).trim();
+    }
+
+    private int determineNextBlockEnd(StringBuilder template, int contentStartIdx, int ifEndIdx) {
+        int nextElseIfIdx = template.indexOf(ELSE_IF_TOKEN, contentStartIdx);
+        int nextElseIdx = template.indexOf(ELSE_TOKEN, contentStartIdx);
+        return determineBlockEnd(nextElseIfIdx, nextElseIdx, ifEndIdx);
+    }
+
+    private void processElseBlock(StringBuilder template, int elseIdx, int ifEndIdx, StringBuilder resultContent) {
+        if (elseIdx != -1 && elseIdx < ifEndIdx) {
+            String elseContent = template.substring(elseIdx + ELSE_TOKEN.length(), ifEndIdx);
+            resultContent.append(elseContent);
+        }
+    }
+
+    private int determineBlockEnd(int elseIfIdx, int elseIdx, int ifEndIdx) {
+        if (elseIfIdx != -1 && elseIfIdx < ifEndIdx) {
+            return elseIfIdx;
+        }
+        if (elseIdx != -1 && elseIdx < ifEndIdx) {
+            return elseIdx;
+        }
+        return ifEndIdx;
+    }
+
+    private void replaceBlockWithResult(StringBuilder template, int start, int ifEndIdx, StringBuilder resultContent) {
+        template.delete(start, ifEndIdx + IF_END.length());
+        template.insert(start, resultContent);
+    }
+
+
 
     private void replaceVariables(StringBuilder template, HashMap<String, Object> variables) {
         int start;
@@ -230,8 +319,6 @@ public class TemplateEngine {
             return valueObj != null ? valueObj.toString() : "";
         }
     }
-
-
 
 
     private void replaceAllOccurrences(StringBuilder template, String placeholder, String value) {
@@ -289,7 +376,6 @@ public class TemplateEngine {
         // Return false if no "or" condition was true
         return false;
     }
-
 
 
     private boolean evaluateSimpleCondition(String condition, HashMap<String, Object> variables) throws Exception {

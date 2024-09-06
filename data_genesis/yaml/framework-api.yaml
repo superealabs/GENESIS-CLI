@@ -18,19 +18,25 @@
       @Entity
       @Table(name="${tableName}")
 
-    modelPrimaryFieldAnnotations: |
+    # Définition des ancres pour réutilisation
+    modelPrimaryFieldAnnotations: &primaryKeyAnnotations |
       @Id
       @GeneratedValue(strategy=GenerationType.IDENTITY)
 
-    modelForeignFieldAnnotations: |
+    modelForeignFieldAnnotations: &foreignKeyAnnotations |
       @ManyToOne
       @JoinColumn(name="${columnName}")
 
-    modelFieldAnnotations:
+    modelFieldAnnotations: &columnAnnotations |
       @Column(name="${columnName}")
 
     modelFieldContent: |
       {{#each fields}}
+      {{#if this.isPrimaryKey}}
+      *primaryKeyAnnotations
+      *columnAnnotations{{elseIf this.isForeignKey}}
+      *foreignKeyAnnotations{{else}}
+      *columnAnnotations{{/if}}
       private ${this.type} ${this.name};
       {{/each}}
 

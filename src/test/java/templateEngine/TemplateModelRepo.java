@@ -12,17 +12,6 @@ import java.util.Map;
 
 public class TemplateModelRepo {
     TemplateEngine engine = new TemplateEngine();
-    /*String templatePrimary = """
-                ${namespace} ${package}${namespaceStart}
-                
-                ${imports}
-                
-                ${classAnnotations}
-                ${classKeyword} ${majStart(className)} ${extends} ${bracketStart}
-                ${fields}${constructors}
-                ${getSets}${bracketEnd}
-                ${namespaceEnd}
-                """;*/
     String templatePrimary = FileUtils.getFileContent("data_genesis/ModelTemplate.templ");
 
     public TemplateModelRepo() throws FileNotFoundException {
@@ -54,30 +43,37 @@ public class TemplateModelRepo {
 
         metadata.put("fields",
                 """
-                    {{#each fields}}
-                    private ${this.type} ${this.name};
-                    {{/each}}
-                """);
+                            {{#each fields}}
+                            {{#if this.isPrimaryKey}}
+                            @Id
+                            @GeneratedValue(strategy=GenerationType.IDENTITY)
+                            @Column(name="${this.columnName}"){{elseIf this.isForeignKey}}
+                            @ManyToOne
+                            @JoinColumn(name="${this.columnName}"){{else}}
+                            @Column(name="${this.columnName}"){{/if}}
+                            private ${this.type} ${this.name};
+                            {{/each}}
+                        """);
         metadata.put("constructors",
                 """
-                    public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
-                        {{#each fields}}
-                        this.${this.name} = ${this.name};{{#if !@last}}
-                        {{/if}}{{/each}}
-                    }
-                """);
+                            public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
+                                {{#each fields}}
+                                this.${this.name} = ${this.name};{{#if !@last}}
+                                {{/if}}{{/each}}
+                            }
+                        """);
         metadata.put("getSets",
                 """
-                    {{#each fields}}
-                    {{#if this.withGetters}}
-                    public ${this.type} get${majStart(this.name)}() {
-                        return ${this.name};
-                    }{{/if}}{{#if this.withSetters}}
-                    public void set${majStart(this.name)}(${this.type} ${this.name}) {
-                        this.${this.name} = ${this.name};
-                    }{{#if !@last}}
-                    {{/if}}{{/if}}{{/each}}
-                """);
+                            {{#each fields}}
+                            {{#if this.withGetters}}
+                            public ${this.type} get${majStart(this.name)}() {
+                                return ${this.name};
+                            }{{/if}}{{#if this.withSetters}}
+                            public void set${majStart(this.name)}(${this.type} ${this.name}) {
+                                this.${this.name} = ${this.name};
+                            }{{#if !@last}}
+                            {{/if}}{{/if}}{{/each}}
+                        """);
 
 
         metadata.put("bracketEnd", "}");
@@ -100,10 +96,11 @@ public class TemplateModelRepo {
                     {{#each fields}}
                     {{#if this.isPrimaryKey}}
                     @Id
-                    @GeneratedValue(strategy=GenerationType.IDENTITY){{/if}}{{#if this.isForeignKey}}
+                    @GeneratedValue(strategy=GenerationType.IDENTITY)
+                    @Column(name="${this.columnName}"){{elseIf this.isForeignKey}}
                     @ManyToOne
-                    @JoinColumn(name="${this.columnName}"){{/if}}
-                    @Column(name="${this.columnName}")
+                    @JoinColumn(name="${this.columnName}"){{else}}
+                    @Column(name="${this.columnName}"){{/if}}
                     private ${this.type} ${this.name};
                 
                     {{/each}}
@@ -140,6 +137,7 @@ public class TemplateModelRepo {
         List<Map<String, Object>> fields = List.of(
                 Map.of("type", "Long", // Primary key
                         "name", "id",
+                        "isDatabaseField", true,
                         "isPrimaryKey", true,
                         "withGetters", true,
                         "withSetters", true,
@@ -147,30 +145,35 @@ public class TemplateModelRepo {
 
                 Map.of("type", "String",
                         "name", "firstName",
+                        "isDatabaseField", true,
                         "withGetters", true,
                         "withSetters", true,
                         "columnName", "first_name"),
 
                 Map.of("type", "String",
                         "name", "lastName",
+                        "isDatabaseField", true,
                         "withGetters", true,
                         "withSetters", true,
                         "columnName", "last_name"),
 
                 Map.of("type", "int",
                         "name", "age",
+                        "isDatabaseField", true,
                         "withGetters", true,
                         "withSetters", true,
                         "columnName", "age"),
 
-                Map.of("type", "LocalDate", // New LocalDate field
+                Map.of("type", "java.time.LocalDate", // New LocalDate field
                         "name", "dateNaissance",
+                        "isDatabaseField", true,
                         "withGetters", true,
                         "withSetters", true,
                         "columnName", "date_naissance"),
 
                 Map.of("type", "Adresse", // Foreign key to Adresse
                         "name", "adresse",
+                        "isDatabaseField", true,
                         "isForeignKey", true,
                         "withGetters", true,
                         "withSetters", true,
@@ -186,6 +189,28 @@ public class TemplateModelRepo {
         return metadata;
     }
 
+    @Test
+    void testElseIfSimplified() throws Exception {
+        String template = """
+                {{#each fields}}
+                {{#if this.isPrimaryKey}}
+                @Id
+                @GeneratedValue(strategy=GenerationType.IDENTITY)
+                @Column(name="${this.columnName}"){{elseIf this.isForeignKey}}
+                @ManyToOne
+                @JoinColumn(name="${this.columnName}"){{else}}
+                @Column(name="${this.columnName}"){{/if}}
+                private ${this.type} ${this.name};
+                
+                {{/each}}
+                """;
+
+        HashMap<String, Object> metadata = getHashMapIntermediaire();
+
+        String result = engine.render(template, metadata);
+        System.out.println(result);
+    }
+
 
     @Test
     void renderModelFromPrimary() throws Exception {
@@ -199,6 +224,31 @@ public class TemplateModelRepo {
         String resultFinal = engine.render(result, metadataFinally);
         System.out.println("\n\n=== 2nd RENDER ====");
         System.out.println(resultFinal);
+    }
+
+    @Test
+    void elseIf() throws Exception {
+        TemplateEngine engine = new TemplateEngine();
+
+        String template = """
+        {{#if isAdult}}
+            You are an adult.
+        {{elseIf isTeenager}}
+            You are a teenager.
+        {{elseIf isTeenagerUp}}
+            You are a teenager Up.
+        {{else}}
+            You are a child.
+        {{/if}}
+        """;
+
+        HashMap<String, Object> variables = new HashMap<>();
+        variables.put("isAdult", false);
+        variables.put("isTeenager", true);
+        variables.put("isTeenagerUp", false);
+
+        String result = engine.render(template, variables);
+        System.out.println(result);
     }
 
     // Etapes pour render le templatePrimary du model :
