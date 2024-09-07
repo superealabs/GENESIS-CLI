@@ -51,7 +51,7 @@ public class TemplateModelRepo {
                             @ManyToOne
                             @JoinColumn(name="${this.columnName}"){{else}}
                             @Column(name="${this.columnName}"){{/if}}
-                            private ${this.type} ${this.name};
+                            private ${this.type} ${this.name};{{#if !@last}}{{newline}}{{/if}}
                             {{/each}}
                         """);
         metadata.put("constructors",
@@ -68,11 +68,12 @@ public class TemplateModelRepo {
                             {{#if this.withGetters}}
                             public ${this.type} get${majStart(this.name)}() {
                                 return ${this.name};
-                            }{{/if}}{{#if this.withSetters}}
+                            }{{/if}}
+                            {{#if this.withSetters}}
                             public void set${majStart(this.name)}(${this.type} ${this.name}) {
                                 this.${this.name} = ${this.name};
-                            }{{#if !@last}}
-                            {{/if}}{{/if}}{{/each}}
+                            }{{#if !@last}}{{newline}}{{/if}}
+                            {{/if}}{{/each}}
                         """);
 
 
@@ -101,8 +102,7 @@ public class TemplateModelRepo {
                     @ManyToOne
                     @JoinColumn(name="${this.columnName}"){{else}}
                     @Column(name="${this.columnName}"){{/if}}
-                    private ${this.type} ${this.name};
-                
+                    private ${this.type} ${this.name};{{#if !@last}}{{newline}}{{/if}}
                     {{/each}}
                     public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
                         {{#each fields}}
@@ -114,11 +114,12 @@ public class TemplateModelRepo {
                     {{#if this.withGetters}}
                     public ${this.type} get${majStart(this.name)}() {
                         return ${this.name};
-                    }{{/if}}{{#if this.withSetters}}
+                    }{{/if}}
+                    {{#if this.withSetters}}
                     public void set${majStart(this.name)}(${this.type} ${this.name}) {
                         this.${this.name} = ${this.name};
-                    }{{#if !@last}}
-                    {{/if}}{{/if}}{{/each}}
+                    }{{#if !@last}}{{newline}}{{/if}}
+                    {{/if}}{{/each}}
                 }
                 """;
 
