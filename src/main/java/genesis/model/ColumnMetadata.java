@@ -12,5 +12,4 @@ public class ColumnMetadata {
     private boolean foreign;
     private String referencedTable;
     private String referencedColumn;
-
 }

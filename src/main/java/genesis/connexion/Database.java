@@ -2,6 +2,7 @@ package genesis.connexion;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import genesis.config.Constantes;
 import genesis.connexion.providers.MySQLDatabase;
 import genesis.connexion.providers.OracleDatabase;
 import genesis.connexion.providers.PostgreSQLDatabase;
@@ -42,6 +43,7 @@ public abstract class Database {
     private String addEntitiesQuery;
     private String getTablesQuery;
     private String loginScript;
+
 
     public abstract Connection getConnection(Credentials credentials) throws ClassNotFoundException, SQLException;
 

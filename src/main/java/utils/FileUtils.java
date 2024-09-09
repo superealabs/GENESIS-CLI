@@ -106,7 +106,7 @@ public class FileUtils {
     public static void createFile(String filePath) throws IOException {
         filePath = filePath.replace("\\", "/");
         String filename = "";
-        String currentChar = "";
+        String currentChar;
 
         File file;
         for (int i = 0; i < filePath.toCharArray().length; ++i) {

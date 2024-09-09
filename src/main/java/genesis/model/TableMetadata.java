@@ -9,7 +9,8 @@ import lombok.Setter;
 import utils.FileUtils;
 
 import java.sql.*;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Setter
@@ -22,56 +23,24 @@ public class TableMetadata {
     private FieldMetadata[] fields;
     private FieldMetadata primaryField;
 
-    public void initialize(Connection connex, Credentials credentials, Database database, Language language) throws ClassNotFoundException, SQLException {
+    public void initialize(Connection connex, Credentials credentials, Database database, Language language) throws SQLException, ClassNotFoundException {
         boolean opened = false;
         Connection connect = connex;
 
-        // Vérifier si la connexion est nulle ou fermée
         if (connect == null || connect.isClosed()) {
             connect = database.getConnection(credentials);
             opened = true;
         }
 
-        String query = database.getGetColumnsQuery().replace("[tableName]", getTableName());
+        try {
+            DatabaseMetaData metaData = connect.getMetaData();
+            String tableName = getTableName();
 
-        // Utilisation du try-with-resources pour assurer la fermeture de PreparedStatement et ResultSet
-        try (PreparedStatement statement = connect.prepareStatement(query);
-             ResultSet result = statement.executeQuery()) {
+            List<ColumnMetadata> listeCols = fetchColumns(metaData, tableName, language, database);
+            List<FieldMetadata> listeFields = fetchPrimaryKeys(metaData, tableName, listeCols);
+            fetchForeignKeys(metaData, tableName, listeFields);
 
-            Vector<ColumnMetadata> listeCols = new Vector<>();
-            Vector<FieldMetadata> listeFields = new Vector<>();
-            setClassName(FileUtils.majStart(FileUtils.toCamelCase(getTableName())));
-
-            while (result.next()) {
-                ColumnMetadata column = new ColumnMetadata();
-                column.setName(result.getString("column_name"));
-                column.setType(result.getString("data_type"));
-                column.setPrimary(result.getBoolean("is_primary"));
-                column.setForeign(result.getBoolean("is_foreign"));
-                column.setReferencedTable(result.getString("foreign_table_name"));
-                column.setReferencedColumn(result.getString("foreign_column_name"));
-
-                FieldMetadata field = new FieldMetadata();
-                if (column.isForeign()) {
-                    field.setName(FileUtils.minStart(FileUtils.toCamelCase(column.getReferencedTable())));
-                    field.setType(FileUtils.majStart(FileUtils.toCamelCase(column.getReferencedTable())));
-                    field.setReferencedField(FileUtils.toCamelCase(column.getReferencedColumn()));
-                } else {
-                    field.setName(FileUtils.toCamelCase(column.getName()));
-                    field.setType(language.getTypes().get(database.getTypes().get(column.getType())));
-                }
-
-                field.setPrimary(column.isPrimary());
-                field.setForeign(column.isForeign());
-
-                if (field.isPrimary()) {
-                    setPrimaryField(field);
-                }
-
-                listeCols.add(column);
-                listeFields.add(field);
-            }
-
+            setClassName(FileUtils.majStart(FileUtils.toCamelCase(tableName)));
             setColumns(listeCols.toArray(new ColumnMetadata[0]));
             setFields(listeFields.toArray(new FieldMetadata[0]));
 
@@ -80,6 +49,110 @@ public class TableMetadata {
                 connect.close();
             }
         }
+    }
+
+    public List<String> getAllTableNames(Connection connection) throws SQLException {
+        List<String> tableNames = new ArrayList<>();
+        DatabaseMetaData metaData = connection.getMetaData();
+
+        try (ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"})) {
+            while (tables.next()) {
+                String tableName = tables.getString("TABLE_NAME");
+                tableNames.add(tableName);
+            }
+        }
+
+        return tableNames;
+    }
+
+    public List<TableMetadata> initializeTables(List<String> tableNames, Connection connex, Credentials credentials, Database database, Language language) throws SQLException, ClassNotFoundException {
+        List<TableMetadata> tableMetadataList = new ArrayList<>();
+        boolean opened = false;
+        Connection connect = connex;
+
+        if (connect == null || connect.isClosed()) {
+            connect = database.getConnection(credentials);
+            opened = true;
+        }
+
+        try {
+            if (tableNames == null || tableNames.isEmpty()) {
+                tableNames = getAllTableNames(connect);
+            }
+
+            for (String tableName : tableNames) {
+                TableMetadata tableMetadata = new TableMetadata();
+                tableMetadata.setTableName(tableName);
+                tableMetadata.initialize(connect, credentials, database, language);
+                tableMetadataList.add(tableMetadata);
+            }
+        } finally {
+            if (opened && !connect.isClosed()) {
+                connect.close();
+            }
+        }
+
+        return tableMetadataList;
+    }
+
+
+
+    private List<ColumnMetadata> fetchColumns(DatabaseMetaData metaData, String tableName, Language language, Database database) throws SQLException {
+        ResultSet columns = metaData.getColumns(null, null, tableName, null);
+        List<ColumnMetadata> listeCols = new ArrayList<>();
+
+        while (columns.next()) {
+            ColumnMetadata column = new ColumnMetadata();
+            String columnName = columns.getString("COLUMN_NAME");
+            String columnType = columns.getString("TYPE_NAME");
+
+            column.setName(columnName);
+            column.setType(language.getTypes().get(database.getTypes().get(columnType)));
+            listeCols.add(column);
+        }
+
+        return listeCols;
+    }
+
+    private List<FieldMetadata> fetchPrimaryKeys(DatabaseMetaData metaData, String tableName, List<ColumnMetadata> columns) throws SQLException {
+        ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, tableName);
+        List<FieldMetadata> listeFields = new ArrayList<>();
+
+        while (primaryKeys.next()) {
+            String pkColumnName = primaryKeys.getString("COLUMN_NAME");
+
+            for (ColumnMetadata column : columns) {
+                if (column.getName().equalsIgnoreCase(pkColumnName)) {
+                    column.setPrimary(true);
+                    FieldMetadata field = new FieldMetadata();
+                    field.setName(FileUtils.toCamelCase(column.getName()));
+                    field.setPrimary(true);
+                    listeFields.add(field);
+                    setPrimaryField(field);
+                }
+            }
+        }
+
+        return listeFields;
+    }
+
+    private void fetchForeignKeys(DatabaseMetaData metaData, String tableName, List<FieldMetadata> fields) throws SQLException {
+        ResultSet foreignKeys = metaData.getImportedKeys(null, null, tableName);
+
+        while (foreignKeys.next()) {
+            String fkColumnName = foreignKeys.getString("FKCOLUMN_NAME");
+            String pkTableName = foreignKeys.getString("PKTABLE_NAME");
+            String pkColumnName = foreignKeys.getString("PKCOLUMN_NAME");
+
+            for (FieldMetadata field : fields) {
+                if (field.getName().equalsIgnoreCase(FileUtils.toCamelCase(fkColumnName))) {
+                    field.setForeign(true);
+                    field.setReferencedField(FileUtils.toCamelCase(pkColumnName));
+                    field.setType(FileUtils.majStart(FileUtils.toCamelCase(pkTableName)));
+                }
+            }
+        }
+
     }
 
     private void printColumnsInfo(DatabaseMetaData metaData, String tableName) throws SQLException {
@@ -94,7 +167,7 @@ public class TableMetadata {
             boolean nullable = columns.getBoolean("NULLABLE");
 
             String dataTypeName = JDBCType.valueOf(columnType).getName();
-            System.out.println("\t" + columnName + " (" + dataTypeName + "), Size: " + columnSize + ", Nullable: " + nullable);
+            System.out.println("\t" + columnName + " (" + dataTypeName + "), Size: " + columnSize + ", Nullable: " + nullable + "Columname type: "+columnTypeName);
         }
     }
 

@@ -27,7 +27,9 @@
     "types": {
       "integer": "int",
       "bigint": "long",
+      "serial": "long",
       "character varying": "string",
+      "varchar": "string",
       "real": "double",
       "double": "double",
       "double precision": "double",

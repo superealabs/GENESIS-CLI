@@ -138,7 +138,6 @@ public class TemplateModelRepo {
         List<Map<String, Object>> fields = List.of(
                 Map.of("type", "Long", // Primary key
                         "name", "id",
-                        "isDatabaseField", true,
                         "isPrimaryKey", true,
                         "withGetters", true,
                         "withSetters", true,
@@ -146,35 +145,30 @@ public class TemplateModelRepo {
 
                 Map.of("type", "String",
                         "name", "firstName",
-                        "isDatabaseField", true,
                         "withGetters", true,
                         "withSetters", true,
                         "columnName", "first_name"),
 
                 Map.of("type", "String",
                         "name", "lastName",
-                        "isDatabaseField", true,
                         "withGetters", true,
                         "withSetters", true,
                         "columnName", "last_name"),
 
                 Map.of("type", "int",
                         "name", "age",
-                        "isDatabaseField", true,
                         "withGetters", true,
                         "withSetters", true,
                         "columnName", "age"),
 
-                Map.of("type", "java.time.LocalDate", // New LocalDate field
+                Map.of("type", "java.time.LocalDate",
                         "name", "dateNaissance",
-                        "isDatabaseField", true,
                         "withGetters", true,
                         "withSetters", true,
                         "columnName", "date_naissance"),
 
-                Map.of("type", "Adresse", // Foreign key to Adresse
+                Map.of("type", "Adresse",
                         "name", "adresse",
-                        "isDatabaseField", true,
                         "isForeignKey", true,
                         "withGetters", true,
                         "withSetters", true,
