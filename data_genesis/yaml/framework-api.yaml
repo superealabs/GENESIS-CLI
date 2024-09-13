@@ -17,88 +17,80 @@
     modelAnnotations: |
       @Entity
       @Table(name="${tableName}")
-
-    # Définition des ancres pour réutilisation
-    modelPrimaryFieldAnnotations: &primaryKeyAnnotations |
-      @Id
-      @GeneratedValue(strategy=GenerationType.IDENTITY)
-
-    modelForeignFieldAnnotations: &foreignKeyAnnotations |
-      @ManyToOne
-      @JoinColumn(name="${columnName}")
-
-    modelFieldAnnotations: &columnAnnotations |
-      @Column(name="${columnName}")
-
     modelFieldContent: |
-      {{#each fields}}
-      {{#if this.isPrimaryKey}}
-      *primaryKeyAnnotations
-      *columnAnnotations{{elseIf this.isForeignKey}}
-      *foreignKeyAnnotations{{else}}
-      *columnAnnotations{{/if}}
-      private ${this.type} ${this.name};
-      {{/each}}
-
+      {{tab}}{{#each fields}}
+      {{tab}}{{#if this.isPrimaryKey}}
+      {{tab}}@Id
+      {{tab}}@GeneratedValue(strategy=GenerationType.IDENTITY)
+      {{tab}}@Column(name="${this.columnName}"){{elseIf this.isForeignKey}}
+      {{tab}}@ManyToOne
+      {{tab}}@JoinColumn(name="${this.columnName}"){{else}}
+      {{tab}}@Column(name="${this.columnName}"){{/if}}
+      {{tab}}private ${this.type} ${this.name};{{#if !@last}}{{newline}}{{/if}}
+      {{tab}}{{/each}}
     modelGetterSetter: |
-      {{#each fields}}
-      {{#if this.withGetters}}
-      public ${this.type} get${majStart(this.name)}() {
-          return ${this.name};
-      }{{/if}}{{#if this.withSetters}}
-      public void set${majStart(this.name)}(${this.type} ${this.name}) {
-          this.${this.name} = ${this.name};
-      }{{#if !@last}}
-      {{/if}}{{/if}}{{/each}}
-
+      {{tab}}{{#each fields}}
+      {{tab}}{{#if this.withGetters}}
+      {{tab}}public ${this.type} get${majStart(this.name)}() {
+      {{tab}}    return ${this.name};
+      {{tab}}}{{/if}}
+      {{#if this.withSetters}}
+      {{tab}}public void set${majStart(this.name)}(${this.type} ${this.name}) {
+      {{tab}}    this.${this.name} = ${this.name};
+      {{tab}}}{{#if !@last}}
+      {{tab}}{{/if}}
+      {{tab}}{{/if}}{{/each}}
     modelConstructors: |
-      public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
-          {{#each fields}}
-          this.${this.name} = ${this.name};{{#if !@last}}
-          {{/if}}{{/each}}
-      }
-
+      {{tab}}public ${majStart(className)}() {
+      {{tab}}}
+      
+      {{tab}}public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
+      {{tab}}    {{#each fields}}
+      {{tab}}    this.${this.name} = ${this.name};{{#if !@last}}
+      {{tab}}    {{/if}}{{/each}}
+      {{tab}}}
     modelSavePath: "[projectNameMaj]/src/main/java/com/[projectNameMin]/entities"
+    modelForeignContextAttr: ""
     modelAdditionnalFiles:
       - name: "[classNameMaj]Repository.java"
         content: "spring/Repository.templ"
     modelExtension: "java"
-    modelPackage: "com.[projectNameMin].entities"
+    modelPackage: "com.${lowerCase(projectName)}.models"
     modelTemplate: "ModelTemplate"
   controller:
-    controllerImports:
-      - "import org.springframework.beans.factory.annotation.Autowired;"
-      - "import org.springframework.stereotype.Controller;"
-      - "import org.springframework.ui.Model;"
-      - "import org.springframework.web.bind.annotation.GetMapping;"
-      - "import org.springframework.web.bind.annotation.PostMapping;"
-      - "import org.springframework.web.servlet.view.RedirectView;"
-      - "import com.[projectNameMin].entities.[classNameMaj];"
-      - "import com.[projectNameMin].entities.[classNameMaj]Repository;"
-      - "import com.config.Constantes;"
-      - "import veda.godao.DAO;"
-      - "import veda.godao.utils.DAOConnexion;"
-      - "import jakarta.servlet.http.HttpServletRequest;"
-      - "import jakarta.servlet.http.HttpSession;"
-      - "import java.sql.Connection;"
-      - "import java.sql.SQLException;"
-      - "import java.net.URLDecoder;"
-      - "import java.net.URLEncoder;"
-      - "import java.nio.charset.StandardCharsets;"
-      - "import java.util.Base64;"
-    controllerAnnotations:
-      - "@Controller"
+    controllerImports: |
+      import org.springframework.beans.factory.annotation.Autowired;
+      import org.springframework.stereotype.Controller;
+      import org.springframework.ui.Model;
+      import org.springframework.web.bind.annotation.GetMapping;
+      import org.springframework.web.bind.annotation.PostMapping;
+      import org.springframework.web.servlet.view.RedirectView;
+      import com.[projectNameMin].entities.[classNameMaj];
+      import com.[projectNameMin].entities.[classNameMaj]Repository;
+      import com.config.Constantes;
+      import veda.godao.DAO;
+      import veda.godao.utils.DAOConnexion;
+      import jakarta.servlet.http.HttpServletRequest;
+      import jakarta.servlet.http.HttpSession;
+      import java.sql.Connection;
+      import java.sql.SQLException;
+      import java.net.URLDecoder;
+      import java.net.URLEncoder;
+      import java.nio.charset.StandardCharsets;
+      import java.util.Base64;
+    controllerAnnotations: |
+      @Controller
     controllerExtends: ""
     controllerName: "[classNameMaj]Controller"
     controllerFields:
-      - controllerFieldAnnotations: [ ]
+      - controllerFieldAnnotations: ""
         controllerFieldContent: "private DAO dao=new DAO(\"[databaseDriver]\", \"[databaseSgbd]\", \"[databaseHost]\", \"[databasePort]\", \"[databaseName]\", \"[user]\", \"[pwd]\", [databaseUseSSL], [databaseAllowKey], [databaseID]);"
-      - controllerFieldAnnotations:
-          - "@Autowired"
+      - controllerFieldAnnotations: |
+          @Autowired
         controllerFieldContent: "private [classNameMaj]Repository repo;"
     controllerFieldsForeign:
-      controllerFieldAnnotations:
-        - "@Autowired"
+      controllerFieldAnnotations: |
+        @Autowired
       controllerFieldContent: "private com.[projectNameMin].entities.[foreignNameMaj]Repository repo[foreignNameMaj];"
     controllerChangeInstanciation:
       template: "o.set[fieldNameMaj]([content]);"
@@ -112,23 +104,24 @@
     controllerForeignList: "model.addAttribute(\"[foreignNameMin]s\", repo[foreignType].findAll());"
     controllerForeignContextParam: ""
     controllerForeignContextInstanciation: ""
-    controllerConstructors: [ ]
+    controllerConstructors: |
+      ...
     controllerForeignInclude: ""
     controllerMethods:
-      - controllerMethodAnnotations:
-          - "@PostMapping(\"/insert[classNameMin].do\")"
+      - controllerMethodAnnotations: |
+          @PostMapping(\"/insert[classNameMin].do\")"
         controllerMethodParameter: "String [fieldNameMin]"
         controllerMethodContent: "spring/controller/springControllerInsert"
-      - controllerMethodAnnotations:
-          - "@GetMapping(\"/tocrud[classNameMin].do\")"
+      - controllerMethodAnnotations: |
+          "@GetMapping(\"/tocrud[classNameMin].do\")"
         controllerMethodParameter: ""
         controllerMethodContent: "spring/controller/springControllerRead"
-      - controllerMethodAnnotations:
-          - "@PostMapping(\"/update[classNameMin].do\")"
+      - controllerMethodAnnotations: |
+          @PostMapping(\"/update[classNameMin].do\")"
         controllerMethodParameter: "String [fieldNameMin]"
         controllerMethodContent: "spring/controller/springControllerUpdate"
-      - controllerMethodAnnotations:
-          - "@PostMapping(\"/delete[classNameMin].do\")"
+      - controllerMethodAnnotations: |
+          "@PostMapping(\"/delete[classNameMin].do\")"
         controllerMethodParameter: ""
         controllerMethodContent: "spring/controller/springControllerDelete"
     controllerSavepath: "[projectNameMaj]/src/main/java/com/[projectNameMin]/controllers"
@@ -167,6 +160,7 @@
     link: "<a href=\"/tocrud[classNameMin].do\" class=\"nav-item nav-link\"><i class=\"fa fa-tachometer-alt me-2\"></i>[classNameformattedMaj]</a>"
 
 - id: 2
+  langageId: 2
   name: ".NET MVC with EF"
   skeleton: "csharppsql_skeleton"
   projectNameTags:
@@ -181,45 +175,56 @@
     - name: "[projectNameMaj]/[projectNameMaj].csproj"
       content: "csharp/data/csprojmysql.templ"
   model:
-    modelImports:
-      - "using System.ComponentModel.DataAnnotations;"
-      - "using System.ComponentModel.DataAnnotations.Schema;"
+    modelImports: |
+      using System.ComponentModel.DataAnnotations;
+      using System.ComponentModel.DataAnnotations.Schema;
     modelExtends: ""
-    modelAnnotations:
-      - "[Table(\"[tableName]\")]"
-    modelPrimaryFieldAnnotations:
-      - "[Key]"
-    modelForeignFieldAnnotations:
-      - "[ForeignKey(\"[columnName]\")]"
-    modelFieldAnnotations:
-      - "[Column(\"[columnName]\")]"
-    modelFieldCase: "Maj"
-    modelFieldContent: "public [fieldType] [fieldName[modelFieldCase]]{ get; set; }"
-    modelGetter: ""
-    modelSetter: ""
-    modelConstructors: [ ]
+    modelAnnotations: ""
+    modelFieldContent: |      
+      {{tab}}{{#each fields}}{{#if this.isPrimaryKey}}
+      {{tab}}[Key]
+      {{tab}}[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+      {{tab}}[Column("${this.columnName}")]
+      {{tab}}public ${this.type} ${majStart(this.name)} { get; set; }{{elseIf this.isForeignKey}}
+      {{tab}}
+      {{tab}}[ForeignKey("${this.type}")]
+      {{tab}}[Column("${this.columnName}")]
+      {{tab}}public ${this.columnType} ${majStart(this.columnName)} { get; set; }
+      {{tab}}
+      {{tab}}public virtual ${this.type} ${majStart(this.name)} { get; set; }
+      {{tab}}{{else}}
+      {{tab}}[Column("${this.columnName}")]
+      {{tab}}public ${this.type} ${majStart(this.name)} { get; set; }{{/if}}{{#if !@last}}{{newline}}{{/if}}
+      {{tab}}{{/each}}
+    modelGetterSetter: ""
+    modelConstructors: |
+      {{tab}}public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
+      {{tab}}    {{#each fields}}
+      {{tab}}    ${majStart(this.name)} = ${this.name};{{#if !@last}}
+      {{tab}}    {{/if}}{{/each}}
+      {{tab}}}
     modelSavePath: "[projectNameMaj]/Models"
     modelForeignContextAttr: "public DbSet<[classNameMaj]> [classNameMaj] { get; set; }"
     modelAdditionnalFiles:
       - name: "[classNameMaj]Context.cs"
         content: "csharp/data/contextmysql.templ"
     modelExtension: "cs"
-    modelPackage: "[projectNameMaj].Models"
+    modelPackage: "${majStart(projectName)}.Models"
     modelTemplate: "ModelTemplate"
   controller:
-    controllerImports:
-      - "using Microsoft.AspNetCore.Mvc;"
-      - "using Microsoft.EntityFrameworkCore;"
-      - "using [projectNameMaj].Models;"
-    controllerAnnotations: [ ]
+    controllerImports: |
+      using Microsoft.AspNetCore.Mvc;
+      using Microsoft.EntityFrameworkCore;
+      using ${majStart(projectName)}.Models;
+    controllerAnnotations: ""
     controllerExtends: " : Controller"
     controllerName: "[classNameMaj]Controller"
     controllerFields:
-      - controllerFieldAnnotations: [ ]
+      - controllerFieldAnnotations: ""
         controllerFieldContent: "private readonly [classNameMaj]Context _context;"
     controllerFieldsForeign:
-      controllerFieldAnnotations: [ ]
-      controllerFieldContent: "private readonly [foreignNameMaj]Context _context[foreignNameMaj];"
+        controllerFieldAnnotations: ""
+        controllerFieldContent: "private readonly [foreignNameMaj]Context _context[foreignNameMaj];"
     controllerChangeInstanciation:
       template: "o.[fieldNameMaj]=[content];"
       value: "[fieldNameMin]"
@@ -232,26 +237,28 @@
     controllerForeignList: "ViewData[\"[foreignNameMin]\"] = await _context[foreignType].[foreignType].ToListAsync();"
     controllerForeignContextParam: "[foreignNameMaj]Context context[foreignNameMaj]"
     controllerForeignContextInstanciation: "_context[foreignNameMaj] = context[foreignNameMaj];"
-    controllerConstructors:
-      - "public [classNameMaj]Controller([classNameMaj]Context context[controllerForeignContextParam]){_context = context; [controllerForeignContextInstanciation]}"
+    controllerConstructors: |
+      public [classNameMaj]Controller([classNameMaj]Context context[controllerForeignContextParam]){_context = context; [controllerForeignContextInstanciation]}"
     controllerForeignInclude: ".Include(e=>e.[foreignNameMaj])"
     controllerMethods:
-      - controllerMethodAnnotations: [ ]
+      - controllerMethodAnnotations: |
+          ...
         controllerMethodParameter: ""
         controllerMethodContent: "csharp/controller/csharpControllerRead"
-      - controllerMethodAnnotations:
-          - "[HttpPost]"
+      - controllerMethodAnnotations: |
+          [HttpPost]"
         controllerMethodParameter: "string [fieldNameMin]"
         controllerMethodContent: "csharp/controller/csharpControllerCreate"
-      - controllerMethodAnnotations:
-          - "[HttpPost]"
+      - controllerMethodAnnotations: |
+          [HttpPost]"
         controllerMethodParameter: "string [fieldNameMin]"
         controllerMethodContent: "csharp/controller/csharpControllerEdit"
-      - controllerMethodAnnotations:
-          - "[HttpPost]"
+      - controllerMethodAnnotations: |
+          [HttpPost]
         controllerMethodParameter: ""
         controllerMethodContent: "csharp/controller/csharpControllerDelete"
-      - controllerMethodAnnotations: [ ]
+      - controllerMethodAnnotations: |
+          ...
         controllerMethodParameter: ""
         controllerMethodContent: "csharp/controller/csharpControllerExists"
     controllerSavepath: "[projectNameMaj]/Controllers"
@@ -268,14 +275,14 @@
     viewUpdateFormField:
       int: "csharp/view/components/csharpViewUpdateInt"
       double: "csharp/view/components/csharpViewUpdateDouble"
-      string?: "csharp/view/components/csharpViewUpdateString"
+      string: "csharp/view/components/csharpViewUpdateString"
       DateOnly: "csharp/view/components/csharpViewUpdateDate"
       DateTime: "csharp/view/components/csharpViewUpdateTimestamp"
     viewInsertFormForeignField: "csharp/view/components/csharpViewInsertForeign"
     viewInsertFormField:
       int: "csharp/view/components/csharpViewInsertInt"
       double: "csharp/view/components/csharpViewInsertDouble"
-      string?: "csharp/view/components/csharpViewInsertString"
+      string: "csharp/view/components/csharpViewInsertString"
       DateOnly: "csharp/view/components/csharpViewInsertDate"
       DateTime: "csharp/view/components/csharpViewInsertTimestamp"
     viewName: "Index"

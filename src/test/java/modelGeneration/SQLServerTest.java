@@ -36,7 +36,7 @@ public class SQLServerTest {
         Framework framework = frameworks[0];                                // Spring MVC
 
         try (Connection connection = database.getConnection(credentials)) {
-            TableMetadata[] entities = database.getEntities(connection, credentials, "employe");
+            TableMetadata[] entities = database.getEntity(connection, credentials, "employe");
             TableMetadata tableMetadata = entities[0];
             tableMetadata.initialize(connection, credentials, database, language);
 
@@ -66,7 +66,7 @@ public class SQLServerTest {
         Framework framework = frameworks[1];                                // .NET
 
         try (Connection connection = database.getConnection(credentials)) {
-            TableMetadata[] entities = database.getEntities(connection, credentials, "employe");
+            TableMetadata[] entities = database.getEntity(connection, credentials, "employe");
             TableMetadata tableMetadata = entities[0];
             tableMetadata.initialize(connection, credentials, database, language);
             ;

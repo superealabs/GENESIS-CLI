@@ -3,9 +3,12 @@
     "id": 1,
     "name": "Java",
     "syntax": {
+      "classKeyword": "public class",
       "namespace": "package",
-      "namespaceStart": ";",
-      "namespaceEnd": ""
+      "namespaceStart": "",
+      "namespaceEnd": "",
+      "bracketStart": "{",
+      "bracketEnd": "}"
     },
     "types": {
       "int": "Integer",
@@ -17,7 +20,7 @@
     },
     "typeParsers": {
       "Integer": "Integer.parseInt([value])",
-      "Long": "Long.parseInt([value])",
+      "Long": "Long.parseLong([value])",
       "Double": "Double.parseDouble([value])",
       "String": "[value]",
       "java.time.LocalDate": "java.time.LocalDate.parse([value])",
@@ -28,15 +31,18 @@
     "id": 2,
     "name": "C#",
     "syntax": {
+      "classKeyword": "public class",
       "namespace": "namespace",
       "namespaceStart": ";",
-      "namespaceEnd": ""
+      "namespaceEnd": "",
+      "bracketStart": "{",
+      "bracketEnd": "}"
     },
     "types": {
       "int": "int",
       "long": "long",
       "double": "double",
-      "string": "string?",
+      "string": "string",
       "date": "DateOnly",
       "timestamp": "DateTime"
     },

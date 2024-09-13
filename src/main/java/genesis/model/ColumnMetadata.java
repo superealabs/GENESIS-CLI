@@ -11,5 +11,6 @@ public class ColumnMetadata {
     private boolean primary;
     private boolean foreign;
     private String referencedTable;
+    private String columnType;
     private String referencedColumn;
 }

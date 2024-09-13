@@ -4,7 +4,6 @@ import genesis.config.Constantes;
 import genesis.config.langage.Language;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
-import genesis.connexion.providers.PostgreSQLDatabase;
 import genesis.model.ColumnMetadata;
 import genesis.model.FieldMetadata;
 import genesis.model.TableMetadata;
@@ -14,11 +13,9 @@ import utils.FileUtils;
 
 import java.io.FileNotFoundException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 public class TableMetadataTest {
 
@@ -63,7 +60,7 @@ public class TableMetadataTest {
     public void testGetAllTableNames() throws SQLException {
         TableMetadata tableMetadata = new TableMetadata();
 
-        List<String> tableNames = tableMetadata.getAllTableNames(connection);
+        List<String> tableNames = tableMetadata.getAllTableNames(database, connection);
 
         System.out.println("Tables:");
         for (String tableName : tableNames) {

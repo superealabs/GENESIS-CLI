@@ -1,5 +1,7 @@
 package genesis.engine;
 
+import utils.FileUtils;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,12 +35,8 @@ public class TemplateEngine {
     static {
         FUNCTIONS_MAP.put("upperCase", str -> str == null ? "" : str.toUpperCase());
         FUNCTIONS_MAP.put("lowerCase", str -> str == null ? "" : str.toLowerCase());
-        FUNCTIONS_MAP.put("majStart", str -> {
-            if (str == null || str.isEmpty()) {
-                return str == null ? "" : str;
-            }
-            return str.substring(0, 1).toUpperCase() + str.substring(1);
-        });
+        FUNCTIONS_MAP.put("majStart", FileUtils::majStart);
+        FUNCTIONS_MAP.put("toCamelCase", FileUtils::toCamelCase);
     }
 
     public String simpleRender(String template, HashMap<String, Object> variables) {

@@ -30,7 +30,7 @@ public class TemplateModelRepo {
         metadata.put("className", "person");
 
         metadata.put("namespace", "package");
-        metadata.put("package", "com.example;");
+        metadata.put("package", "com.${lowerCase(projectName)}.models");
         metadata.put("namespaceStart", "");
         metadata.put("imports", "import jakarta.persistence.*;");
         metadata.put("classAnnotations", """
@@ -87,7 +87,7 @@ public class TemplateModelRepo {
     @Test
     void templateEngineRenderModel() throws Exception {
         String template = """
-                package com.example;
+                package com.${lowerCase(projectName)}.models;
                 
                 import jakarta.persistence.*;
                 
@@ -134,6 +134,8 @@ public class TemplateModelRepo {
         HashMap<String, Object> metadata = new HashMap<>();
         metadata.put("tableName", "person");
         metadata.put("className", "person");
+        metadata.put("projectName", "TestProject");
+
 
         List<Map<String, Object>> fields = List.of(
                 Map.of("type", "Long", // Primary key

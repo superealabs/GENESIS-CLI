@@ -89,7 +89,7 @@ public class App {
                 FileUtils.overwriteFileContent(projectNameTagPath, projectNameTagContent);
             }
             try (Connection connect = database.getConnexion(credentials)) {
-                entities = database.getEntities(connect, credentials, entityName);
+                entities = database.getEntity(connect, credentials, entityName);
                 GenesisObject obj = new GenesisObject();
                 obj.setDatabaseId(database.getId());
                 obj.setLanguageId(language.getId());
@@ -213,6 +213,11 @@ public class App {
 
             /*---Project configuration---*/
             String projectName = projectSetup.setupProject(scanner, framework);
+
+            // TO DO :
+            /*
+            - Appel fonction generate prenant en argument
+             */
         }
     }
 }

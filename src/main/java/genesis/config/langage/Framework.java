@@ -27,17 +27,12 @@ public class Framework {
     @Getter
     @Setter
     public static class Model {
-        private String[] modelImports;
+        private String modelImports;
         private String modelExtends;
-        private String[] modelAnnotations;
-        private String[] modelPrimaryFieldAnnotations;
-        private String[] modelForeignFieldAnnotations;
-        private String[] modelFieldAnnotations;
-        private String modelFieldCase;
+        private String modelAnnotations;
         private String modelFieldContent;
-        private String modelGetter;
-        private String modelSetter;
-        private String[] modelConstructors;
+        private String modelGetterSetter;
+        private String modelConstructors;
         private String modelSavePath;
         private String modelForeignContextAttr;
         private CustomFile[] modelAdditionnalFiles;
@@ -49,8 +44,8 @@ public class Framework {
     @Getter
     @Setter
     public static class Controller {
-        private String[] controllerImports;
-        private String[] controllerAnnotations;
+        private String controllerImports;
+        private String controllerAnnotations;
         private String controllerExtends;
         private String controllerName;
         private ControllerField[] controllerFields;
@@ -61,7 +56,7 @@ public class Framework {
         private String controllerForeignList;
         private String controllerForeignContextParam;
         private String controllerForeignContextInstanciation;
-        private String[] controllerConstructors;
+        private String controllerConstructors;
         private String controllerForeignInclude;
         private ControllerMethod[] controllerMethods;
         private String controllerSavepath;
@@ -74,14 +69,14 @@ public class Framework {
     @Getter
     @Setter
     public static class ControllerField {
-        private String[] controllerFieldAnnotations;
+        private String controllerFieldAnnotations;
         private String controllerFieldContent;
     }
 
     @Getter
     @Setter
     public static class ControllerMethod {
-        private String[] controllerMethodAnnotations;
+        private String controllerMethodAnnotations;
         private String controllerMethodParameter;
         private String controllerMethodContent;
     }

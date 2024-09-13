@@ -3,9 +3,9 @@ package genesis.connexion.providers;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SQLServerDatabase extends Database {
 
@@ -27,4 +27,32 @@ public class SQLServerDatabase extends Database {
                 credentials.getUser(),
                 credentials.getPwd());
     }
+
+    @Override
+    public List<String> getAllTableNames(Connection connection) throws SQLException {
+        List<String> tableNames = new ArrayList<>();
+        DatabaseMetaData metaData = connection.getMetaData();
+
+        try (ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"})) {
+            while (tables.next()) {
+                String tableName = tables.getString("TABLE_NAME");
+                String tableSchema = tables.getString("TABLE_SCHEMA");
+
+                boolean isSystemTable = false;
+                for (String schema : super.getExcludeSchemas()) {
+                    if (schema.equalsIgnoreCase(tableSchema)) {
+                        isSystemTable = true;
+                        break;
+                    }
+                }
+
+                if (!isSystemTable) {
+                    tableNames.add(tableName);
+                }
+            }
+        }
+
+        return tableNames;
+    }
+
 }

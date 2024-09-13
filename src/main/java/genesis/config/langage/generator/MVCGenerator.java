@@ -5,60 +5,96 @@ import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
-import genesis.model.TableMetadata;
+import genesis.engine.TemplateEngine;
 import genesis.model.ColumnMetadata;
-import genesis.model.FieldMetadata;
+import genesis.model.TableMetadata;
+import org.jetbrains.annotations.NotNull;
 import utils.FileUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static utils.FileUtils.toCamelCase;
 
 public class MVCGenerator implements GenesisGenerator {
-    private static final String INDENT = "    "; // 4 espaces pour l'indentation
 
     @Override
-    public String generateModel(Framework framework, Language language, TableMetadata tableMetadata, String projectName) throws IOException {
-        if (language.getId() != framework.getLangageId()) {
-            throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
-        }
-
-        String templateContent = loadModelTemplate(framework);
-        StringBuilder content = new StringBuilder(templateContent);
-
-        // Remplacer les placeholders
-        replaceModelPlaceholders(content, framework, language, tableMetadata, projectName);
-
-        // Remplacer [fields]
-        int fieldsIndex = content.indexOf("[fields]");
-        if (fieldsIndex != -1) {
-            content.delete(fieldsIndex, fieldsIndex + "[fields]".length());
-            insertFields(content, fieldsIndex, framework, tableMetadata);
-        }
-
-        // Remplacer [constructors]
-        int constructorsIndex = content.indexOf("[constructors]");
-        if (constructorsIndex != -1) {
-            content.delete(constructorsIndex, constructorsIndex + "[constructors]".length());
-            insertConstructors(content, constructorsIndex, framework);
-        }
-
-        return formatContent(content.toString());
-    }
-
-    public String generateModelNextGen(Framework framework, Language language, TableMetadata tableMetadata, String projectName) throws IOException {
+    public String generateModel(Framework framework, Language language, TableMetadata tableMetadata, String projectName) throws Exception {
         if (language.getId() != framework.getLangageId()) {
             throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
         }
         String templateContent = loadModelTemplate(framework);
-        StringBuilder content = new StringBuilder(templateContent);
+
+        TemplateEngine engine = new TemplateEngine();
 
         // Render le template intermédiaire
-
+        HashMap<String, Object> metadataPrimary = getHashMapPrimaire(framework, language, tableMetadata);
+        String result = engine.simpleRender(templateContent, metadataPrimary);
 
         // Render le template final
-
-
-        return content.toString();
+        HashMap<String, Object> metadataFinally = getHashMapIntermediaire(tableMetadata, projectName);
+        return engine.render(result, metadataFinally);
     }
+
+
+    private static HashMap<String, Object> getHashMapPrimaire(Framework framework, Language language, TableMetadata tableMetadata) {
+        HashMap<String, Object> metadata = new HashMap<>();
+
+        // Framework-related metadata
+        metadata.put("package", framework.getModel().getModelPackage());
+        metadata.put("imports", framework.getModel().getModelImports());
+        metadata.put("classAnnotations", framework.getModel().getModelAnnotations());
+        metadata.put("extends", framework.getModel().getModelExtends());
+        metadata.put("fields", framework.getModel().getModelFieldContent());
+        metadata.put("constructors", framework.getModel().getModelConstructors());
+        metadata.put("getSets", framework.getModel().getModelGetterSetter());
+
+        // Language-related metadata
+        metadata.put("className", tableMetadata.getTableName());
+        metadata.put("namespace", language.getSyntax().get("namespace"));
+        metadata.put("namespaceStart", language.getSyntax().get("namespaceStart"));
+        metadata.put("classKeyword", language.getSyntax().get("classKeyword"));
+        metadata.put("bracketStart", language.getSyntax().get("bracketStart"));
+        metadata.put("bracketEnd", language.getSyntax().get("bracketEnd"));
+        metadata.put("namespaceEnd", language.getSyntax().get("namespaceEnd"));
+
+        return metadata;
+    }
+
+
+
+    private static HashMap<String, Object> getHashMapIntermediaire(TableMetadata tableMetadata, String projectName) {
+        HashMap<String, Object> metadata = new HashMap<>();
+        metadata.put("tableName", tableMetadata.getTableName());
+        metadata.put("className", tableMetadata.getClassName());
+        metadata.put("projectName", projectName);
+
+        List<Map<String, Object>> fields = new ArrayList<>();
+        for (ColumnMetadata field : tableMetadata.getColumns()) {
+            Map<String, Object> fieldMap = getStringObjectMap(field);
+            fields.add(fieldMap);
+        }
+        metadata.put("fields", fields);
+
+        return metadata;
+    }
+
+    private static @NotNull Map<String, Object> getStringObjectMap(ColumnMetadata field) {
+        Map<String, Object> fieldMap = new HashMap<>();
+        fieldMap.put("type", field.getType());
+        fieldMap.put("name", field.getName());
+        fieldMap.put("isPrimaryKey", field.isPrimary());
+        fieldMap.put("isForeignKey", field.isForeign());
+        fieldMap.put("withGetters", true);
+        fieldMap.put("withSetters", true);
+        fieldMap.put("columnType", field.getColumnType());
+        fieldMap.put("columnName", field.getReferencedColumn());
+        return fieldMap;
+    }
+
 
     @Override
     public String generateController(Framework framework, Language language, TableMetadata tableMetadata, Database database, Credentials credentials, String projectName) throws IOException {
@@ -73,111 +109,4 @@ public class MVCGenerator implements GenesisGenerator {
     private String loadModelTemplate(Framework framework) throws IOException {
         return FileUtils.getFileContent(Constantes.DATA_PATH + "/" + framework.getModel().getModelTemplate() + "." + Constantes.MODEL_TEMPLATE_EXT);
     }
-
-    private void replaceModelPlaceholders(StringBuilder content, Framework framework, Language language, TableMetadata tableMetadata, String projectName) {
-        replace(content, "[namespace]", language.getSyntax().get("namespace"));
-        replace(content, "[namespaceStart]", language.getSyntax().get("namespaceStart"));
-        replace(content, "[namespaceEnd]", language.getSyntax().get("namespaceEnd"));
-        replace(content, "[package]", framework.getModel().getModelPackage());
-        replace(content, "[imports]", generateImports(framework.getModel().getModelImports()));
-        replace(content, "[classAnnotations]", generateClassAnnotations(framework.getModel().getModelAnnotations()));
-        replace(content, "[extends]", framework.getModel().getModelExtends());
-        replace(content, "[projectNameMin]", FileUtils.minStart(projectName));
-        replace(content, "[projectNameMaj]", FileUtils.majStart(projectName));
-
-        replace(content, "[classNameMaj]", FileUtils.majStart(tableMetadata.getClassName()));
-        replace(content, "[tableName]", tableMetadata.getTableName());
-    }
-
-    private void generateForeignFieldAnnotations(StringBuilder content, Framework framework, FieldMetadata field, ColumnMetadata column, String indent) {
-        for (String annotation : framework.getModel().getModelForeignFieldAnnotations()) {
-            String formattedAnnotation = annotation
-                    .replace("[referencedFieldNameMin]", FileUtils.minStart(field.getReferencedField()))
-                    .replace("[columnName]", column.getName());
-            content.append(indent).append(formattedAnnotation).append("\n");
-        }
-    }
-
-    private void insertFields(StringBuilder content, int index, Framework framework, TableMetadata tableMetadata) {
-        StringBuilder fields = new StringBuilder();
-        FieldMetadata[] fieldMetadata = tableMetadata.getFields();
-        ColumnMetadata[] columnMetadata = tableMetadata.getColumns();
-
-        for (int i = 0; i < fieldMetadata.length; i++) {
-            fields.append("\n");
-            generateFieldContent(fields, framework, fieldMetadata[i], columnMetadata[i]);
-            if (i < fieldMetadata.length - 1) {
-                fields.append("\n");
-            }
-        }
-
-        content.insert(index, fields);
-    }
-
-    private void generateFieldContent(StringBuilder content, Framework framework, FieldMetadata field, ColumnMetadata column) {
-        String indent = INDENT;
-        String fieldCase = framework.getModel().getModelFieldCase();
-        String fieldName = field.getName();
-
-        if (field.isPrimary()) {
-            for (String annotation : framework.getModel().getModelPrimaryFieldAnnotations()) {
-                content.append(indent).append(annotation).append("\n");
-            }
-        } else if (field.isForeign()) {
-            generateForeignFieldAnnotations(content, framework, field, column, indent);
-        }
-
-        if (!field.isForeign()) {
-            for (String annotation : framework.getModel().getModelFieldAnnotations()) {
-                content.append(indent).append(annotation.replace("[columnName]", fieldName)).append("\n");
-            }
-        }
-        fieldName = getFieldName(fieldName, fieldCase);
-        String fieldDeclaration = framework.getModel().getModelFieldContent()
-                .replace("[fieldType]", field.getType())
-                .replace("[modelFieldCase]", fieldCase)
-                .replace("[fieldNameMin]", FileUtils.minStart(fieldName))
-                .replace("[fieldNameMaj]", FileUtils.majStart(fieldName))
-                .replace("[columnName]", fieldName);
-
-        content.append(indent).append(fieldDeclaration);
-    }
-
-    public String getFieldName(String fieldName, String fieldCase) {
-        if ("Min".equalsIgnoreCase(fieldCase)) {
-            fieldName = FileUtils.minStart(fieldName);
-        } else if ("Maj".equalsIgnoreCase(fieldCase)) {
-            fieldName = FileUtils.majStart(fieldName);
-        }
-        return fieldName;
-    }
-
-    private void insertConstructors(StringBuilder content, int index, Framework framework) {
-        StringBuilder constructors = new StringBuilder();
-        for (String constructor : framework.getModel().getModelConstructors()) {
-            constructors.append(constructor).append("\n");
-        }
-        content.insert(index, constructors);
-    }
-
-    private String generateImports(String[] importsList) {
-        String imports = String.join("\n", importsList);
-        return "\n"+imports;
-    }
-
-    private String generateClassAnnotations(String[] annotationsList) {
-        String annotations = String.join("\n", annotationsList);
-        return "\n"+annotations;    }
-
-    private void replace(StringBuilder content, String placeholder, String value) {
-        int index = content.indexOf(placeholder);
-        if (index != -1) {
-            content.replace(index, index + placeholder.length(), value);
-        }
-    }
-
-    private String formatContent(String content) {
-        return content.trim();
-    }
-
 }

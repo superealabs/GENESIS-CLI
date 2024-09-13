@@ -72,34 +72,23 @@ public class FileUtils {
 
     }
 
-    public static String minStart(String s) {
-        return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toLowerCase());
+    public static String minStart(String string) {
+        return string.replaceFirst(String.valueOf(string.charAt(0)), String.valueOf(string.charAt(0)).toLowerCase());
     }
 
-    public static String majStart(String s) {
-        return s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase());
+    public static String majStart(String string) {
+        return string.replaceFirst(String.valueOf(string.charAt(0)), String.valueOf(string.charAt(0)).toUpperCase());
     }
 
-    public static String toCamelCase(String s) {
-        StringBuilder newString = new StringBuilder();
-        boolean snakeTrail = false;
+    public static String toCamelCase(String string) {
+        String[] words = string.split("_");
+        StringBuilder camelCase = new StringBuilder(words[0].toLowerCase()); // Le premier mot reste en minuscule
 
-        for (int i = 0; i < s.toCharArray().length; ++i) {
-            String c = String.valueOf(s.charAt(i));
-            if (snakeTrail) {
-                c = majStart(c);
-                snakeTrail = false;
-            }
-
-            if (c.equals("_")) {
-                c = "";
-                snakeTrail = true;
-            }
-
-            newString.append(c);
+        for (int i = 1; i < words.length; i++) {
+            camelCase.append(majStart(words[i]));
         }
 
-        return newString.toString();
+        return camelCase.toString();
     }
 
 
@@ -172,9 +161,15 @@ public class FileUtils {
 
 
 
-    public static <T> T fromYaml(Class<T> clazz, String yamlFilePath) throws IOException {
+    public static <T> T fromYamlFile(Class<T> clazz, String yamlFilePath) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
         return objectMapper.readValue(new File(yamlFilePath), clazz);
+    }
+
+
+    public static <T> T fromYaml(Class<T> clazz, String yamlContent) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+        return objectMapper.readValue(new StringReader(yamlContent), clazz);
     }
 
 

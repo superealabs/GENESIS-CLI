@@ -15,7 +15,6 @@ import utils.FileUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 public class MySQLTest {
     @Test
@@ -24,10 +23,10 @@ public class MySQLTest {
     }
 
     @Test
-    void MySQLxJavaSpringMVC() throws FileNotFoundException {
+    void MySQLxJavaSpringMVC() throws IOException {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_JSON));
+        Framework[] frameworks = FileUtils.fromYaml(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_YAML));
 
         MySQLDatabase database = (MySQLDatabase) databases[0];  // MySQL
         Language language = languages[0];                       // Java
@@ -36,29 +35,28 @@ public class MySQLTest {
         Credentials credentials = new Credentials("test_db", "root", "Nomena321@", "localhost", true, true);
 
         try (Connection connection = database.getConnection(credentials)) {
-            TableMetadata[] entities = database.getEntities(connection, credentials, "employe");
-            TableMetadata tableMetadata = entities[0];
-            tableMetadata.initialize(connection, credentials, database, language); ;
+            TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
+            TableMetadata tableMetadata = entities[1]; //Employe
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "Test");
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
 
             System.out.println(database);
             System.out.println(language);
             System.out.println(framework);
 
             System.out.println("\n====== GENERATED ======\n"+model);
-        } catch (SQLException | ClassNotFoundException | IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
 
     @Test
-    void MySQLxNET() throws FileNotFoundException {
+    void MySQLxNET() throws IOException {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_JSON));
+        Framework[] frameworks = FileUtils.fromYaml(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_YAML));
 
         MySQLDatabase database = (MySQLDatabase) databases[0];  // MySQL
         Language language = languages[1];                       // C#
@@ -67,20 +65,18 @@ public class MySQLTest {
         Credentials credentials = new Credentials("test_db", "root", "Nomena321@", "localhost", true, true);
 
         try (Connection connection = database.getConnection(credentials)) {
-            TableMetadata[] entities = database.getEntities(connection, credentials, "employe");
-            TableMetadata tableMetadata = entities[0];
-            tableMetadata.initialize(connection, credentials, database, language); ;
+            TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
+            TableMetadata tableMetadata = entities[1]; //Employe
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "Test");
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
 
             System.out.println(database);
             System.out.println(language);
             System.out.println(framework);
 
             System.out.println("\n====== GENERATED ======\n"+model);
-        }
-        catch (SQLException | ClassNotFoundException | IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

@@ -3,9 +3,9 @@ package genesis.connexion.providers;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PostgreSQLDatabase extends Database {
 
@@ -15,7 +15,8 @@ public class PostgreSQLDatabase extends Database {
         String url = getJdbcUrl(credentials);
         Connection connection = DriverManager.getConnection(url);
         connection.setAutoCommit(false);
-        return connection;    }
+        return connection;
+    }
 
     @Override
     protected String getJdbcUrl(Credentials credentials) {
@@ -26,5 +27,23 @@ public class PostgreSQLDatabase extends Database {
                 credentials.getUser(),
                 credentials.getPwd());
     }
+
+    @Override
+    public List<String> getAllTableNames(Connection connection) throws SQLException {
+        List<String> tableNames = new ArrayList<>();
+        DatabaseMetaData metaData = connection.getMetaData();
+
+        try (ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"})) {
+            while (tables.next()) {
+                String tableName = tables.getString("TABLE_NAME");
+                tableNames.add(tableName);
+
+            }
+        }
+
+        return tableNames;
+    }
+
+
 }
 

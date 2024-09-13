@@ -26,60 +26,58 @@ public class OracleTest {
     }
 
     @Test
-    void OraclexJavaSpringMVC() throws FileNotFoundException {
+    void OraclexJavaSpringMVC() throws IOException {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_JSON));
+        Framework[] frameworks = FileUtils.fromYaml(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_YAML));
 
         OracleDatabase database = (OracleDatabase) databases[3];    // Oracle
         Language language = languages[0];                                   // Java
         Framework framework = frameworks[0];                                // Spring MVC
 
         try (Connection connection = database.getConnection(credentials)) {
-            TableMetadata[] entities = database.getEntities(connection, credentials, "employe");
+            TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
             TableMetadata tableMetadata = entities[0];
             tableMetadata.initialize(connection, credentials, database, language);
 
-
             GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "Test");
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
 
             System.out.println(database);
             System.out.println(language);
             System.out.println(framework);
 
-            System.out.println("\n====== GENERATED ======\n" + model);
-        } catch (SQLException | ClassNotFoundException | IOException e) {
+            System.out.println("\n====== GENERATED ======\n"+model);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
 
     @Test
-    void OraclexNET() throws FileNotFoundException {
+    void OraclexNET() throws IOException {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_JSON));
+        Framework[] frameworks = FileUtils.fromYaml(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_YAML));
 
         OracleDatabase database = (OracleDatabase) databases[3];    // Oracle
         Language language = languages[1];                                   // C#
         Framework framework = frameworks[1];                                // .NET
 
         try (Connection connection = database.getConnection(credentials)) {
-            TableMetadata[] entities = database.getEntities(connection, credentials, "employe");
+            TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
             TableMetadata tableMetadata = entities[0];
             tableMetadata.initialize(connection, credentials, database, language);
-            ;
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "Test");
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
 
             System.out.println(database);
             System.out.println(language);
             System.out.println(framework);
 
-            System.out.println("\n====== GENERATED ======\n" + model);
-        } catch (SQLException | ClassNotFoundException | IOException e) {
+            System.out.println("\n====== GENERATED ======\n"+model);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -114,7 +112,7 @@ public class OracleTest {
                     // Convertir le type de données entier en nom de type pour une meilleure lisibilité
                     String dataTypeName = JDBCType.valueOf(dataType).getName(); // Utilisation de JdbcType pour convertir le type de données entier en nom
 
-                    System.out.println("\t" + columnName + " (" + dataTypeName + "), Size: " + columnSize + ", Nullable: " + nullable);
+                    System.out.println("\t" + columnName + " (" + dataTypeName + "), TypeName: "+typeName+", Size: " + columnSize + ", Nullable: " + nullable);
                 }
 
 

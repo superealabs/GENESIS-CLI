@@ -12,6 +12,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static utils.FileUtils.*;
+
 
 @Setter
 @Getter
@@ -38,9 +40,9 @@ public class TableMetadata {
 
             List<ColumnMetadata> listeCols = fetchColumns(metaData, tableName, language, database);
             List<FieldMetadata> listeFields = fetchPrimaryKeys(metaData, tableName, listeCols);
-            fetchForeignKeys(metaData, tableName, listeFields);
+            fetchForeignKeys(metaData, tableName, listeCols);
 
-            setClassName(FileUtils.majStart(FileUtils.toCamelCase(tableName)));
+            setClassName(FileUtils.majStart(toCamelCase(tableName)));
             setColumns(listeCols.toArray(new ColumnMetadata[0]));
             setFields(listeFields.toArray(new FieldMetadata[0]));
 
@@ -51,18 +53,8 @@ public class TableMetadata {
         }
     }
 
-    public List<String> getAllTableNames(Connection connection) throws SQLException {
-        List<String> tableNames = new ArrayList<>();
-        DatabaseMetaData metaData = connection.getMetaData();
-
-        try (ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"})) {
-            while (tables.next()) {
-                String tableName = tables.getString("TABLE_NAME");
-                tableNames.add(tableName);
-            }
-        }
-
-        return tableNames;
+    public List<String> getAllTableNames(Database database, Connection connection) throws SQLException {
+        return database.getAllTableNames(connection);
     }
 
     public List<TableMetadata> initializeTables(List<String> tableNames, Connection connex, Credentials credentials, Database database, Language language) throws SQLException, ClassNotFoundException {
@@ -77,7 +69,7 @@ public class TableMetadata {
 
         try {
             if (tableNames == null || tableNames.isEmpty()) {
-                tableNames = getAllTableNames(connect);
+                tableNames = getAllTableNames(database, connect);
             }
 
             for (String tableName : tableNames) {
@@ -96,7 +88,6 @@ public class TableMetadata {
     }
 
 
-
     private List<ColumnMetadata> fetchColumns(DatabaseMetaData metaData, String tableName, Language language, Database database) throws SQLException {
         ResultSet columns = metaData.getColumns(null, null, tableName, null);
         List<ColumnMetadata> listeCols = new ArrayList<>();
@@ -106,8 +97,10 @@ public class TableMetadata {
             String columnName = columns.getString("COLUMN_NAME");
             String columnType = columns.getString("TYPE_NAME");
 
-            column.setName(columnName);
-            column.setType(language.getTypes().get(database.getTypes().get(columnType)));
+            column.setName(toCamelCase(columnName));
+            column.setReferencedColumn(columnName);
+            column.setType(language.getTypes().get(database.getTypes().get(columnType.toLowerCase())));
+            column.setColumnType(columnType);
             listeCols.add(column);
         }
 
@@ -125,7 +118,7 @@ public class TableMetadata {
                 if (column.getName().equalsIgnoreCase(pkColumnName)) {
                     column.setPrimary(true);
                     FieldMetadata field = new FieldMetadata();
-                    field.setName(FileUtils.toCamelCase(column.getName()));
+                    field.setName(toCamelCase(column.getName()));
                     field.setPrimary(true);
                     listeFields.add(field);
                     setPrimaryField(field);
@@ -136,23 +129,25 @@ public class TableMetadata {
         return listeFields;
     }
 
-    private void fetchForeignKeys(DatabaseMetaData metaData, String tableName, List<FieldMetadata> fields) throws SQLException {
+    private void fetchForeignKeys(DatabaseMetaData metaData, String tableName, List<ColumnMetadata> listeCols) throws SQLException {
         ResultSet foreignKeys = metaData.getImportedKeys(null, null, tableName);
 
         while (foreignKeys.next()) {
             String fkColumnName = foreignKeys.getString("FKCOLUMN_NAME");
             String pkTableName = foreignKeys.getString("PKTABLE_NAME");
-            String pkColumnName = foreignKeys.getString("PKCOLUMN_NAME");
+            //String pkColumnName = foreignKeys.getString("PKCOLUMN_NAME");
 
-            for (FieldMetadata field : fields) {
-                if (field.getName().equalsIgnoreCase(FileUtils.toCamelCase(fkColumnName))) {
+            for (ColumnMetadata field : listeCols) {
+                if (field.getReferencedColumn().equalsIgnoreCase(fkColumnName)) {
+                    field.setName(toCamelCase(pkTableName.toLowerCase()));
                     field.setForeign(true);
-                    field.setReferencedField(FileUtils.toCamelCase(pkColumnName));
-                    field.setType(FileUtils.majStart(FileUtils.toCamelCase(pkTableName)));
+                    field.setReferencedTable(toCamelCase(pkTableName));
+                    field.setReferencedColumn(toCamelCase(field.getReferencedColumn()));
+                    field.setColumnType(toCamelCase(field.getType()));
+                    field.setType(FileUtils.majStart(toCamelCase(pkTableName)));
                 }
             }
         }
-
     }
 
     private void printColumnsInfo(DatabaseMetaData metaData, String tableName) throws SQLException {
@@ -167,7 +162,7 @@ public class TableMetadata {
             boolean nullable = columns.getBoolean("NULLABLE");
 
             String dataTypeName = JDBCType.valueOf(columnType).getName();
-            System.out.println("\t" + columnName + " (" + dataTypeName + "), Size: " + columnSize + ", Nullable: " + nullable + "Columname type: "+columnTypeName);
+            System.out.println("\t" + columnName + " (" + dataTypeName + "), Size: " + columnSize + ", Nullable: " + nullable + "Columname type: " + columnTypeName);
         }
     }
 

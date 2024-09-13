@@ -3,9 +3,9 @@ package genesis.connexion.providers;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MySQLDatabase extends Database {
 
@@ -29,4 +29,26 @@ public class MySQLDatabase extends Database {
                 credentials.isUseSSL(),
                 credentials.isAllowPublicKeyRetrieval());
     }
+
+    @Override
+    public List<String> getAllTableNames(Connection connection) throws SQLException {
+        List<String> tableNames = new ArrayList<>();
+
+        try (Statement statement = connection.createStatement();
+             ResultSet tables = statement.executeQuery("SHOW TABLES")) {
+            while (tables.next()) {
+                String tableName = tables.getString(1);
+
+                boolean isSystemTable = false;
+
+                if (!isSystemTable) {
+                    tableNames.add(tableName);
+                }
+            }
+        }
+
+        return tableNames;
+    }
+
+
 }
