@@ -18,7 +18,7 @@ import java.sql.*;
 
 public class OracleTest {
 
-    Credentials credentials = new Credentials("test_db", "c##test_db", "test_db", "localhost", true, true);
+    Credentials credentials = new Credentials("ORCLCDB", "c##test_db", "test_db", "localhost", true, true);
 
     @Test
     void test() {
@@ -36,8 +36,8 @@ public class OracleTest {
         Framework framework = frameworks[0];                                // Spring MVC
 
         try (Connection connection = database.getConnection(credentials)) {
-            TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
-            TableMetadata tableMetadata = entities[0];
+            TableMetadata tableMetadata = new TableMetadata();
+            tableMetadata.setTableName("EMPLOYEE_T");
             tableMetadata.initialize(connection, credentials, database, language);
 
             GenesisGenerator mvcGenerator = new MVCGenerator();

@@ -49,10 +49,10 @@
       {{tab}}    this.${this.name} = ${this.name};{{#if !@last}}
       {{tab}}    {{/if}}{{/each}}
       {{tab}}}
-    modelSavePath: "[projectNameMaj]/src/main/java/com/[projectNameMin]/entities"
+    modelSavePath: "${majStart(projectName)}/src/main/java/com/${lowerCase(projectName)}/models"
     modelForeignContextAttr: ""
     modelAdditionnalFiles:
-      - name: "[classNameMaj]Repository.java"
+      - name: "${majStart(className)}Repository.java"
         content: "spring/Repository.templ"
     modelExtension: "java"
     modelPackage: "com.${lowerCase(projectName)}.models"

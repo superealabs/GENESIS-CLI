@@ -19,9 +19,9 @@ public class OracleDatabase extends Database {
 
     @Override
     protected String getJdbcUrl(Credentials credentials) {
-        return String.format("jdbc:oracle:thin:@%s:%s:%s",
+        return String.format("jdbc:oracle:thin:@//%s:%d/%s",
                 credentials.getHost(),
-                getPort(),
+                Integer.parseInt(getPort()),
                 credentials.getDatabaseName());
     }
 
@@ -33,7 +33,7 @@ public class OracleDatabase extends Database {
         try (ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"})) {
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
-                String tableSchema = tables.getString("TABLE_OWNER"); // Utiliser TABLE_OWNER
+                String tableSchema = tables.getString("TABLE_SCHEM");
 
                 boolean isSystemTable = false;
                 for (String schema : super.getExcludeSchemas()) {

@@ -216,7 +216,9 @@ public class App {
 
             // TO DO :
             /*
-            - Appel fonction generate prenant en argument
+            - Appel fonction generateProject (encore à créer) prenant en argument application, database, credentials, language, framework, projectName, dossier de destination
+                - Si nouvelle application, tout générer vers dossier de destination
+                - Si application déjà existante, menu supplémentaire pour savoir quoi générer et où le générer : model, DAO (repo ou DbContext), vue, controller + dossier de destination
              */
         }
     }

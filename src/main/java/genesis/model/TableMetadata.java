@@ -42,7 +42,7 @@ public class TableMetadata {
             List<FieldMetadata> listeFields = fetchPrimaryKeys(metaData, tableName, listeCols);
             fetchForeignKeys(metaData, tableName, listeCols);
 
-            setClassName(FileUtils.majStart(toCamelCase(tableName)));
+            setClassName(FileUtils.majStart(toCamelCase(tableName.toLowerCase())));
             setColumns(listeCols.toArray(new ColumnMetadata[0]));
             setFields(listeFields.toArray(new FieldMetadata[0]));
 
@@ -74,7 +74,7 @@ public class TableMetadata {
 
             for (String tableName : tableNames) {
                 TableMetadata tableMetadata = new TableMetadata();
-                tableMetadata.setTableName(tableName);
+                tableMetadata.setTableName(tableName.toLowerCase());
                 tableMetadata.initialize(connect, credentials, database, language);
                 tableMetadataList.add(tableMetadata);
             }
@@ -97,9 +97,9 @@ public class TableMetadata {
             String columnName = columns.getString("COLUMN_NAME");
             String columnType = columns.getString("TYPE_NAME");
 
-            column.setName(toCamelCase(columnName));
+            column.setName(toCamelCase(columnName.toLowerCase()));
             column.setReferencedColumn(columnName);
-            column.setType(language.getTypes().get(database.getTypes().get(columnType.toLowerCase())));
+            column.setType(language.getTypes().get(database.getTypes().get(columnType)));
             column.setColumnType(columnType);
             listeCols.add(column);
         }

@@ -17,8 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static utils.FileUtils.toCamelCase;
-
 public class MVCGenerator implements GenesisGenerator {
 
     @Override
@@ -39,6 +37,35 @@ public class MVCGenerator implements GenesisGenerator {
         return engine.render(result, metadataFinally);
     }
 
+    @Override
+    public String generateDAO(Framework framework, Language language, TableMetadata tableMetadata, String projectName) throws Exception {
+        return "";
+    }
+
+    private static HashMap<String, Object> getHashMapDAO(Framework framework, Language language, TableMetadata tableMetadata) {
+        HashMap<String, Object> metadata = new HashMap<>();
+
+        // Framework-related metadata
+        metadata.put("package", framework.getModel().getModelPackage());
+        metadata.put("imports", framework.getModel().getModelImports());
+        metadata.put("classAnnotations", framework.getModel().getModelAnnotations());
+        metadata.put("extends", framework.getModel().getModelExtends());
+        metadata.put("fields", framework.getModel().getModelFieldContent());
+        metadata.put("constructors", framework.getModel().getModelConstructors());
+        metadata.put("getSets", framework.getModel().getModelGetterSetter());
+
+        // Language-related metadata
+        metadata.put("className", tableMetadata.getClassName());
+        metadata.put("namespace", language.getSyntax().get("namespace"));
+        metadata.put("namespaceStart", language.getSyntax().get("namespaceStart"));
+        metadata.put("classKeyword", language.getSyntax().get("classKeyword"));
+        metadata.put("bracketStart", language.getSyntax().get("bracketStart"));
+        metadata.put("bracketEnd", language.getSyntax().get("bracketEnd"));
+        metadata.put("namespaceEnd", language.getSyntax().get("namespaceEnd"));
+
+        return metadata;
+    }
+
 
     private static HashMap<String, Object> getHashMapPrimaire(Framework framework, Language language, TableMetadata tableMetadata) {
         HashMap<String, Object> metadata = new HashMap<>();
@@ -53,7 +80,7 @@ public class MVCGenerator implements GenesisGenerator {
         metadata.put("getSets", framework.getModel().getModelGetterSetter());
 
         // Language-related metadata
-        metadata.put("className", tableMetadata.getTableName());
+        metadata.put("className", tableMetadata.getClassName());
         metadata.put("namespace", language.getSyntax().get("namespace"));
         metadata.put("namespaceStart", language.getSyntax().get("namespaceStart"));
         metadata.put("classKeyword", language.getSyntax().get("classKeyword"));
@@ -108,5 +135,8 @@ public class MVCGenerator implements GenesisGenerator {
 
     private String loadModelTemplate(Framework framework) throws IOException {
         return FileUtils.getFileContent(Constantes.DATA_PATH + "/" + framework.getModel().getModelTemplate() + "." + Constantes.MODEL_TEMPLATE_EXT);
+    }
+    private String loadDAOTemplate(Framework framework) throws IOException {
+        return FileUtils.getFileContent(Constantes.DATA_PATH + "/" + framework.getModel().getModelAdditionnalFiles()[0].getContent() + "." + Constantes.MODEL_TEMPLATE_EXT);
     }
 }

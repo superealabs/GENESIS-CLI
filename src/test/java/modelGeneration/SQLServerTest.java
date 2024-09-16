@@ -69,7 +69,6 @@ public class SQLServerTest {
             TableMetadata[] entities = database.getEntity(connection, credentials, "employe");
             TableMetadata tableMetadata = entities[0];
             tableMetadata.initialize(connection, credentials, database, language);
-            ;
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
             String model = mvcGenerator.generateModel(framework, language, tableMetadata, "Test");

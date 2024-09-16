@@ -38,12 +38,7 @@ public class MySQLDatabase extends Database {
              ResultSet tables = statement.executeQuery("SHOW TABLES")) {
             while (tables.next()) {
                 String tableName = tables.getString(1);
-
-                boolean isSystemTable = false;
-
-                if (!isSystemTable) {
-                    tableNames.add(tableName);
-                }
+                tableNames.add(tableName);
             }
         }
 

@@ -1,8 +1,6 @@
-package com.[projectNameMin].entities;
+package com.${lowerCase(projectName)}.repositories;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.JpaRepository;
 
-public interface [classNameMaj]Repository extends CrudRepository<[classNameMaj],Integer> {
-
-    
+public interface ${majStart(className)}Repository extends JpaRepository<${majStart(className)},${pkColumnType}> {
 }

@@ -37,7 +37,6 @@ public class PostgreSQLDatabase extends Database {
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
                 tableNames.add(tableName);
-
             }
         }
 
