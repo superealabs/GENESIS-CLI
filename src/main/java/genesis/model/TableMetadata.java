@@ -21,9 +21,8 @@ import static utils.FileUtils.*;
 public class TableMetadata {
     private String tableName;
     private ColumnMetadata[] columns;
+    private ColumnMetadata primaryColumn;
     private String className;
-    private FieldMetadata[] fields;
-    private FieldMetadata primaryField;
 
     public void initialize(Connection connex, Credentials credentials, Database database, Language language) throws SQLException, ClassNotFoundException {
         boolean opened = false;
@@ -39,12 +38,11 @@ public class TableMetadata {
             String tableName = getTableName();
 
             List<ColumnMetadata> listeCols = fetchColumns(metaData, tableName, language, database);
-            List<FieldMetadata> listeFields = fetchPrimaryKeys(metaData, tableName, listeCols);
+            List<ColumnMetadata> listeFields = fetchPrimaryKeys(metaData, tableName, listeCols);
             fetchForeignKeys(metaData, tableName, listeCols);
 
             setClassName(FileUtils.majStart(toCamelCase(tableName.toLowerCase())));
             setColumns(listeCols.toArray(new ColumnMetadata[0]));
-            setFields(listeFields.toArray(new FieldMetadata[0]));
 
         } finally {
             if (opened && !connect.isClosed()) {
@@ -107,9 +105,9 @@ public class TableMetadata {
         return listeCols;
     }
 
-    private List<FieldMetadata> fetchPrimaryKeys(DatabaseMetaData metaData, String tableName, List<ColumnMetadata> columns) throws SQLException {
+    private List<ColumnMetadata> fetchPrimaryKeys(DatabaseMetaData metaData, String tableName, List<ColumnMetadata> columns) throws SQLException {
         ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, tableName);
-        List<FieldMetadata> listeFields = new ArrayList<>();
+        List<ColumnMetadata> listeFields = new ArrayList<>();
 
         while (primaryKeys.next()) {
             String pkColumnName = primaryKeys.getString("COLUMN_NAME");
@@ -117,11 +115,14 @@ public class TableMetadata {
             for (ColumnMetadata column : columns) {
                 if (column.getName().equalsIgnoreCase(pkColumnName)) {
                     column.setPrimary(true);
-                    FieldMetadata field = new FieldMetadata();
-                    field.setName(toCamelCase(column.getName()));
-                    field.setPrimary(true);
-                    listeFields.add(field);
-                    setPrimaryField(field);
+                    ColumnMetadata pkfield = new ColumnMetadata();
+
+                    pkfield.setName(toCamelCase(column.getName()));
+                    pkfield.setType(column.getType());
+                    pkfield.setColumnType(column.getColumnType());
+                    pkfield.setPrimary(true);
+                    listeFields.add(pkfield);
+                    setPrimaryColumn(pkfield);
                 }
             }
         }

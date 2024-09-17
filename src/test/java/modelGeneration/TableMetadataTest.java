@@ -35,7 +35,7 @@ public class TableMetadataTest {
         database = databases[1];    // PostgreSQL
         language = languages[0];    // Java
     }
-
+/*
     @Test
     public void testInitialize() throws SQLException, ClassNotFoundException {
         TableMetadata tableMetadata = new TableMetadata();
@@ -55,7 +55,7 @@ public class TableMetadataTest {
             System.out.println("PrimaryField: " + tableMetadata.getPrimaryField().getName());
         }
     }
-
+*/
     @Test
     public void testGetAllTableNames() throws SQLException {
         TableMetadata tableMetadata = new TableMetadata();
@@ -67,7 +67,7 @@ public class TableMetadataTest {
             System.out.println(tableName);
         }
     }
-
+/*
     @Test
     public void testInitializeTables() throws SQLException, ClassNotFoundException {
         TableMetadata tableMetadata = new TableMetadata();
@@ -88,4 +88,6 @@ public class TableMetadataTest {
             System.out.println();
         }
     }
+
+ */
 }

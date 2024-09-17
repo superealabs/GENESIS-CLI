@@ -51,9 +51,17 @@
       {{tab}}}
     modelSavePath: "${majStart(projectName)}/src/main/java/com/${lowerCase(projectName)}/models"
     modelForeignContextAttr: ""
-    modelAdditionnalFiles:
-      - name: "${majStart(className)}Repository.java"
-        content: "spring/Repository.templ"
+    modelDao:
+      name: "${majStart(className)}Repository.java"
+      packagePath: "com.${lowerCase(projectName)}.repositories;"
+      isUnique: false
+      content: |
+        package ${packagePath};
+        
+        import org.springframework.data.repository.JpaRepository;
+
+        public interface ${majStart(className)}Repository extends JpaRepository<${majStart(className)}, ${pkColumnType}> {
+        }
     modelExtension: "java"
     modelPackage: "com.${lowerCase(projectName)}.models"
     modelTemplate: "ModelTemplate"
@@ -205,9 +213,17 @@
       {{tab}}}
     modelSavePath: "[projectNameMaj]/Models"
     modelForeignContextAttr: "public DbSet<[classNameMaj]> [classNameMaj] { get; set; }"
-    modelAdditionnalFiles:
-      - name: "[classNameMaj]Context.cs"
-        content: "csharp/data/contextmysql.templ"
+    modelDao:
+      name: "${majStart(className)}Repository.java"
+      packagePath: "com.${lowerCase(projectName)}.repositories;"
+      isUnique: true
+      content: |
+        package ${packageValue};
+        
+        import org.springframework.data.repository.JpaRepository;
+        
+        public interface ${majStart(className)}Repository extends JpaRepository<${majStart(className)}, ${pkColumnType}> {
+        }
     modelExtension: "cs"
     modelPackage: "${majStart(projectName)}.Models"
     modelTemplate: "ModelTemplate"

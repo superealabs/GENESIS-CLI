@@ -37,31 +37,32 @@ public class MVCGenerator implements GenesisGenerator {
         return engine.render(result, metadataFinally);
     }
 
+
+
     @Override
-    public String generateDAO(Framework framework, Language language, TableMetadata tableMetadata, String projectName) throws Exception {
-        return "";
+    public String generateDao(Framework framework, Language language, TableMetadata tableMetadata, String projectName) throws Exception {
+        if (language.getId() != framework.getLangageId()) {
+            throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
+        }
+        String templateContent = framework.getModel().getModelDao().getContent();
+
+        TemplateEngine engine = new TemplateEngine();
+
+        HashMap<String, Object> metadata = getHashMapDAO(framework, tableMetadata, projectName);
+        return engine.render(templateContent, metadata);
     }
 
-    private static HashMap<String, Object> getHashMapDAO(Framework framework, Language language, TableMetadata tableMetadata) {
+    private static HashMap<String, Object> getHashMapDAO(Framework framework, TableMetadata tableMetadata, String projectName) {
         HashMap<String, Object> metadata = new HashMap<>();
 
-        // Framework-related metadata
-        metadata.put("package", framework.getModel().getModelPackage());
-        metadata.put("imports", framework.getModel().getModelImports());
-        metadata.put("classAnnotations", framework.getModel().getModelAnnotations());
-        metadata.put("extends", framework.getModel().getModelExtends());
-        metadata.put("fields", framework.getModel().getModelFieldContent());
-        metadata.put("constructors", framework.getModel().getModelConstructors());
-        metadata.put("getSets", framework.getModel().getModelGetterSetter());
+        String packageDefault;
 
-        // Language-related metadata
+        packageDefault = framework.getModel().getModelDao().getPackagePath();
+
+        metadata.put("packagePath", packageDefault);
+        metadata.put("projectName", projectName);
+        metadata.put("pkColumnType", tableMetadata.getPrimaryColumn().getColumnType());
         metadata.put("className", tableMetadata.getClassName());
-        metadata.put("namespace", language.getSyntax().get("namespace"));
-        metadata.put("namespaceStart", language.getSyntax().get("namespaceStart"));
-        metadata.put("classKeyword", language.getSyntax().get("classKeyword"));
-        metadata.put("bracketStart", language.getSyntax().get("bracketStart"));
-        metadata.put("bracketEnd", language.getSyntax().get("bracketEnd"));
-        metadata.put("namespaceEnd", language.getSyntax().get("namespaceEnd"));
 
         return metadata;
     }
@@ -90,7 +91,6 @@ public class MVCGenerator implements GenesisGenerator {
 
         return metadata;
     }
-
 
 
     private static HashMap<String, Object> getHashMapIntermediaire(TableMetadata tableMetadata, String projectName) {
@@ -135,8 +135,5 @@ public class MVCGenerator implements GenesisGenerator {
 
     private String loadModelTemplate(Framework framework) throws IOException {
         return FileUtils.getFileContent(Constantes.DATA_PATH + "/" + framework.getModel().getModelTemplate() + "." + Constantes.MODEL_TEMPLATE_EXT);
-    }
-    private String loadDAOTemplate(Framework framework) throws IOException {
-        return FileUtils.getFileContent(Constantes.DATA_PATH + "/" + framework.getModel().getModelAdditionnalFiles()[0].getContent() + "." + Constantes.MODEL_TEMPLATE_EXT);
     }
 }

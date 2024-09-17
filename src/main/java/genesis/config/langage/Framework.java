@@ -35,10 +35,19 @@ public class Framework {
         private String modelConstructors;
         private String modelSavePath;
         private String modelForeignContextAttr;
-        private CustomFile[] modelAdditionnalFiles;
+        private ModelDao modelDao;
         private String modelExtension;
         private String modelPackage;
         private String modelTemplate;
+    }
+
+    @Getter
+    @Setter
+    public static class ModelDao {
+        private String name;
+        private String packagePath;
+        private Boolean isUnique;
+        private String content;
     }
 
     @Getter
