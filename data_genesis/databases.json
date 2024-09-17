@@ -2,6 +2,8 @@
   {
     "id": 1,
     "name": "MySQL",
+    "driverType": "",
+    "serviceName": "",
     "connectionString": {
       "1": "jdbc:mysql://${host}:${port}/${database}?useSSL=${useSSL}",
       "2": "Server=${host};Port=${port};Database=${database};User Id=${username};Password=${password};"
@@ -31,6 +33,8 @@
   {
     "id": 2,
     "name": "PostgreSQL",
+    "driverType": "",
+    "serviceName": "",
     "connectionString": {
       "1": "jdbc:postgresql://${host}:${port}/${database}",
       "2": "Host=${host};Port=${port};Database=${database};Username=${username};Password=${password};"
@@ -69,6 +73,8 @@
   {
     "id": 3,
     "name": "SQL Server",
+    "driverType": "",
+    "serviceName": "",
     "connectionString": {
       "1": "jdbc:sqlserver://${host}:${port};databaseName=${database}",
       "2": "Server=${host};Database=${database};User Id=${username};Password=${password};"
@@ -98,6 +104,8 @@
   {
     "id": 4,
     "name": "Oracle",
+    "driverType": "thin",
+    "serviceName": "ORCLCDB",
     "connectionString": {
       "1": "jdbc:oracle:${driverType}:@//${host}:${port}/${serviceName}",
       "2": "User Id=${username};Password=${password};Data Source=${host}:${port}/${database}"

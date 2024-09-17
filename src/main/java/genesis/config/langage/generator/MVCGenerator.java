@@ -80,17 +80,7 @@ public class MVCGenerator implements GenesisGenerator {
 
         Database database = tableMetadata[0].getDatabase();
         String connectionString = database.getConnectionString().get(framework.getLangageId());
-        Credentials credentials = database.getCredentials();
-
-        Map<String, Object> connectionStringMetadata = new HashMap<>(
-                Map.of("host", credentials.getHost(),
-                        "port", database.getPort(),
-                        "database", database.getName(),
-                        "useSSL", credentials.isUseSSL(),
-                        "username", credentials.getUser(),
-                        "password", credentials.getPwd()
-                        )
-        );
+        Map<String, Object> connectionStringMetadata = getStringObjectMap(database);
         connectionString = engine.render(connectionString, connectionStringMetadata);
 
         Map<String, Object> metadata = new HashMap<>(Map.of(
@@ -109,6 +99,22 @@ public class MVCGenerator implements GenesisGenerator {
         metadata.put("entities", fields);
 
         return metadata;
+    }
+
+    private static @NotNull Map<String, Object> getStringObjectMap(Database database) {
+        Credentials credentials = database.getCredentials();
+
+        return new HashMap<>(
+                Map.of("host", credentials.getHost(),
+                        "port", database.getPort(),
+                        "database", database.getName(),
+                        "useSSL", credentials.isUseSSL(),
+                        "username", credentials.getUser(),
+                        "password", credentials.getPwd(),
+                        "driverType", database.getDriverType(),
+                        "serviceName", database.getServiceName()
+                        )
+        );
     }
 
 

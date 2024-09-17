@@ -37,6 +37,8 @@ import java.util.Map;
 public abstract class Database {
     private int id;
     private String name;
+    private String driverType;
+    private String serviceName;
     private Map<Integer, String> connectionString;
     private Map<Integer, String> daoName;
     private String driver;

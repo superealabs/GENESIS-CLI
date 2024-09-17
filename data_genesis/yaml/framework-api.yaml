@@ -216,7 +216,7 @@
     modelForeignContextAttr: "public DbSet<[classNameMaj]> [classNameMaj] { get; set; }"
     modelDao:
       name: "${majStart(className)}Repository.java"
-      packagePath: "com.${lowerCase(projectName)}.repositories;"
+      packagePath: "com.${lowerCase(projectName)}.repositories"
       isUnique: true
       content: |
         using Microsoft.EntityFrameworkCore;
