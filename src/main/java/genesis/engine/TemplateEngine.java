@@ -14,7 +14,7 @@ public class TemplateEngine {
     private static final String LOOP_START = "{{#each ";
     private static final String LOOP_INDEX = "@index";
     private static final String IS_LOOP_LAST_INDEX = "@last";
-    private static final String LOOP_ITEM = "this.";
+    private static final String LOOP_ITEM = "this";
     private static final String LOOP_END = "{{/each}}";
     private static final String IF_START = "{{#if ";
     private static final String ELSE_IF_TOKEN = "{{elseIf ";
@@ -163,7 +163,8 @@ public class TemplateEngine {
             if (item instanceof Map) {
                 Map<String, Object> itemMap = (Map<String, Object>) item;
                 for (Map.Entry<String, Object> entry : itemMap.entrySet()) {
-                    loopVariables.put(LOOP_ITEM + entry.getKey(), entry.getValue());
+                    loopVariables.put(LOOP_ITEM +"."+ entry.getKey(), entry.getValue());
+                    loopVariables.put(LOOP_ITEM +".", entry.getValue());
                 }
             }
             loopVariables.put(LOOP_INDEX, i);

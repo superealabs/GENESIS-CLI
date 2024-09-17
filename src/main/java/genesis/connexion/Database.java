@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Setter
 @Getter
@@ -36,10 +37,13 @@ import java.util.List;
 public abstract class Database {
     private int id;
     private String name;
+    private Map<Integer, String> connectionString;
+    private Map<Integer, String> daoName;
     private String driver;
     private String port;
-    private HashMap<String, String> types;
+    private Map<String, String> types;
     private List<String> excludeSchemas;
+    private Credentials credentials;
 
     public abstract Connection getConnection(Credentials credentials) throws ClassNotFoundException, SQLException;
 

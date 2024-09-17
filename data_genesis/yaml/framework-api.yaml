@@ -222,9 +222,9 @@
         using Microsoft.EntityFrameworkCore;
         using System.ComponentModel.DataAnnotations;
         using ${projectName}.Models;
-
+        
         namespace ${packageValue};
-
+        
         public class ${projectName}Context : DbContext
         {
             {{#each entities}}

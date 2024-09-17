@@ -71,7 +71,7 @@ public class MySQLTest {
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
             String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
-            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
+            String dao = mvcGenerator.generateDao(framework, language, entities, "TestProject");
 
             System.out.println(database);
             System.out.println(language);

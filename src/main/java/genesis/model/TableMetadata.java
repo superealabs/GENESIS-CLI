@@ -19,6 +19,7 @@ import static utils.FileUtils.*;
 @Getter
 @NoArgsConstructor
 public class TableMetadata {
+    private Database database;
     private String tableName;
     private ColumnMetadata[] columns;
     private ColumnMetadata primaryColumn;
@@ -34,6 +35,7 @@ public class TableMetadata {
         }
 
         try {
+            setDatabase(database);
             DatabaseMetaData metaData = connect.getMetaData();
             String tableName = getTableName();
 

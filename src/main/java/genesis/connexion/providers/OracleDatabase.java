@@ -10,6 +10,7 @@ import java.util.List;
 public class OracleDatabase extends Database {
     @Override
     public Connection getConnection(Credentials credentials) throws ClassNotFoundException, SQLException {
+        setCredentials(credentials);
         Class.forName(getDriver());
         String url = getJdbcUrl(credentials);
         Connection connection = DriverManager.getConnection(url, credentials.getUser(), credentials.getPwd());

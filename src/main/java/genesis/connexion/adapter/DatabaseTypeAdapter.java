@@ -23,16 +23,16 @@ public class DatabaseTypeAdapter extends TypeAdapter<Database> {
         JsonObject jsonObject = JsonParser.parseReader(in).getAsJsonObject();
         String name = jsonObject.get("name").getAsString();
 
-        if ("mysql".equalsIgnoreCase(name)) {
+        if ("MySQL".equalsIgnoreCase(name)) {
             return new Gson().fromJson(jsonObject, MySQLDatabase.class);
         }
-        else if ("postgresql".equalsIgnoreCase(name)) {
+        else if ("PostgreSQL".equalsIgnoreCase(name)) {
             return new Gson().fromJson(jsonObject, PostgreSQLDatabase.class);
         }
-        else if ("sqlServer".equalsIgnoreCase(name)) {
+        else if ("SQL Server".equalsIgnoreCase(name)) {
             return new Gson().fromJson(jsonObject, SQLServerDatabase.class);
         }
-        else if ("oracle".equalsIgnoreCase(name)) {
+        else if ("Oracle".equalsIgnoreCase(name)) {
             return new Gson().fromJson(jsonObject, OracleDatabase.class);
         }
 
