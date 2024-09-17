@@ -35,7 +35,7 @@
       "namespace": "namespace",
       "namespaceStart": ";",
       "namespaceEnd": "",
-      "bracketStart": "{",
+      "bracketStart": "\n{",
       "bracketEnd": "}"
     },
     "types": {

@@ -52,16 +52,20 @@ public class MVCGenerator implements GenesisGenerator {
         return engine.render(templateContent, metadata);
     }
 
+    @Override
+    public String generateDao(Framework framework, Language language, List<TableMetadata> tableMetadata, String projectName) throws Exception {
+        return "";
+    }
+
     private static HashMap<String, Object> getHashMapDAO(Framework framework, TableMetadata tableMetadata, String projectName) {
         HashMap<String, Object> metadata = new HashMap<>();
 
         String packageDefault;
-
         packageDefault = framework.getModel().getModelDao().getPackagePath();
 
         metadata.put("packagePath", packageDefault);
         metadata.put("projectName", projectName);
-        metadata.put("pkColumnType", tableMetadata.getPrimaryColumn().getColumnType());
+        metadata.put("pkColumnType", tableMetadata.getPrimaryColumn().getType());
         metadata.put("className", tableMetadata.getClassName());
 
         return metadata;

@@ -1,7 +1,14 @@
 [
   {
     "id": 1,
-    "name": "mysql",
+    "name": "MySQL",
+    "connectionString": {
+      "1": "jdbc:mysql://${host}:${port}/${database}?useSSL=${useSSL}",
+      "2": "Server=${host};Port=${port};Database=${database};User Id=${username};Password=${password};"
+    },
+    "daoName": {
+      "2": "MySql"
+    },
     "driver": "com.mysql.cj.jdbc.Driver",
     "port": "3306",
     "types": {
@@ -23,7 +30,14 @@
   },
   {
     "id": 2,
-    "name": "postgresql",
+    "name": "PostgreSQL",
+    "connectionString": {
+      "1": "jdbc:postgresql://${host}:${port}/${database}",
+      "2": "Host=${host};Port=${port};Database=${database};Username=${username};Password=${password};"
+    },
+    "daoName": {
+      "2": "Npgsql"
+    },
     "driver": "org.postgresql.Driver",
     "port": "5432",
     "types": {
@@ -54,7 +68,14 @@
   },
   {
     "id": 3,
-    "name": "sqlServer",
+    "name": "SQL Server",
+    "connectionString": {
+      "1": "jdbc:sqlserver://${host}:${port};databaseName=${database}",
+      "2": "Server=${host};Database=${database};User Id=${username};Password=${password};"
+    },
+    "daoName": {
+      "2": "SqlServer"
+    },
     "driver": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
     "port": "1433",
     "types": {
@@ -76,7 +97,14 @@
   },
   {
     "id": 4,
-    "name": "oracle",
+    "name": "Oracle",
+    "connectionString": {
+      "1": "jdbc:oracle:${driverType}:@//${host}:${port}/${serviceName}",
+      "2": "User Id=${username};Password=${password};Data Source=${host}:${port}/${database}"
+    },
+    "daoName": {
+      "2": "Oracle"
+    },
     "driver": "oracle.jdbc.driver.OracleDriver",
     "port": "1521",
     "types": {

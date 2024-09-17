@@ -41,12 +41,14 @@ public class PostgreSQLTest {
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
             String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
+            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
 
             System.out.println(database);
             System.out.println(language);
             System.out.println(framework);
 
             System.out.println("\n====== GENERATED ======\n"+model);
+            System.out.println("\n====== GENERATED ======\n"+dao);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -69,12 +71,14 @@ public class PostgreSQLTest {
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
             String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
+            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
 
             System.out.println(database);
             System.out.println(language);
             System.out.println(framework);
 
             System.out.println("\n====== GENERATED ======\n"+model);
+            System.out.println("\n====== GENERATED ======\n"+dao);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

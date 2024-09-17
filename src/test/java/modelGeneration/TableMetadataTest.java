@@ -18,7 +18,6 @@ import java.util.List;
 
 
 public class TableMetadataTest {
-
     private Connection connection;
     private Credentials credentials;
     private Database database;
@@ -35,7 +34,7 @@ public class TableMetadataTest {
         database = databases[1];    // PostgreSQL
         language = languages[0];    // Java
     }
-/*
+
     @Test
     public void testInitialize() throws SQLException, ClassNotFoundException {
         TableMetadata tableMetadata = new TableMetadata();
@@ -48,14 +47,14 @@ public class TableMetadataTest {
         for (ColumnMetadata column : tableMetadata.getColumns()) {
             System.out.println("Column: " + column.getName() + ", Type: " + column.getType());
         }
-        for (FieldMetadata field : tableMetadata.getFields()) {
+        for (ColumnMetadata field : tableMetadata.getColumns()) {
             System.out.println("Field: " + field.getName() + ", Type: " + field.getType());
         }
-        if (tableMetadata.getPrimaryField() != null) {
-            System.out.println("PrimaryField: " + tableMetadata.getPrimaryField().getName());
+        if (tableMetadata.getPrimaryColumn() != null) {
+            System.out.println("PrimaryField: " + tableMetadata.getPrimaryColumn().getName());
         }
     }
-*/
+
     @Test
     public void testGetAllTableNames() throws SQLException {
         TableMetadata tableMetadata = new TableMetadata();
@@ -67,7 +66,7 @@ public class TableMetadataTest {
             System.out.println(tableName);
         }
     }
-/*
+
     @Test
     public void testInitializeTables() throws SQLException, ClassNotFoundException {
         TableMetadata tableMetadata = new TableMetadata();
@@ -79,15 +78,13 @@ public class TableMetadataTest {
             for (ColumnMetadata column : metadata.getColumns()) {
                 System.out.println("Column: " + column.getName() + ", Type: " + column.getType());
             }
-            for (FieldMetadata field : metadata.getFields()) {
+            for (ColumnMetadata field : tableMetadata.getColumns()) {
                 System.out.println("Field: " + field.getName() + ", Type: " + field.getType());
             }
-            if (metadata.getPrimaryField() != null) {
-                System.out.println("PrimaryField: " + metadata.getPrimaryField().getName());
+            if (tableMetadata.getPrimaryColumn() != null) {
+                System.out.println("PrimaryField: " + tableMetadata.getPrimaryColumn().getName());
             }
             System.out.println();
         }
     }
-
- */
 }

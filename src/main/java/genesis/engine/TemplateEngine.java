@@ -3,6 +3,7 @@ package genesis.engine;
 import utils.FileUtils;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -39,7 +40,7 @@ public class TemplateEngine {
         FUNCTIONS_MAP.put("toCamelCase", FileUtils::toCamelCase);
     }
 
-    public String simpleRender(String template, HashMap<String, Object> variables) {
+    public String simpleRender(String template, Map<String, Object> variables) {
         if (template == null || template.isEmpty()) {
             throw new IllegalArgumentException("The template must not be empty.");
         }
@@ -64,7 +65,7 @@ public class TemplateEngine {
     }
 
 
-    private String evaluatePlaceholderSimple(String placeholder, HashMap<String, Object> variables) {
+    private String evaluatePlaceholderSimple(String placeholder, Map<String, Object> variables) {
         int funcStart = placeholder.indexOf(FUNCTION_OPEN_PARENTHESIS);
         int funcEnd = placeholder.indexOf(FUNCTION_CLOSED_PARENTHESIS);
 
@@ -88,7 +89,7 @@ public class TemplateEngine {
     }
 
 
-    public String render(String template, HashMap<String, Object> variables) throws Exception {
+    public String render(String template, Map<String, Object> variables) throws Exception {
         if (template == null || template.isEmpty()) {
             throw new IllegalArgumentException("The template must not be empty.");
         }
@@ -117,7 +118,7 @@ public class TemplateEngine {
         return result.toString();
     }
 
-    private void evaluateLoops(StringBuilder template, HashMap<String, Object> variables) throws Exception {
+    private void evaluateLoops(StringBuilder template, Map<String, Object> variables) throws Exception {
         int start;
         while ((start = template.indexOf(LOOP_START)) != -1) {
             LoopInfo loopInfo = extractLoopInfo(template, start);
@@ -144,7 +145,7 @@ public class TemplateEngine {
     }
 
     @SuppressWarnings("unchecked")
-    private void processLoopContent(StringBuilder template, LoopInfo loopInfo, HashMap<String, Object> variables) throws Exception {
+    private void processLoopContent(StringBuilder template, LoopInfo loopInfo, Map<String, Object> variables) throws Exception {
         String loopVarName = loopInfo.loopVarName();
         String loopContent = loopInfo.loopContent();
         int start = loopInfo.start();
@@ -157,7 +158,7 @@ public class TemplateEngine {
         StringBuilder loopResult = new StringBuilder();
         for (int i = 0; i < loopVar.size(); i++) {
             Object item = loopVar.get(i);
-            HashMap<String, Object> loopVariables = new HashMap<>(variables);
+            Map<String, Object> loopVariables = new HashMap<>(variables);
 
             if (item instanceof Map) {
                 Map<String, Object> itemMap = (Map<String, Object>) item;
@@ -176,7 +177,7 @@ public class TemplateEngine {
         template.insert(start, loopResult);
     }
 
-    private void evaluateConditionals(StringBuilder template, HashMap<String, Object> variables) throws Exception {
+    private void evaluateConditionals(StringBuilder template, Map<String, Object> variables) throws Exception {
         int start;
         while ((start = template.indexOf(IF_START)) != -1) {
             int ifEndIdx = findBlockEnd(template, start);
@@ -218,7 +219,7 @@ public class TemplateEngine {
         return template.substring(contentStartIdx, ifBlockEnd);
     }
 
-    private void processElseIfBlocks(StringBuilder template, HashMap<String, Object> variables,
+    private void processElseIfBlocks(StringBuilder template, Map<String, Object> variables,
                                      int contentStartIdx, int ifEndIdx, StringBuilder resultContent) throws Exception {
         int elseIfIdx = template.indexOf(ELSE_IF_TOKEN, contentStartIdx);
         int elseIdx = template.indexOf(ELSE_TOKEN, contentStartIdx);
@@ -279,7 +280,7 @@ public class TemplateEngine {
 
 
 
-    private void replaceVariables(StringBuilder template, HashMap<String, Object> variables) {
+    private void replaceVariables(StringBuilder template, Map<String, Object> variables) {
         int start;
         while ((start = template.indexOf(VARIABLE_PLACEHOLDER_PREFIX)) != -1) {
             int end = template.indexOf(VARIABLE_PLACEHOLDER_SUFFIX, start);
@@ -291,7 +292,7 @@ public class TemplateEngine {
         }
     }
 
-    private String evaluatePlaceholder(String placeholder, HashMap<String, Object> variables) {
+    private String evaluatePlaceholder(String placeholder, Map<String, Object> variables) {
         // Check if it contains a function call
         int funcStart = placeholder.indexOf("(");
         int funcEnd = placeholder.indexOf(")");
@@ -339,7 +340,7 @@ public class TemplateEngine {
         }
     }
 
-    private boolean evaluateCondition(String condition, HashMap<String, Object> variables) throws Exception {
+    private boolean evaluateCondition(String condition, Map<String, Object> variables) throws Exception {
         // Normalize the condition
         condition = condition.trim();
 
@@ -353,7 +354,7 @@ public class TemplateEngine {
         return evaluateCompositeCondition(condition, variables);
     }
 
-    private boolean evaluateCompositeCondition(String condition, HashMap<String, Object> variables) throws Exception {
+    private boolean evaluateCompositeCondition(String condition, Map<String, Object> variables) throws Exception {
         // Split by "or" operator
         String[] orConditions = condition.split("\\s+or\\s+");
         for (String orCondition : orConditions) {
@@ -376,7 +377,7 @@ public class TemplateEngine {
     }
 
 
-    private boolean evaluateSimpleCondition(String condition, HashMap<String, Object> variables) throws Exception {
+    private boolean evaluateSimpleCondition(String condition, Map<String, Object> variables) throws Exception {
         // Check if the condition is a boolean literal
         if ("true".equalsIgnoreCase(condition)) {
             return true;

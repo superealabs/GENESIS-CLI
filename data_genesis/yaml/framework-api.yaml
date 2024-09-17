@@ -53,7 +53,7 @@
     modelForeignContextAttr: ""
     modelDao:
       name: "${majStart(className)}Repository.java"
-      packagePath: "com.${lowerCase(projectName)}.repositories;"
+      packagePath: "com.${lowerCase(projectName)}.repositories"
       isUnique: false
       content: |
         package ${packagePath};
@@ -206,7 +206,8 @@
       {{tab}}{{/each}}
     modelGetterSetter: ""
     modelConstructors: |
-      {{tab}}public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
+      {{tab}}public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) 
+      {{tab}}{
       {{tab}}    {{#each fields}}
       {{tab}}    ${majStart(this.name)} = ${this.name};{{#if !@last}}
       {{tab}}    {{/if}}{{/each}}
@@ -218,11 +219,21 @@
       packagePath: "com.${lowerCase(projectName)}.repositories;"
       isUnique: true
       content: |
-        package ${packageValue};
-        
-        import org.springframework.data.repository.JpaRepository;
-        
-        public interface ${majStart(className)}Repository extends JpaRepository<${majStart(className)}, ${pkColumnType}> {
+        using Microsoft.EntityFrameworkCore;
+        using System.ComponentModel.DataAnnotations;
+        using ${projectName}.Models;
+
+        namespace ${packageValue};
+
+        public class ${projectName}Context : DbContext
+        {
+            {{#each entities}}
+            public DbSet<${this.className}> ${this.className}s { get; set; }
+            {{/each}}
+            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            {
+                optionsBuilder.Use${DBType}(@"${connectionString}");
+            }
         }
     modelExtension: "cs"
     modelPackage: "${majStart(projectName)}.Models"

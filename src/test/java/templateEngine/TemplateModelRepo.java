@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,9 +89,9 @@ public class TemplateModelRepo {
     void templateEngineRenderModel() throws Exception {
         String template = """
                 package com.${lowerCase(projectName)}.models;
-                
+                                
                 import jakarta.persistence.*;
-                
+                                
                 @Entity
                 @Table(name="${tableName}")
                 public class Person  {
@@ -109,7 +110,7 @@ public class TemplateModelRepo {
                         this.${this.name} = ${this.name};{{#if !@last}}
                         {{/if}}{{/each}}
                     }
-                
+                                
                     {{#each fields}}
                     {{#if this.withGetters}}
                     public ${this.type} get${majStart(this.name)}() {
@@ -198,7 +199,6 @@ public class TemplateModelRepo {
                 @JoinColumn(name="${this.columnName}"){{else}}
                 @Column(name="${this.columnName}"){{/if}}
                 private ${this.type} ${this.name};
-                
                 {{/each}}
                 """;
 
@@ -228,16 +228,16 @@ public class TemplateModelRepo {
         TemplateEngine engine = new TemplateEngine();
 
         String template = """
-        {{#if isAdult}}
-            You are an adult.
-        {{elseIf isTeenager}}
-            You are a teenager.
-        {{elseIf isTeenagerUp}}
-            You are a teenager Up.
-        {{else}}
-            You are a child.
-        {{/if}}
-        """;
+                {{#if isAdult}}
+                    You are an adult.
+                {{elseIf isTeenager}}
+                    You are a teenager.
+                {{elseIf isTeenagerUp}}
+                    You are a teenager Up.
+                {{else}}
+                    You are a child.
+                {{/if}}
+                """;
 
         HashMap<String, Object> variables = new HashMap<>();
         variables.put("isAdult", false);
@@ -247,6 +247,46 @@ public class TemplateModelRepo {
         String result = engine.render(template, variables);
         System.out.println(result);
     }
+
+    @Test
+    void dbContext() throws Exception {
+        TemplateEngine engine = new TemplateEngine();
+
+        String template = """
+        using Microsoft.EntityFrameworkCore;
+        using System.ComponentModel.DataAnnotations;
+        using ${projectName}.Models;
+        
+        namespace ${packageValue};
+        
+        public class ${projectName}Context : DbContext
+        {
+            {{#each entities}}
+            public DbSet<${this.className}> ${this.className}s { get; set; }
+            {{/each}}
+            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            {
+                optionsBuilder.Use${DBType}(@"${connectionString}");
+            }
+        }
+        """;
+
+        // Utilisation de Map.of pour créer la map des variables
+        Map<String, Object> variables = Map.of(
+                "projectName", "MyApp",
+                "packageValue", "MyApp.Data",
+                "DBType", "SqlServer",  // Peut être "SqlServer", "MySQL", "PostgreSQL", etc.
+                "connectionString", "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;",
+                "entities", List.of(
+                        Map.of("className", "User"),
+                        Map.of("className", "Order")
+                )
+        );
+
+        String result = engine.render(template, variables);
+        System.out.println(result);
+    }
+
 
     // Etapes pour render le templatePrimary du model :
     /*

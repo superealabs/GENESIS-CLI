@@ -38,7 +38,7 @@ public class TableMetadata {
             String tableName = getTableName();
 
             List<ColumnMetadata> listeCols = fetchColumns(metaData, tableName, language, database);
-            List<ColumnMetadata> listeFields = fetchPrimaryKeys(metaData, tableName, listeCols);
+            fetchPrimaryKeys(metaData, tableName, listeCols);
             fetchForeignKeys(metaData, tableName, listeCols);
 
             setClassName(FileUtils.majStart(toCamelCase(tableName.toLowerCase())));
@@ -105,15 +105,15 @@ public class TableMetadata {
         return listeCols;
     }
 
-    private List<ColumnMetadata> fetchPrimaryKeys(DatabaseMetaData metaData, String tableName, List<ColumnMetadata> columns) throws SQLException {
+    private void fetchPrimaryKeys(DatabaseMetaData metaData, String tableName, List<ColumnMetadata> columns) throws SQLException {
         ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, tableName);
-        List<ColumnMetadata> listeFields = new ArrayList<>();
+        //List<ColumnMetadata> listeFields = new ArrayList<>();
 
         while (primaryKeys.next()) {
             String pkColumnName = primaryKeys.getString("COLUMN_NAME");
 
             for (ColumnMetadata column : columns) {
-                if (column.getName().equalsIgnoreCase(pkColumnName)) {
+                if (column.getReferencedColumn().equalsIgnoreCase(pkColumnName)) {
                     column.setPrimary(true);
                     ColumnMetadata pkfield = new ColumnMetadata();
 
@@ -121,13 +121,14 @@ public class TableMetadata {
                     pkfield.setType(column.getType());
                     pkfield.setColumnType(column.getColumnType());
                     pkfield.setPrimary(true);
-                    listeFields.add(pkfield);
+                    pkfield.setReferencedColumn(column.getReferencedColumn());
+                    //listeFields.add(pkfield);
                     setPrimaryColumn(pkfield);
+                    break;
                 }
             }
         }
 
-        return listeFields;
     }
 
     private void fetchForeignKeys(DatabaseMetaData metaData, String tableName, List<ColumnMetadata> listeCols) throws SQLException {
@@ -143,7 +144,7 @@ public class TableMetadata {
                     field.setName(toCamelCase(pkTableName.toLowerCase()));
                     field.setForeign(true);
                     field.setReferencedTable(toCamelCase(pkTableName));
-                    field.setReferencedColumn(toCamelCase(field.getReferencedColumn()));
+                    field.setReferencedColumn(field.getReferencedColumn());
                     field.setColumnType(toCamelCase(field.getType()));
                     field.setType(FileUtils.majStart(toCamelCase(pkTableName)));
                 }
