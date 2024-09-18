@@ -22,7 +22,7 @@ public class TestParse {
 
     @Test
     void frameworkYAML() throws IOException {
-        Framework[] object = FileUtils.fromYamlFile(Framework[].class, "/Users/nomena/STAGE/GENESIS/data_genesis/yaml/framework-api.yaml");
+        Framework[] object = FileUtils.fromYamlFile(Framework[].class, "/Users/nomena/STAGE/GENESIS/data_genesis/yaml/framework.yaml");
 
         System.out.println(Arrays.toString(object));
     }

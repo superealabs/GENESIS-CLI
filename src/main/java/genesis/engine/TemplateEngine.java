@@ -10,7 +10,6 @@ import java.util.function.Function;
 
 public class TemplateEngine {
 
-    // Static constants for templating keywords
     private static final String LOOP_START = "{{#each ";
     private static final String LOOP_INDEX = "@index";
     private static final String IS_LOOP_LAST_INDEX = "@last";
@@ -29,8 +28,6 @@ public class TemplateEngine {
     private static final String FUNCTION_CLOSED_PARENTHESIS = ")";
 
 
-
-    // Map to hold available functions
     private static final Map<String, Function<String, String>> FUNCTIONS_MAP = new HashMap<>();
 
     static {
@@ -47,7 +44,6 @@ public class TemplateEngine {
 
         StringBuilder result = new StringBuilder(template);
 
-        // Remplacer les variables avec leur valeur ou les laisser telles quelles
         int start = 0;
         while ((start = result.indexOf(VARIABLE_PLACEHOLDER_PREFIX, start)) != -1) {
             int end = result.indexOf(VARIABLE_PLACEHOLDER_SUFFIX, start);
@@ -57,7 +53,6 @@ public class TemplateEngine {
             String value = evaluatePlaceholderSimple(placeholder, variables);
             result.replace(start, end + VARIABLE_PLACEHOLDER_SUFFIX.length(), value);
 
-            // Avancer après le remplacement pour éviter de retomber sur le même placeholder
             start += value.length();
         }
 
@@ -100,19 +95,14 @@ public class TemplateEngine {
 
         StringBuilder result = new StringBuilder(template);
 
-        // Evaluate loops
         evaluateLoops(result, variables);
 
-        // Evaluate if-else blocks
         evaluateConditionals(result, variables);
 
-        // Replace variables and evaluate function calls
         replaceVariables(result, variables);
 
-        // Process special tags like {{newline}} and {{tab}}
         processSpecialTags(result);
 
-        // Check if there are undefined variables left in the template
         checkUndefinedVariables(result);
 
         return result.toString();
@@ -163,20 +153,22 @@ public class TemplateEngine {
             if (item instanceof Map) {
                 Map<String, Object> itemMap = (Map<String, Object>) item;
                 for (Map.Entry<String, Object> entry : itemMap.entrySet()) {
-                    loopVariables.put(LOOP_ITEM +"."+ entry.getKey(), entry.getValue());
-                    loopVariables.put(LOOP_ITEM +".", entry.getValue());
+                    loopVariables.put(LOOP_ITEM + "." + entry.getKey(), entry.getValue());
                 }
+            } else {
+                loopVariables.put(LOOP_ITEM, item);
             }
+
             loopVariables.put(LOOP_INDEX, i);
             loopVariables.put(IS_LOOP_LAST_INDEX, (i == loopVar.size() - 1));
 
-            // Render loop content with conditionals
             String renderedContent = render(loopContent, loopVariables).stripLeading();
             loopResult.append(renderedContent);
         }
 
         template.insert(start, loopResult);
     }
+
 
     private void evaluateConditionals(StringBuilder template, Map<String, Object> variables) throws Exception {
         int start;
@@ -294,7 +286,6 @@ public class TemplateEngine {
     }
 
     private String evaluatePlaceholder(String placeholder, Map<String, Object> variables) {
-        // Check if it contains a function call
         int funcStart = placeholder.indexOf("(");
         int funcEnd = placeholder.indexOf(")");
 
@@ -302,19 +293,18 @@ public class TemplateEngine {
             String functionName = placeholder.substring(0, funcStart).trim();
             String variableName = placeholder.substring(funcStart + 1, funcEnd).trim();
 
-            // Retrieve the variable value, and ensure it's not null
             Object valueObj = variables.get(variableName);
             String value = valueObj != null ? valueObj.toString() : "";
 
-            // Apply the function if available
+
             Function<String, String> function = FUNCTIONS_MAP.get(functionName);
             if (function != null) {
                 return function.apply(value);
             } else {
-                return value; // Return the original value if the function is not found
+                return value;
             }
         } else {
-            // No function, simply return the variable value or an empty string if not found
+
             Object valueObj = variables.get(placeholder);
             return valueObj != null ? valueObj.toString() : "";
         }
@@ -342,44 +332,44 @@ public class TemplateEngine {
     }
 
     private boolean evaluateCondition(String condition, Map<String, Object> variables) throws Exception {
-        // Normalize the condition
+
         condition = condition.trim();
 
-        // Check for negation
+
         if (condition.startsWith("!")) {
             String innerCondition = condition.substring(1).trim();
             return !evaluateCondition(innerCondition, variables);
         }
 
-        // Evaluate composite conditions
+
         return evaluateCompositeCondition(condition, variables);
     }
 
     private boolean evaluateCompositeCondition(String condition, Map<String, Object> variables) throws Exception {
-        // Split by "or" operator
+
         String[] orConditions = condition.split("\\s+or\\s+");
         for (String orCondition : orConditions) {
-            // Split by "and" operator
+
             String[] andConditions = orCondition.split("\\s+and\\s+");
             boolean andResult = true;
             for (String andCondition : andConditions) {
-                // Trim and evaluate each and condition
+
                 andCondition = andCondition.trim();
                 boolean result = evaluateSimpleCondition(andCondition, variables);
                 andResult = andResult && result;
             }
-            // Return true if any "or" condition is true
+
             if (andResult) {
                 return true;
             }
         }
-        // Return false if no "or" condition was true
+
         return false;
     }
 
 
     private boolean evaluateSimpleCondition(String condition, Map<String, Object> variables) throws Exception {
-        // Check if the condition is a boolean literal
+
         if ("true".equalsIgnoreCase(condition)) {
             return true;
         }
@@ -404,10 +394,10 @@ public class TemplateEngine {
     }
 
     private void processSpecialTags(StringBuilder template) {
-        // Replace {{newline}} with '\n'
+
         replaceAllOccurrences(template, NEWLINE_TAG, "\n");
 
-        // Replace {{tab}} with '\t'
+
         replaceAllOccurrences(template, TAB_TAG, "\t");
     }
 

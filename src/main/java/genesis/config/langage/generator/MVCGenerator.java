@@ -90,10 +90,9 @@ public class MVCGenerator implements GenesisGenerator {
                 "connectionString", connectionString)
         );
 
-        List<Map<String, Object>> fields = new ArrayList<>();
-        for (TableMetadata table : tableMetadata) {
-            Map<String, Object> fieldMap = getStringObjectMapEntities(table);
-            fields.add(fieldMap);
+        List<String> fields = new ArrayList<>();
+        for (TableMetadata tableMetadatum : tableMetadata) {
+            fields.add(tableMetadatum.getClassName());
         }
 
         metadata.put("entities", fields);
@@ -169,12 +168,6 @@ public class MVCGenerator implements GenesisGenerator {
         fieldMap.put("withSetters", true);
         fieldMap.put("columnType", field.getColumnType());
         fieldMap.put("columnName", field.getReferencedColumn());
-        return fieldMap;
-    }
-
-    private static @NotNull Map<String, Object> getStringObjectMapEntities(TableMetadata tableMetadata) {
-        Map<String, Object> fieldMap = new HashMap<>();
-        fieldMap.put("className", tableMetadata.getClassName());
         return fieldMap;
     }
 

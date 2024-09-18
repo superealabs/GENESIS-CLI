@@ -89,9 +89,9 @@ public class TemplateModelRepo {
     void templateEngineRenderModel() throws Exception {
         String template = """
                 package com.${lowerCase(projectName)}.models;
-                                
+
                 import jakarta.persistence.*;
-                                
+                
                 @Entity
                 @Table(name="${tableName}")
                 public class Person  {
@@ -110,7 +110,7 @@ public class TemplateModelRepo {
                         this.${this.name} = ${this.name};{{#if !@last}}
                         {{/if}}{{/each}}
                     }
-                                
+                
                     {{#each fields}}
                     {{#if this.withGetters}}
                     public ${this.type} get${majStart(this.name)}() {
@@ -262,7 +262,7 @@ public class TemplateModelRepo {
         public class ${projectName}Context : DbContext
         {
             {{#each entities}}
-            public DbSet<${this.className}> ${this.className}s { get; set; }
+            public DbSet<${this}> ${this}s { get; set; }
             {{/each}}
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {
@@ -277,16 +277,25 @@ public class TemplateModelRepo {
                 "packageValue", "MyApp.Data",
                 "DBType", "SqlServer",  // Peut être "SqlServer", "MySQL", "PostgreSQL", etc.
                 "connectionString", "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;",
-                "entities", List.of(
-                        Map.of("className", "User"),
-                        Map.of("className", "Order")
-                )
+                "entities", List.of("User", "Order")
         );
 
         String result = engine.render(template, variables);
         System.out.println(result);
     }
 
+    @Test
+    void loopTest() throws Exception {
+        TemplateEngine engine = new TemplateEngine();
+        String template = "Liste des éléments :\n{{#each items}}\n- ${this}\n{{/each}}";
+
+        Map<String, Object> variables = new HashMap<>();
+        List<String> items = List.of("Pomme", "Banane", "Orange");
+        variables.put("items", items);
+
+        String output = engine.render(template, variables);
+        System.out.println(output);
+    }
 
     // Etapes pour render le templatePrimary du model :
     /*

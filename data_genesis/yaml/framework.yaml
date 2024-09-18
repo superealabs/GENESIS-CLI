@@ -92,7 +92,8 @@
     controllerName: "[classNameMaj]Controller"
     controllerFields:
       - controllerFieldAnnotations: ""
-        controllerFieldContent: "private DAO dao=new DAO(\"[databaseDriver]\", \"[databaseSgbd]\", \"[databaseHost]\", \"[databasePort]\", \"[databaseName]\", \"[user]\", \"[pwd]\", [databaseUseSSL], [databaseAllowKey], [databaseID]);"
+        controllerFieldContent: |
+          "private DAO dao=new DAO(\"[databaseDriver]\", \"[databaseSgbd]\", \"[databaseHost]\", \"[databasePort]\", \"[databaseName]\", \"[user]\", \"[pwd]\", [databaseUseSSL], [databaseAllowKey], [databaseID]);"
       - controllerFieldAnnotations: |
           @Autowired
         controllerFieldContent: "private [classNameMaj]Repository repo;"
@@ -228,7 +229,7 @@
         public class ${projectName}Context : DbContext
         {
             {{#each entities}}
-            public DbSet<${this.className}> ${this.className}s { get; set; }
+            public DbSet<${this}> ${this}s { get; set; }
             {{/each}}
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {
