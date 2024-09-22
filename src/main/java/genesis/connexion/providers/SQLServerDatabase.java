@@ -21,12 +21,14 @@ public class SQLServerDatabase extends Database {
 
     @Override
     protected String getJdbcUrl(Credentials credentials) {
-        return String.format("jdbc:sqlserver://%s:%s;databaseName=%s;user=%s;password=%s",
+        return String.format("jdbc:sqlserver://%s:%s;databaseName=%s;user=%s;password=%s;encrypt=%s;trustServerCertificate=%s;",
                 credentials.getHost(),
                 getPort(),
                 credentials.getDatabaseName(),
                 credentials.getUser(),
-                credentials.getPwd());
+                credentials.getPwd(),
+                credentials.isUseSSL(),
+                credentials.isTrustCertificate());
     }
 
     @Override
@@ -37,7 +39,7 @@ public class SQLServerDatabase extends Database {
         try (ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"})) {
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
-                String tableSchema = tables.getString("TABLE_SCHEMA");
+                String tableSchema = tables.getString("TABLE_SCHEM");
 
                 boolean isSystemTable = false;
                 for (String schema : super.getExcludeSchemas()) {

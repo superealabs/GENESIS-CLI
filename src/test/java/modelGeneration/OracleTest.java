@@ -17,7 +17,18 @@ import java.io.IOException;
 import java.sql.*;
 
 public class OracleTest {
-    Credentials credentials = new Credentials("ORCLCDB", "c##test_db", "test_db", "localhost", true, true);
+    Credentials credentials;
+
+    public OracleTest() {
+        this.credentials = new Credentials();
+        credentials
+                .setHost("localhost")
+                .setDatabaseName("ORCLCDB")
+                .setUser("c##test_db")
+                .setPwd("test_db")
+                .setTrustCertificate(true)
+                .setUseSSL(true);
+    }
 
     @Test
     void test() {
@@ -30,7 +41,7 @@ public class OracleTest {
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
         Framework[] frameworks = FileUtils.fromYaml(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_YAML));
 
-        OracleDatabase database = (OracleDatabase) databases[3];    // Oracle
+        OracleDatabase database = (OracleDatabase) databases[3];            // Oracle
         Language language = languages[0];                                   // Java
         Framework framework = frameworks[0];                                // Spring MVC
 
@@ -67,12 +78,11 @@ public class OracleTest {
 
         try (Connection connection = database.getConnection(credentials)) {
             TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
-            TableMetadata tableMetadata = entities[0];
-            tableMetadata.initialize(connection, credentials, database, language);
+            TableMetadata tableMetadata = entities[1]; //Employe
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
             String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
-            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
+            String dao = mvcGenerator.generateDao(framework, language, entities, "TestProject");
 
             System.out.println(database);
             System.out.println(language);

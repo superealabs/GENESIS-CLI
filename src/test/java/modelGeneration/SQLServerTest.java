@@ -7,6 +7,7 @@ import genesis.config.langage.generator.GenesisGenerator;
 import genesis.config.langage.generator.MVCGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
+import genesis.connexion.providers.OracleDatabase;
 import genesis.connexion.providers.SQLServerDatabase;
 import genesis.model.TableMetadata;
 import org.junit.jupiter.api.Test;
@@ -18,67 +19,80 @@ import java.sql.*;
 
 public class SQLServerTest {
 
-    Credentials credentials = new Credentials("test_db", "nomena", "root", "localhost", true, true);
-/*
+    Credentials credentials;
+
+    public SQLServerTest() {
+        this.credentials = new Credentials();
+        credentials
+                .setHost("localhost")
+                .setDatabaseName("test_db")
+                .setUser("SA")
+                .setPwd("ComplexP@ssw0rd321")
+                .setTrustCertificate(true)
+                .setUseSSL(true);
+    }
+
     @Test
     void test() {
         System.out.println("Hey !");
     }
 
     @Test
-    void SQLServerxJavaSpringMVC() throws FileNotFoundException {
+    void SQLServerxJavaSpringMVC() throws IOException {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_JSON));
+        Framework[] frameworks = FileUtils.fromYaml(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_YAML));
 
-        SQLServerDatabase database = (SQLServerDatabase) databases[2];    // SQLServer
+        SQLServerDatabase database = (SQLServerDatabase) databases[2];      // SQL Server
         Language language = languages[0];                                   // Java
         Framework framework = frameworks[0];                                // Spring MVC
 
         try (Connection connection = database.getConnection(credentials)) {
-            TableMetadata[] entities = database.getEntity(connection, credentials, "employe");
-            TableMetadata tableMetadata = entities[0];
+            TableMetadata tableMetadata = new TableMetadata();
+            tableMetadata.setTableName("Employe");
             tableMetadata.initialize(connection, credentials, database, language);
 
-
             GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "Test");
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
+            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
 
             System.out.println(database);
             System.out.println(language);
             System.out.println(framework);
 
-            System.out.println("\n====== GENERATED ======\n" + model);
-        } catch (SQLException | ClassNotFoundException | IOException e) {
+            System.out.println("\n====== GENERATED ======\n"+model);
+            System.out.println("\n====== GENERATED ======\n"+dao);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
 
     @Test
-    void SQLServerxNET() throws FileNotFoundException {
+    void SQLServerxNET() throws IOException {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-        Framework[] frameworks = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_JSON));
+        Framework[] frameworks = FileUtils.fromYaml(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_YAML));
 
-        SQLServerDatabase database = (SQLServerDatabase) databases[2];    // SQLServer
-        Language language = languages[1];                                   // C#
+        SQLServerDatabase database = (SQLServerDatabase) databases[2];      // SQL Server
+        Language language = languages[1];                                   // Java
         Framework framework = frameworks[1];                                // .NET
 
         try (Connection connection = database.getConnection(credentials)) {
-            TableMetadata[] entities = database.getEntity(connection, credentials, "employe");
-            TableMetadata tableMetadata = entities[0];
-            tableMetadata.initialize(connection, credentials, database, language);
+            TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
+            TableMetadata tableMetadata = entities[1]; //Employe
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "Test");
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
+            String dao = mvcGenerator.generateDao(framework, language, entities, "TestProject");
 
             System.out.println(database);
             System.out.println(language);
             System.out.println(framework);
 
-            System.out.println("\n====== GENERATED ======\n" + model);
-        } catch (SQLException | ClassNotFoundException | IOException e) {
+            System.out.println("\n====== GENERATED ======\n"+model);
+            System.out.println("\n====== GENERATED ======\n"+dao);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -143,8 +157,6 @@ public class SQLServerTest {
             throw new RuntimeException(e);
         }
     }
-*/
-
 
 
 }

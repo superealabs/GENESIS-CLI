@@ -16,6 +16,21 @@ import java.io.IOException;
 import java.sql.Connection;
 
 public class MySQLTest {
+
+    Credentials credentials;
+
+    public MySQLTest(Credentials credentials) {
+        this.credentials = new Credentials();
+        credentials
+                .setHost("localhost")
+                .setDatabaseName("test_db")
+                .setUser("root")
+                .setPwd("Nomena321@")
+                .setTrustCertificate(true)
+                .setUseSSL(true)
+                .setAllowPublicKeyRetrieval(true);
+    }
+
     @Test
     void test() {
         System.out.println("Hey !");
@@ -31,7 +46,6 @@ public class MySQLTest {
         Language language = languages[0];                       // Java
         Framework framework = frameworks[0];                    // Spring MVC
 
-        Credentials credentials = new Credentials("test_db", "root", "Nomena321@", "localhost", true, true);
 
         try (Connection connection = database.getConnection(credentials)) {
             TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
@@ -63,7 +77,6 @@ public class MySQLTest {
         Language language = languages[1];                       // C#
         Framework framework = frameworks[1];                    // .NET
 
-        Credentials credentials = new Credentials("test_db", "root", "Nomena321@", "localhost", true, true);
 
         try (Connection connection = database.getConnection(credentials)) {
             TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);

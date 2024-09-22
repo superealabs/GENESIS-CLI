@@ -106,7 +106,7 @@ public class MVCGenerator implements GenesisGenerator {
         return new HashMap<>(
                 Map.of("host", credentials.getHost(),
                         "port", database.getPort(),
-                        "database", database.getName(),
+                        "database", credentials.getDatabaseName(),
                         "useSSL", credentials.isUseSSL(),
                         "username", credentials.getUser(),
                         "password", credentials.getPwd(),

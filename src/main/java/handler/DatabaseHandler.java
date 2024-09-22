@@ -30,11 +30,27 @@ public class DatabaseHandler {
         String pwd = scanner.next();
         System.out.print("Database host: ");
         String host = scanner.next();
+        System.out.print("Port: ");
+        String port = scanner.next();
         System.out.print("Use SSL ?(Y/n): ");
         boolean useSSL = scanner.next().equalsIgnoreCase("Y");
+        System.out.print("Trust Certificate ?(Y/n): ");
+        boolean trustCertificate = scanner.next().equalsIgnoreCase("Y");
         System.out.print("Allow public key retrieval ?(Y/n): ");
         boolean allowPublicKeyRetrieval = scanner.next().equalsIgnoreCase("Y");
 
-        return new Credentials(databaseName, user, pwd, host, useSSL, allowPublicKeyRetrieval);
+        Credentials credentials = new Credentials();
+
+        credentials
+                .setHost(host)
+                .setDatabaseName(databaseName)
+                .setUser(user)
+                .setPwd(pwd)
+                .setPort(port)
+                .setTrustCertificate(trustCertificate)
+                .setUseSSL(useSSL)
+                .setAllowPublicKeyRetrieval(allowPublicKeyRetrieval);
+
+        return credentials;
     }
 }

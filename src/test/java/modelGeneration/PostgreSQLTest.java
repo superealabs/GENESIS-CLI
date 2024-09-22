@@ -18,7 +18,19 @@ import java.sql.*;
 
 public class PostgreSQLTest {
 
-    Credentials credentials = new Credentials("test_db", "postgres", "nikami", "localhost", true, true);
+    Credentials credentials;
+
+    public PostgreSQLTest(Credentials credentials) {
+        this.credentials = credentials;
+        credentials
+                .setHost("localhost")
+                .setDatabaseName("test_db")
+                .setUser("nomena")
+                .setPwd("root")
+                .setTrustCertificate(true)
+                .setUseSSL(true)
+                .setAllowPublicKeyRetrieval(true);
+    }
 
     @Test
     void test() {
@@ -47,8 +59,8 @@ public class PostgreSQLTest {
             System.out.println(language);
             System.out.println(framework);
 
-            System.out.println("\n====== GENERATED ======\n"+model);
-            System.out.println("\n====== GENERATED ======\n"+dao);
+            System.out.println("\n====== GENERATED ======\n" + model);
+            System.out.println("\n====== GENERATED ======\n" + dao);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -71,7 +83,7 @@ public class PostgreSQLTest {
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
             String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
-            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
+            String dao = mvcGenerator.generateDao(framework, language, entities, "TestProject");
 
             System.out.println(database);
             System.out.println(language);
@@ -83,7 +95,6 @@ public class PostgreSQLTest {
             throw new RuntimeException(e);
         }
     }
-
 
 
     @Test
@@ -114,7 +125,7 @@ public class PostgreSQLTest {
                     // Convertir le type de données entier en nom de type pour une meilleure lisibilité
                     String dataTypeName = JDBCType.valueOf(dataType).getName(); // Utilisation de JdbcType pour convertir le type de données entier en nom
 
-                    System.out.println("\t" + columnName + " (" + dataTypeName + "), TypeName: "+typeName+", Size: " + columnSize + ", Nullable: " + nullable);
+                    System.out.println("\t" + columnName + " (" + dataTypeName + "), TypeName: " + typeName + ", Size: " + columnSize + ", Nullable: " + nullable);
                 }
 
 
@@ -144,8 +155,6 @@ public class PostgreSQLTest {
             throw new RuntimeException(e);
         }
     }
-
-
 
 
 }

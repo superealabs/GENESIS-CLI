@@ -1,11 +1,20 @@
 package templateEngine;
 
+import freemarker.cache.StringTemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateExceptionHandler;
 import genesis.config.Constantes;
 import genesis.engine.TemplateEngine;
 import org.junit.jupiter.api.Test;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+import org.thymeleaf.templateresolver.StringTemplateResolver;
 import utils.FileUtils;
 
 import java.io.FileNotFoundException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -86,6 +95,130 @@ public class TemplateModelRepo {
 
 
     @Test
+    void templateEngineRenderModelWithFreeMarker() throws Exception {
+        // Créer et configurer une instance FreeMarker
+        Configuration cfg = new Configuration(Configuration.VERSION_2_3_31);
+        cfg.setDefaultEncoding("UTF-8");
+        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+
+
+        String templateContent = """
+                <#assign fields=metadata.fields>
+                       \s
+                package com.${metadata.projectName}.models;
+                       \s
+                import jakarta.persistence.*;
+                       \s
+                @Entity
+                @Table(name="${metadata.tableName}")
+                public class Person  {
+                <#list fields as field>
+                    private ${field.type} ${field.name};
+                </#list>
+                       \s
+                public ${metadata.className}(<#list fields as field>${field.type} ${field.name}<#if field_has_next>, </#if></#list>) {
+                    <#list fields as field>
+                    this.${field.name} = ${field.name};
+                    </#list>
+                }
+                       \s
+                <#list fields as field>
+                <#if field.withGetters>
+                public ${field.type} get${field.name?cap_first}() {
+                    return ${field.name};
+                }
+                </#if>
+
+                <#if field.withSetters>
+                public void set${field.name?cap_first}(${field.type} ${field.name}) {
+                    this.${field.name} = ${field.name};
+                }
+                </#if>
+                </#list>
+                }
+               \s""";
+
+        // Utilisation de StringTemplateLoader pour charger des templates à partir de chaînes
+        StringTemplateLoader stringLoader = new StringTemplateLoader();
+        stringLoader.putTemplate("myTemplate", templateContent);
+        cfg.setTemplateLoader(stringLoader);
+
+        // Charger le template
+        Template template = cfg.getTemplate("myTemplate");
+
+        // Données du modèle
+        Map<String, Object> metadata = getHashMapIntermediaire();
+
+        // Rendu du template
+        StringWriter writer = new StringWriter();
+        template.process(Map.of("metadata", metadata), writer);
+
+        String result = writer.toString();
+        System.out.println(result);
+    }
+    /*
+    @Test
+    void templateEngineRenderModelWithThymeleaf() {
+        // Configuration de Thymeleaf en mode texte
+        var templateEngine = new org.thymeleaf.TemplateEngine();
+        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode("TEXT");  // Mode texte au lieu de HTML
+        templateEngine.setTemplateResolver(templateResolver);
+
+        // Contenu du template sans balises HTML
+        String templateContent = """
+                package com.[(${metadata.projectName})].models;
+                       \s
+                import jakarta.persistence.*;
+                       \s
+                @Entity
+                @Table(name="[[${metadata.tableName}]]")
+                public class [[${metadata.className}]]  {
+               \s
+                    <th:block th:each="field : ${metadata.fields}">
+                        <th:block th:if="${field.type != null && field.name != null}">
+                            private [[${field.type}]] [[${field.name}]];
+                        </th:block>
+                    </th:block>
+                   \s
+                       \s
+                    public [[${metadata.className}]](<th:block th:each="field, fieldStat : ${metadata.fields}">
+                    [[${field.type}]] [[${field.name}]]<th:block th:if="${fieldStat.index < metadata.fields.size() - 1}">, </th:block>
+                    </th:block>) {
+                        <th:block th:each="field : ${metadata.fields}">
+                        this.[[${field.name}]] = [[${field.name}]];
+                        </th:block>
+                    }
+                       \s
+                    <th:block th:each="field : ${metadata.fields}">
+                        <th:block th:if="${field.withGetters}">
+                        public [[${field.type}]] get[[${#strings.capitalize(field.name)}]]() {
+                            return [[${field.name}]];
+                        }
+                        </th:block>
+                       \s
+                        <th:block th:if="${field.withSetters}">
+                        public void set[[${#strings.capitalize(field.name)}]]([[${field.type}]] [[${field.name}]]) {
+                            this.[[${field.name}]] = [[${field.name}]];
+                        }
+                        </th:block>
+                    </th:block>
+                }
+               \s""";
+
+        // Données du modèle
+        Map<String, Object> metadata = getHashMapIntermediaire();
+
+        // Contexte Thymeleaf
+        Context context = new Context();
+        context.setVariable("metadata", metadata);
+
+        // Rendu du template
+        String result = templateEngine.process(templateContent, context);
+        System.out.println(result);
+    }
+*/
+    @Test
     void templateEngineRenderModel() throws Exception {
         String template = """
                 package com.${lowerCase(projectName)}.models;
@@ -94,7 +227,7 @@ public class TemplateModelRepo {
                 
                 @Entity
                 @Table(name="${tableName}")
-                public class Person  {
+                public class ${majStart(className)} {
                     {{#each fields}}
                     {{#if this.isPrimaryKey}}
                     @Id
@@ -134,13 +267,13 @@ public class TemplateModelRepo {
     private static HashMap<String, Object> getHashMapIntermediaire() {
         HashMap<String, Object> metadata = new HashMap<>();
         metadata.put("tableName", "person");
-        metadata.put("className", "person");
+        metadata.put("className", "Person");
         metadata.put("projectName", "TestProject");
 
 
         List<Map<String, Object>> fields = List.of(
                 Map.of("type", "Long", // Primary key
-                        "name", "id",
+                            "name", "id",
                         "isPrimaryKey", true,
                         "withGetters", true,
                         "withSetters", true,
@@ -253,23 +386,23 @@ public class TemplateModelRepo {
         TemplateEngine engine = new TemplateEngine();
 
         String template = """
-        using Microsoft.EntityFrameworkCore;
-        using System.ComponentModel.DataAnnotations;
-        using ${projectName}.Models;
-        
-        namespace ${packageValue};
-        
-        public class ${projectName}Context : DbContext
-        {
-            {{#each entities}}
-            public DbSet<${this}> ${this}s { get; set; }
-            {{/each}}
-            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            {
-                optionsBuilder.Use${DBType}(@"${connectionString}");
-            }
-        }
-        """;
+                using Microsoft.EntityFrameworkCore;
+                using System.ComponentModel.DataAnnotations;
+                using ${projectName}.Models;
+                        
+                namespace ${packageValue};
+                        
+                public class ${projectName}Context : DbContext
+                {
+                    {{#each entities}}
+                    public DbSet<${this}> ${this}s { get; set; }
+                    {{/each}}
+                    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+                    {
+                        optionsBuilder.Use${DBType}(@"${connectionString}");
+                    }
+                }
+                """;
 
         // Utilisation de Map.of pour créer la map des variables
         Map<String, Object> variables = Map.of(
