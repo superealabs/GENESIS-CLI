@@ -86,17 +86,18 @@
     "port": "1433",
     "types": {
       "int": "int",
+      "int identity": "int",
       "bigint": "long",
       "smallint": "int",
       "float": "float",
       "double": "double",
       "decimal": "double",
-      "varchar": "string",
+      "nvarchar": "string",
       "date": "date",
       "time": "time",
       "datetime": "datetime"
     },
-    "excludedSchemas": [
+    "excludeSchemas": [
       "sys",
       "information_schema"
     ]

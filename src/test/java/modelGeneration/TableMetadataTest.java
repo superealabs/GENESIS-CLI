@@ -5,7 +5,6 @@ import genesis.config.langage.Language;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.model.ColumnMetadata;
-import genesis.model.FieldMetadata;
 import genesis.model.TableMetadata;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +29,13 @@ public class TableMetadataTest {
 
     @BeforeEach
     public void setUp() {
-        credentials = new Credentials("test_db", "nomena", "root", "localhost", true, true);
+        credentials = new Credentials()
+                .setHost("localhost")
+                .setDatabaseName("test_db")
+                .setUser("SA")
+                .setPwd("ComplexP@ssw0rd321")
+                .setTrustCertificate(true)
+                .setUseSSL(true);
         database = databases[1];    // PostgreSQL
         language = languages[0];    // Java
     }

@@ -5,18 +5,18 @@ USE test_db;
 
 CREATE TABLE Departement
 (
-    DeptID INT PRIMARY KEY IDENTITY (1,1),
-    Nom    NVARCHAR(50) NOT NULL
+    DeptID INT PRIMARY KEY IDENTITY(1,1),
+    Nom NVARCHAR(50) NOT NULL
 );
 
 CREATE TABLE Employe
 (
-    EmployeID     INT PRIMARY KEY IDENTITY (1,1),
-    Nom           NVARCHAR(50) NOT NULL,
-    Prenom        NVARCHAR(50) NOT NULL,
-    DateNaissance DATE,
-    DeptID        INT,
-    FOREIGN KEY (DeptID) REFERENCES Departement (DeptID)
+    EmployeID INT PRIMARY KEY IDENTITY(1,1),
+    Nom NVARCHAR(50) NOT NULL,
+    Prenom NVARCHAR(50) NOT NULL,
+    DateNaissance DATE NULL,
+    DeptID INT NULL,
+    CONSTRAINT FK_Employe_Departement FOREIGN KEY (DeptID) REFERENCES Departement(DeptID)
 );
 
 INSERT INTO Departement (Nom)

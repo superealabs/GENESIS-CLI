@@ -109,7 +109,6 @@ public class TableMetadata {
 
     private void fetchPrimaryKeys(DatabaseMetaData metaData, String tableName, List<ColumnMetadata> columns) throws SQLException {
         ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, tableName);
-        //List<ColumnMetadata> listeFields = new ArrayList<>();
 
         while (primaryKeys.next()) {
             String pkColumnName = primaryKeys.getString("COLUMN_NAME");
@@ -124,7 +123,6 @@ public class TableMetadata {
                     pkfield.setColumnType(column.getColumnType());
                     pkfield.setPrimary(true);
                     pkfield.setReferencedColumn(column.getReferencedColumn());
-                    //listeFields.add(pkfield);
                     setPrimaryColumn(pkfield);
                     break;
                 }
@@ -195,19 +193,17 @@ public class TableMetadata {
         try (Connection connection = database.getConnection(credentials)) {
             DatabaseMetaData metaData = connection.getMetaData();
 
-            // Obtenir toutes les tables de la base de données
             ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"});
 
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
                 System.out.println("Table Name: " + tableName);
 
-                // Appel des méthodes pour afficher les informations de la table
                 printColumnsInfo(metaData, tableName);
                 printPrimaryKeys(metaData, tableName);
                 printForeignKeys(metaData, tableName);
 
-                System.out.println(); // Séparation entre les tables
+                System.out.println();
             }
 
         } catch (SQLException | ClassNotFoundException e) {
