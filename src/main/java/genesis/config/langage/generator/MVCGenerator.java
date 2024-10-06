@@ -110,14 +110,13 @@ public class MVCGenerator implements GenesisGenerator {
         HashMap<String, Object> metadata = new HashMap<>();
 
         // Framework-related metadata
-        metadata.put("fields", framework.getController().getControllerFields());
         metadata.put("package", framework.getController().getControllerPackage());
         metadata.put("imports", framework.getController().getControllerImports());
         metadata.put("extends", framework.getController().getControllerExtends());
-        metadata.put("classAnnotations", framework.getController().getControllerAnnotations());
-
-        // Framework-related-fields metadata
-        metadata.put("controllerField", framework.getController());
+        metadata.put("field", framework.getController().getControllerFieldContent());
+        metadata.put("method", framework.getController().getControllerMethodContent());
+        metadata.put("classAnnotations", framework.getController().getControllerName());
+        metadata.put("controllerName", framework.getController().getControllerAnnotations());
 
         return metadata;
     }
@@ -126,6 +125,18 @@ public class MVCGenerator implements GenesisGenerator {
         HashMap<String, Object> metadata = new HashMap<>();
 
         HashMap<String, Object> PrimaryModelMetadata = getPrimaryModelHashMap(framework);
+        HashMap<String, Object> languageMetadata = getRelatedLanguageMetadata(language, tableMetadata);
+
+        metadata.putAll(PrimaryModelMetadata);
+        metadata.putAll(languageMetadata);
+
+        return metadata;
+    }
+
+    private static HashMap<String, Object> getControllerHashMap(Framework framework, Language language, TableMetadata tableMetadata) {
+        HashMap<String, Object> metadata = new HashMap<>();
+
+        HashMap<String, Object> PrimaryModelMetadata = getPrimaryControllerHashMap(framework);
         HashMap<String, Object> languageMetadata = getRelatedLanguageMetadata(language, tableMetadata);
 
         metadata.putAll(PrimaryModelMetadata);
@@ -213,13 +224,20 @@ public class MVCGenerator implements GenesisGenerator {
     }
 
     @Override
-    public String generateController(Framework framework, Language language, TableMetadata tableMetadata, Database database, Credentials credentials, String projectName) throws IOException {
+    public String generateController(Framework framework, Language language, TableMetadata tableMetadata, Database database, Credentials credentials, String projectName) throws Exception {
         if (language.getId() != framework.getLangageId()) {
             throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
         }
         String templateContent = loadTemplate(framework);
 
-        return "";
+        // Render le template intermédiaire
+        HashMap<String, Object> metadataPrimary = getControllerHashMap(framework, language, tableMetadata);
+
+        String result = engine.simpleRender(templateContent, metadataPrimary);
+
+        // Render le template final
+        HashMap<String, Object> metadataFinally = getHashMapIntermediaire(tableMetadata, projectName);
+        return engine.render(result, metadataFinally);
     }
 
     @Override

@@ -60,22 +60,7 @@ public class Framework {
         private String controllerSavePath;
         private String controllerExtension;
         private String controllerAnnotations;
-        private ControllerField[] controllerFields;
-        private ControllerMethod[] controllerMethods;
-    }
-
-    @Getter
-    @Setter
-    public static class ControllerField {
-        private String controllerFieldAnnotations;
         private String controllerFieldContent;
-    }
-
-    @Getter
-    @Setter
-    public static class ControllerMethod {
-        private String controllerMethodAnnotations;
-        private String controllerMethodParameter;
         private String controllerMethodContent;
     }
 

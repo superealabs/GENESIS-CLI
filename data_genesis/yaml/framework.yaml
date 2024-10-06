@@ -128,51 +128,44 @@
       {{tab}}@RequestMapping("/${className}")
     controllerExtends: ""
     controllerName: "${majStart(className)}Controller"
-    controllerFields:
-      - controllerFieldAnnotations: |
-          {{tab}}@Autowired
-        controllerFieldContent: |
-          {{tab}}private ${majStart(className)}Service ${lowerCase(className)}Service;
-    controllerMethods:
-      - controllerMethodAnnotations: "{{tab}}@GetMapping"
-        controllerMethodParameter: "String getAll${majStart(classNameLink)}(Model model) ${bracketStart}"
-        controllerMethodContent: |
-          {{tab}}   List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(classNameLink)}();
-          {{tab}}   model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
-          {{tab}}   return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
-          {{tab}}${bracketEnd}
-      - controllerMethodAnnotations: |
-          {{tab}}@GetMapping("/{id}")
-        controllerMethodParameter: "String get${majStart(className)}ById(${pathVariableKeyword} Long id, Model model) ${bracketStart}"
-        controllerMethodContent: |
-          {{tab}}   ${majStart(className)} ${lowerCase(className)} = ${lowerCase(className)}Service.get${majStart(className)}ById(id);
-          {{tab}}   model.addAttribute("${lowerCase(className)}", ${lowerCase(className)});
-          {{tab}}   return "${lowerCase(classNameLink)}/view-list-${lowerCase(className)}";
-          {{tab}}${bracketEnd}
-      - controllerMethodAnnotations: |
-          {{tab}}@PostMapping
-        controllerMethodParameter: "String create${majStart(className)}(${modelAttributeKeyword} ${majStart(className)} ${lowerCase(className)}, Model model) ${bracketStart}"
-        controllerMethodContent: |
-          {{tab}}   ${majStart(className)} new${majStart(className)} = ${lowerCase(className)}Service.create${majStart(className)}(${lowerCase(className)});
-          {{tab}}   model.addAttribute("new${majStart(className)}", new${majStart(className)});
-          {{tab}}   return "${lowerCase(classNameLink)}/create-list-${lowerCase(className)}";
-          {{tab}}${bracketEnd}
-      - controllerMethodAnnotations: |
-          {{tab}}@PutMapping("/{id}")
-        controllerMethodParameter: "String update${majStart(className)}(${pathVariableKeyword} Long id, ${modelAttributeKeyword} ${majStart(className)} ${lowerCase(className)}, Model model) ${bracketStart}"
-        controllerMethodContent: |
-          {{tab}}   ${majStart(className)} update${majStart(className)} = ${lowerCase(className)}Service.update${majStart(className)}(id, ${lowerCase(className)});
-          {{tab}}   model.addAttribute("update${majStart(className)}", update${majStart(className)});
-          {{tab}}   return "${lowerCase(classNameLink)}/update-${lowerCase(className)}";
-          {{tab}}${bracketEnd}
-      - controllerMethodAnnotations: |
-          {{tab}}@DeleteMapping("/{id}")
-        controllerMethodParameter: "String delete${majStart(className)}ById(${pathVariableKeyword} Long id, Model model) ${bracketStart}"
-        controllerMethodContent: |
-          {{tab}}   ${lowerCase(className)}Service.delete${majStart(className)}(id);
-          {{tab}}   model.addAttribute("message", "${majStart(className)} deleted successfully");
-          {{tab}}   return "redirect:/${lowerCase(classNameLink)}";
-          {{tab}}${bracketEnd}
+    controllerFieldContent: |
+      {{tab}}@Autowired
+      {{tab}}private ${majStart(className)}Service ${lowerCase(className)}Service;
+    controllerMethodContent: |
+      {{tab}}@GetMapping
+      {{tab}}public String getAll${majStart(classNameLink)}(Model model) ${bracketStart}
+      {{tab}}   List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(className)}();
+      {{tab}}   model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
+      {{tab}}   return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
+      {{tab}}${bracketEnd}
+  
+      {{tab}}@GetMapping("/{id}")
+      {{tab}}public String get${majStart(className)}ById(${pathVariableKeyword} Long id, Model model) ${bracketStart}
+      {{tab}}   ${majStart(className)} ${lowerCase(className)} = ${lowerCase(className)}Service.get${majStart(className)}ById(id);
+      {{tab}}   model.addAttribute("${lowerCase(className)}", ${lowerCase(className)});
+      {{tab}}   return "${lowerCase(classNameLink)}/view-list-${lowerCase(className)}";
+      {{tab}}${bracketEnd}
+  
+      {{tab}}@PostMapping
+      {{tab}}public String create${majStart(className)}(${modelAttributeKeyword} ${majStart(className)} ${lowerCase(className)}, Model model) ${bracketStart}
+      {{tab}}   ${majStart(className)} new${majStart(className)} = ${lowerCase(className)}Service.create${majStart(className)}(${lowerCase(className)});
+      {{tab}}   model.addAttribute("new${majStart(className)}", new${majStart(className)});
+      {{tab}}   return "${lowerCase(classNameLink)}/create-list-${lowerCase(className)}";
+      {{tab}}${bracketEnd}
+  
+      {{tab}}@PutMapping("/{id}")
+      {{tab}}public String update${majStart(className)}(${pathVariableKeyword} Long id, ${modelAttributeKeyword} ${majStart(className)} ${lowerCase(className)}, Model model) ${bracketStart}
+      {{tab}}   ${majStart(className)} update${majStart(className)} = ${lowerCase(className)}Service.update${majStart(className)}(id, ${lowerCase(className)});
+      {{tab}}   model.addAttribute("update${majStart(className)}", update${majStart(className)});
+      {{tab}}   return "${lowerCase(classNameLink)}/update-list-${lowerCase(className)}";
+      {{tab}}${bracketEnd}
+  
+      {{tab}}@DeleteMapping("/{id}")
+      {{tab}}public String delete${majStart(className)}ById(${pathVariableKeyword} Long id, Model model) ${bracketStart}
+      {{tab}}   ${lowerCase(className)}Service.delete${majStart(className)}(id);
+      {{tab}}   model.addAttribute("message", "${majStart(className)} deleted successfully");
+      {{tab}}   return "redirect:/${lowerCase(classNameLink)}";
+      {{tab}}${bracketEnd}
     controllerSavePath: "${majStart(className)}/src/main/java/com/${lowerCase(className)}/controllers"
     controllerExtension: "java"
     controllerPackage: "com.${lowerCase(projectName)}.controllers"
