@@ -22,7 +22,7 @@ public class App {
         File project;
         String customFilePath, customFileContentOuter;
         Entity[] entities;
-        String[] models, controllers, views;
+        String[] models, controllers, views;afr
         String modelFile, controllerFile, viewFile, customFile;
         String customFileContent;
         StringBuilder foreignContext;

@@ -37,7 +37,6 @@ public class MVCGenerator implements GenesisGenerator {
     }
 
 
-
     @Override
     public String generateDao(Framework framework, Language language, TableMetadata tableMetadata, String projectName) throws Exception {
         if (language.getId() != framework.getLangageId()) {

@@ -65,79 +65,98 @@
     modelExtension: "java"
     modelPackage: "com.${lowerCase(projectName)}.models"
     modelTemplate: "ModelTemplate"
+  modelDTO:
+    name: "${majStart(className)}DTO.java"
+    packagePath: "com.${lowerCase(projectName)}.dto"
+    isUnique: false
+    content: |
+
+    modelDTOSavePath: "${majStart(className)}/src/main/java/com/${lowerCase(className)}/dto"
+    modelDTOExtension: "java"
+    modelDTOPackage: "com.${lowerCase(projectName)}.dto"
   controller:
     controllerImports: |
-      import org.springframework.beans.factory.annotation.Autowired;
-      import org.springframework.stereotype.Controller;
       import org.springframework.ui.Model;
-      import org.springframework.web.bind.annotation.GetMapping;
-      import org.springframework.web.bind.annotation.PostMapping;
+      import com.${lowerCase(projectName)}.entities.${majStart(className)};
+      import org.springframework.stereotype.Controller;
+      import org.springframework.web.bind.annotation.*;
+      import com.${lowerCase(projectName)}.repositories.${majStart(className)}Repository;
       import org.springframework.web.servlet.view.RedirectView;
-      import com.[projectNameMin].entities.[classNameMaj];
-      import com.[projectNameMin].entities.[classNameMaj]Repository;
-      import com.config.Constantes;
-      import veda.godao.DAO;
-      import veda.godao.utils.DAOConnexion;
-      import jakarta.servlet.http.HttpServletRequest;
-      import jakarta.servlet.http.HttpSession;
-      import java.sql.Connection;
-      import java.sql.SQLException;
-      import java.net.URLDecoder;
-      import java.net.URLEncoder;
-      import java.nio.charset.StandardCharsets;
-      import java.util.Base64;
+      import org.springframework.beans.factory.annotation.Autowired;
     controllerAnnotations: |
       @Controller
+      {{tab}}@RequestMapping("/${className}")
     controllerExtends: ""
-    controllerName: "[classNameMaj]Controller"
+    controllerName: "${majStart(className)}Controller"
     controllerFields:
-      - controllerFieldAnnotations: ""
-        controllerFieldContent: |
-          "private DAO dao=new DAO(\"[databaseDriver]\", \"[databaseSgbd]\", \"[databaseHost]\", \"[databasePort]\", \"[databaseName]\", \"[user]\", \"[pwd]\", [databaseUseSSL], [databaseAllowKey], [databaseID]);"
       - controllerFieldAnnotations: |
-          @Autowired
-        controllerFieldContent: "private [classNameMaj]Repository repo;"
-    controllerFieldsForeign:
-      controllerFieldAnnotations: |
-        @Autowired
-      controllerFieldContent: "private com.[projectNameMin].entities.[foreignNameMaj]Repository repo[foreignNameMaj];"
-    controllerChangeInstanciation:
-      template: "o.set[fieldNameMaj]([content]);"
-      value: "[fieldNameMin]"
-    controllerWhereInstanciation:
-      template: "where.set[primaryNameMaj]([content]);"
-      value: "[primaryNameMin]"
-    controllerForeignInstanciation:
-      template: "o.set[fieldNameMaj](repo[foreignType].findById([content]).orElseThrow());"
-      value: "[fieldNameMin]"
-    controllerForeignList: "model.addAttribute(\"[foreignNameMin]s\", repo[foreignType].findAll());"
-    controllerForeignContextParam: ""
-    controllerForeignContextInstanciation: ""
-    controllerConstructors: |
-      ...
-    controllerForeignInclude: ""
+          {{tab}}@Autowired
+        controllerFieldContent: |
+          {{tab}}private ${majStart(className)}Service ${lowerCase(className)}Service;
+#    controllerFieldsForeign:
+#      controllerFieldAnnotations: |
+#        {{tab}}{{#each fields}}
+#        @Autowired
+#      controllerFieldContent: "private com.[projectNameMin].entities.[foreignNameMaj]Repository repo[foreignNameMaj];"
+#    controllerChangeInstanciation:
+#      template: "o.set[fieldNameMaj]([content]);"
+#      value: "[fieldNameMin]"
+#    controllerWhereInstanciation:
+#      template: "where.set[primaryNameMaj]([content]);"
+#      value: "[primaryNameMin]"
+#    controllerForeignInstanciation:
+#      template: "o.set[fieldNameMaj](repo[foreignType].findById([content]).orElseThrow());"
+#      value: "[fieldNameMin]"
+#    controllerForeignList: "model.addAttribute(\"[foreignNameMin]s\", repo[foreignType].findAll());"
+#    controllerForeignContextParam: ""
+#    controllerForeignContextInstanciation: ""
+#    controllerConstructors: |
+#      ...
+#    controllerForeignInclude: ""
     controllerMethods:
+      - controllerMethodAnnotations: "{{tab}}@GetMapping"
+        controllerMethodParameter: "${valueReturnKeyword} getAll${majStart(classNameLink)}(Model model) ${bracketStart}"
+        controllerMethodContent: |
+          {{tab}}    List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(classNameLink)}();
+          {{tab}}    model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
+          {{tab}}    ${returnKeyword} "${lowerCase(classNameLink)}/list";
+          {{tab}}${bracketEnd}
       - controllerMethodAnnotations: |
-          @PostMapping(\"/insert[classNameMin].do\")"
-        controllerMethodParameter: "String [fieldNameMin]"
-        controllerMethodContent: "spring/controller/springControllerInsert"
+          {{tab}}@GetMapping("/{id}")
+        controllerMethodParameter: "${valueReturnKeyword} get${majStart(className)}ById(${pathVariableKeyword} Long id, Model model) ${bracketStart}"
+        controllerMethodContent: |
+          {{tab}}     ${majStart(className)} ${lowerCase(className)} = ${lowerCase(className)}Service.get${majStart(className)}ById(id);
+          {{tab}}     model.addAttribute("${lowerCase(className)}", ${lowerCase(className)});
+          {{tab}}     ${returnKeyword} "${lowerCase(classNameLink)}/view";
+          {{tab}}${bracketEnd}
       - controllerMethodAnnotations: |
-          "@GetMapping(\"/tocrud[classNameMin].do\")"
-        controllerMethodParameter: ""
-        controllerMethodContent: "spring/controller/springControllerRead"
+          {{tab}}@PostMapping
+        controllerMethodParameter: "{{tab}}${methodKeyword} ${valueReturnKeyword} create${majStart(className)}(${modelAttributeKeyword} ${majStart(className)}DTO ${lowerCase(className)}DTO, Model model) ${bracketStart}"
+        controllerMethodContent: |
+          {{tab}}     ${majStart(className)} new${majStart(className)} = ${lowerCase(className)}Service.create${majStart(className)}(${lowerCase(className)}DTO.to${majStart(className)}());
+          {{tab}}     model.addAttribute("new${majStart(className)}", new${majStart(className)});
+          {{tab}}     ${returnKeyword} "${lowerCase(classNameLink)}/create";
+          {{tab}}${bracketEnd}
       - controllerMethodAnnotations: |
-          @PostMapping(\"/update[classNameMin].do\")"
-        controllerMethodParameter: "String [fieldNameMin]"
-        controllerMethodContent: "spring/controller/springControllerUpdate"
+          {{tab}}@PutMapping("/{id}")
+        controllerMethodParameter: "{{tab}}${methodKeyword} ${valueReturnKeyword} update${majStart(className)}(${pathVariableKeyword} Long id, ${modelAttributeKeyword} ${majStart(className)}DTO ${lowerCase(className)}DTO, Model model) ${bracketStart}"
+        controllerMethodContent: |
+          {{tab}}     ${majStart(className)} update${majStart(className)} = ${lowerCase(className)}Service.update${majStart(className)}(id, ${lowerCase(className)}DTO.to${majStart(className)}());
+          {{tab}}     model.addAttribute("update${majStart(className)}", update${majStart(className)});
+          {{tab}}     ${returnKeyword} "${lowerCase(classNameLink)}/update";
+          {{tab}}${bracketEnd}
       - controllerMethodAnnotations: |
-          "@PostMapping(\"/delete[classNameMin].do\")"
-        controllerMethodParameter: ""
-        controllerMethodContent: "spring/controller/springControllerDelete"
-    controllerSavepath: "[projectNameMaj]/src/main/java/com/[projectNameMin]/controllers"
+          {{tab}}@DeleteMapping("/{id}")
+        controllerMethodParameter: "{{tab}}${methodKeyword} ${valueReturnKeyword} delete${majStart(className)}ById(${pathVariableKeyword} Long id, Model model) ${bracketStart}"
+        controllerMethodContent: |
+          {{tab}}     ${lowerCase(className)}Service.delete${majStart(className)}(id);
+          {{tab}}     model.addAttribute("message", "${majStart(className)} deleted successfully");
+          {{tab}}     ${returnKeyword} "redirect:/${lowerCase(classNameLink)}";
+          {{tab}}${bracketEnd}
+    controllerSavePath: "${majStart(className)}/src/main/java/com/${lowerCase(className)}/controllers"
     controllerExtension: "java"
-    controllerPackage: "com.[projectNameMin].controllers"
+    controllerPackage: "com.${lowerCase(projectName)}.controllers"
     controllerTemplate: "ControllerTemplate"
-    controllerNameSuffix: "Controller"
   view:
     viewForeignList: ""
     viewTableHeader: "<th scope=\"col\">[fieldNameFormattedMaj]</th>"
