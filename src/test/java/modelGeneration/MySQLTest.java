@@ -19,9 +19,8 @@ public class MySQLTest {
 
     Credentials credentials;
 
-    public MySQLTest(Credentials credentials) {
-        this.credentials = new Credentials();
-        credentials
+    public MySQLTest() {
+        this.credentials = new Credentials()
                 .setHost("localhost")
                 .setDatabaseName("test_db")
                 .setUser("root")
@@ -59,8 +58,8 @@ public class MySQLTest {
             System.out.println(language);
             System.out.println(framework);
 
-            System.out.println("\n====== GENERATED ======\n"+model);
-            System.out.println("\n====== GENERATED ======\n"+dao);
+            System.out.println("\n====== GENERATED ======\n" + model);
+            System.out.println("\n====== GENERATED ======\n" + dao);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -90,8 +89,8 @@ public class MySQLTest {
             System.out.println(language);
             System.out.println(framework);
 
-            System.out.println("\n====== GENERATED ======\n"+model);
-            System.out.println("\n====== GENERATED ======\n"+dao);
+            System.out.println("\n====== GENERATED ======\n" + model);
+            System.out.println("\n====== GENERATED ======\n" + dao);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

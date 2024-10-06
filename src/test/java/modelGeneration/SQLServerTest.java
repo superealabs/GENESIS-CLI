@@ -7,7 +7,6 @@ import genesis.config.langage.generator.GenesisGenerator;
 import genesis.config.langage.generator.MVCGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
-import genesis.connexion.providers.OracleDatabase;
 import genesis.connexion.providers.SQLServerDatabase;
 import genesis.model.TableMetadata;
 import org.junit.jupiter.api.Test;
@@ -22,8 +21,7 @@ public class SQLServerTest {
     Credentials credentials;
 
     public SQLServerTest() {
-        this.credentials = new Credentials();
-        credentials
+        this.credentials = new Credentials()
                 .setHost("localhost")
                 .setDatabaseName("test_db")
                 .setUser("SA")
@@ -43,9 +41,9 @@ public class SQLServerTest {
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
         Framework[] frameworks = FileUtils.fromYaml(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_YAML));
 
-        SQLServerDatabase database = (SQLServerDatabase) databases[2];      // SQL Server
-        Language language = languages[0];                                   // Java
-        Framework framework = frameworks[0];                                // Spring MVC
+        var database = (SQLServerDatabase) databases[2];   // SQL Server
+        Language language = languages[0];                  // Java
+        Framework framework = frameworks[0];               // Spring MVC
 
         try (Connection connection = database.getConnection(credentials)) {
             TableMetadata tableMetadata = new TableMetadata();
@@ -60,8 +58,8 @@ public class SQLServerTest {
             System.out.println(language);
             System.out.println(framework);
 
-            System.out.println("\n====== GENERATED ======\n"+model);
-            System.out.println("\n====== GENERATED ======\n"+dao);
+            System.out.println("\n====== GENERATED ======\n" + model);
+            System.out.println("\n====== GENERATED ======\n" + dao);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -90,13 +88,12 @@ public class SQLServerTest {
             System.out.println(language);
             System.out.println(framework);
 
-            System.out.println("\n====== GENERATED ======\n"+model);
-            System.out.println("\n====== GENERATED ======\n"+dao);
+            System.out.println("\n====== GENERATED ======\n" + model);
+            System.out.println("\n====== GENERATED ======\n" + dao);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
 
 
     @Test

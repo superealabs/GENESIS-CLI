@@ -20,8 +20,7 @@ public class OracleTest {
     Credentials credentials;
 
     public OracleTest() {
-        this.credentials = new Credentials();
-        credentials
+        this.credentials = new Credentials()
                 .setHost("localhost")
                 .setDatabaseName("ORCLCDB")
                 .setUser("c##test_db")
@@ -58,8 +57,8 @@ public class OracleTest {
             System.out.println(language);
             System.out.println(framework);
 
-            System.out.println("\n====== GENERATED ======\n"+model);
-            System.out.println("\n====== GENERATED ======\n"+dao);
+            System.out.println("\n====== GENERATED ======\n" + model);
+            System.out.println("\n====== GENERATED ======\n" + dao);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -88,13 +87,12 @@ public class OracleTest {
             System.out.println(language);
             System.out.println(framework);
 
-            System.out.println("\n====== GENERATED ======\n"+model);
-            System.out.println("\n====== GENERATED ======\n"+dao);
+            System.out.println("\n====== GENERATED ======\n" + model);
+            System.out.println("\n====== GENERATED ======\n" + dao);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
 
 
     @Test
@@ -125,7 +123,7 @@ public class OracleTest {
                     // Convertir le type de données entier en nom de type pour une meilleure lisibilité
                     String dataTypeName = JDBCType.valueOf(dataType).getName(); // Utilisation de JdbcType pour convertir le type de données entier en nom
 
-                    System.out.println("\t" + columnName + " (" + dataTypeName + "), TypeName: "+typeName+", Size: " + columnSize + ", Nullable: " + nullable);
+                    System.out.println("\t" + columnName + " (" + dataTypeName + "), TypeName: " + typeName + ", Size: " + columnSize + ", Nullable: " + nullable);
                 }
 
 

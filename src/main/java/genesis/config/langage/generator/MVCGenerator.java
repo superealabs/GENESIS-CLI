@@ -22,6 +22,7 @@ public class MVCGenerator implements GenesisGenerator {
 
     @Override
     public String generateModel(Framework framework, Language language, TableMetadata tableMetadata, String projectName) throws Exception {
+
         if (language.getId() != framework.getLangageId()) {
             throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
         }
@@ -170,7 +171,6 @@ public class MVCGenerator implements GenesisGenerator {
         fieldMap.put("columnName", field.getReferencedColumn());
         return fieldMap;
     }
-
 
     @Override
     public String generateController(Framework framework, Language language, TableMetadata tableMetadata, Database database, Credentials credentials, String projectName) throws IOException {

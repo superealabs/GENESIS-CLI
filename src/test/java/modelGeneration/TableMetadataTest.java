@@ -24,7 +24,8 @@ public class TableMetadataTest {
     Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
     Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
 
-    public TableMetadataTest() throws FileNotFoundException {
+    public TableMetadataTest(Connection connection) throws FileNotFoundException {
+        this.connection = connection;
     }
 
     @BeforeEach
@@ -38,6 +39,7 @@ public class TableMetadataTest {
                 .setUseSSL(true);
         database = databases[1];    // PostgreSQL
         language = languages[0];    // Java
+
     }
 
     @Test
