@@ -32,11 +32,11 @@
       {{tab}}{{#each fields}}
       {{tab}}{{#if this.withGetters}}
       {{tab}}public ${this.type} get${majStart(this.name)}() {
-      {{tab}}    return ${this.name};
+      {{tab}}   return ${this.name};
       {{tab}}}{{/if}}
       {{#if this.withSetters}}
       {{tab}}public void set${majStart(this.name)}(${this.type} ${this.name}) {
-      {{tab}}    this.${this.name} = ${this.name};
+      {{tab}}   this.${this.name} = ${this.name};
       {{tab}}}{{#if !@last}}
       {{tab}}{{/if}}
       {{tab}}{{/if}}{{/each}}
@@ -44,10 +44,16 @@
       {{tab}}public ${majStart(className)}() {
       {{tab}}}
       
+      {{tab}}public ${majStart(className)}({{#each fields}} {{#if !this.isPrimaryKey}} ${this.type} ${this.name} {{/if}} {{#if !@last}}, {{/if}}{{/each}}) {
+      {{tab}}   {{#each fields}} {{#if !this.isPrimaryKey}}
+      {{tab}}   this.${this.name} = ${this.name};{{#if !@last}}
+      {{tab}}   {{/if}}{{/if}}{{/each}}
+      {{tab}}}
+      
       {{tab}}public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
-      {{tab}}    {{#each fields}}
-      {{tab}}    this.${this.name} = ${this.name};{{#if !@last}}
-      {{tab}}    {{/if}}{{/each}}
+      {{tab}}   {{#each fields}}
+      {{tab}}   this.${this.name} = ${this.name};{{#if !@last}}
+      {{tab}}   {{/if}}{{/each}}
       {{tab}}}
     modelSavePath: "${majStart(projectName)}/src/main/java/com/${lowerCase(projectName)}/models"
     modelForeignContextAttr: ""
@@ -65,18 +71,53 @@
     modelExtension: "java"
     modelPackage: "com.${lowerCase(projectName)}.models"
     modelTemplate: "ModelTemplate"
-  modelDTO:
-    name: "${majStart(className)}DTO.java"
-    packagePath: "com.${lowerCase(projectName)}.dto"
-    isUnique: false
-    content: |
-
-    modelDTOSavePath: "${majStart(className)}/src/main/java/com/${lowerCase(className)}/dto"
-    modelDTOExtension: "java"
-    modelDTOPackage: "com.${lowerCase(projectName)}.dto"
+  service:
+    serviceImports: |
+      import com.${lowerCase(projectName)}.models.${majStart(className)};
+      import org.springframework.stereotype.Service;
+      import com.${lowerCase(projectName)}.repositories.${majStart(className)}Repository;
+      import org.springframework.beans.factory.annotation.Autowired;
+    serviceAnnotations: |
+      @Service
+    serviceExtends:
+    serviceName: "${majStart(className)}Service"
+    serviceFields:
+      - serviceFieldAnnotations: |
+          {{tab}}@Autowired
+        serviceFieldContent: |
+          {{tab}}private ${majStart(className)}Repository ${lowerCase(className)};
+    serviceMethods:
+      - serviceMethodParameter: "List<${majStart(className)}> getAll${majStart(className)}() ${bracketStart}"
+        serviceMethodContent: |
+          {{tab}}   return ${lowerCase(className)}Repository.findAll();
+          {{tab}}${bracketEnd}
+      - serviceMethodParameter: "${majStart(className)} get${majStart(className)}ById(Long id) ${bracketStart}"
+        serviceMethodContent: |
+          {{tab}}   return ${lowerCase(className)}Repository.findById(id);
+          {{tab}}${bracketEnd}
+      - serviceMethodParameter: "${majStart(className)} create${majStart(className)}(${majStart(className)} ${lowerCase(className)}) ${bracketStart}"
+        serviceMethodContent: |
+          {{tab}}   return ${lowerCase(className)}Repository.save(${lowerCase(className)});
+          {{tab}}${bracketEnd}
+      - serviceMethodParameter: "${majStart(className)} update${majStart(className)}(Long id, ${majStart(className)} ${lowerCase(className)}) ${bracketStart}"
+        serviceMethodContent: |
+          {{tab}}   ${majStart(className)} existing${majStart(className)} = ${lowerCase(className)}Repository.findById(id);
+          {{tab}}   existing${majStart(className)} = ${lowerCase(className)};
+          {{tab}}   existing${majStart(className)}.setId${majStart(className)}(id);
+          {{tab}}   return ${lowerCase(className)}Repository.save(existing${lowerCase(className)});
+          {{tab}}${bracketEnd}
+      - serviceMethodParameter: "void delete${majStart(className)}(Long id) ${bracketStart}"
+        serviceMethodContent: |
+          {{tab}}   ${lowerCase(className)}Repository.deleteById(id);
+          {{tab}}${bracketEnd}
+    serviceSavePath: "${majStart(className)}/src/main/java/com/${lowerCase(className)}/services"
+    serviceExtension: "java"
+    servicePackage: "com.${lowerCase(projectName)}.services"
+    serviceTemplate: "ServiceTemplate"
   controller:
     controllerImports: |
       import org.springframework.ui.Model;
+      import com.${lowerCase(projectName)}.models.${majStart(className)};
       import com.${lowerCase(projectName)}.entities.${majStart(className)};
       import org.springframework.stereotype.Controller;
       import org.springframework.web.bind.annotation.*;
@@ -93,65 +134,45 @@
           {{tab}}@Autowired
         controllerFieldContent: |
           {{tab}}private ${majStart(className)}Service ${lowerCase(className)}Service;
-#    controllerFieldsForeign:
-#      controllerFieldAnnotations: |
-#        {{tab}}{{#each fields}}
-#        @Autowired
-#      controllerFieldContent: "private com.[projectNameMin].entities.[foreignNameMaj]Repository repo[foreignNameMaj];"
-#    controllerChangeInstanciation:
-#      template: "o.set[fieldNameMaj]([content]);"
-#      value: "[fieldNameMin]"
-#    controllerWhereInstanciation:
-#      template: "where.set[primaryNameMaj]([content]);"
-#      value: "[primaryNameMin]"
-#    controllerForeignInstanciation:
-#      template: "o.set[fieldNameMaj](repo[foreignType].findById([content]).orElseThrow());"
-#      value: "[fieldNameMin]"
-#    controllerForeignList: "model.addAttribute(\"[foreignNameMin]s\", repo[foreignType].findAll());"
-#    controllerForeignContextParam: ""
-#    controllerForeignContextInstanciation: ""
-#    controllerConstructors: |
-#      ...
-#    controllerForeignInclude: ""
     controllerMethods:
       - controllerMethodAnnotations: "{{tab}}@GetMapping"
-        controllerMethodParameter: "${valueReturnKeyword} getAll${majStart(classNameLink)}(Model model) ${bracketStart}"
+        controllerMethodParameter: "String getAll${majStart(classNameLink)}(Model model) ${bracketStart}"
         controllerMethodContent: |
-          {{tab}}    List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(classNameLink)}();
-          {{tab}}    model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
-          {{tab}}    ${returnKeyword} "${lowerCase(classNameLink)}/list";
+          {{tab}}   List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(classNameLink)}();
+          {{tab}}   model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
+          {{tab}}   return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
           {{tab}}${bracketEnd}
       - controllerMethodAnnotations: |
           {{tab}}@GetMapping("/{id}")
-        controllerMethodParameter: "${valueReturnKeyword} get${majStart(className)}ById(${pathVariableKeyword} Long id, Model model) ${bracketStart}"
+        controllerMethodParameter: "String get${majStart(className)}ById(${pathVariableKeyword} Long id, Model model) ${bracketStart}"
         controllerMethodContent: |
-          {{tab}}     ${majStart(className)} ${lowerCase(className)} = ${lowerCase(className)}Service.get${majStart(className)}ById(id);
-          {{tab}}     model.addAttribute("${lowerCase(className)}", ${lowerCase(className)});
-          {{tab}}     ${returnKeyword} "${lowerCase(classNameLink)}/view";
+          {{tab}}   ${majStart(className)} ${lowerCase(className)} = ${lowerCase(className)}Service.get${majStart(className)}ById(id);
+          {{tab}}   model.addAttribute("${lowerCase(className)}", ${lowerCase(className)});
+          {{tab}}   return "${lowerCase(classNameLink)}/view-list-${lowerCase(className)}";
           {{tab}}${bracketEnd}
       - controllerMethodAnnotations: |
           {{tab}}@PostMapping
-        controllerMethodParameter: "{{tab}}${methodKeyword} ${valueReturnKeyword} create${majStart(className)}(${modelAttributeKeyword} ${majStart(className)}DTO ${lowerCase(className)}DTO, Model model) ${bracketStart}"
+        controllerMethodParameter: "String create${majStart(className)}(${modelAttributeKeyword} ${majStart(className)} ${lowerCase(className)}, Model model) ${bracketStart}"
         controllerMethodContent: |
-          {{tab}}     ${majStart(className)} new${majStart(className)} = ${lowerCase(className)}Service.create${majStart(className)}(${lowerCase(className)}DTO.to${majStart(className)}());
-          {{tab}}     model.addAttribute("new${majStart(className)}", new${majStart(className)});
-          {{tab}}     ${returnKeyword} "${lowerCase(classNameLink)}/create";
+          {{tab}}   ${majStart(className)} new${majStart(className)} = ${lowerCase(className)}Service.create${majStart(className)}(${lowerCase(className)});
+          {{tab}}   model.addAttribute("new${majStart(className)}", new${majStart(className)});
+          {{tab}}   return "${lowerCase(classNameLink)}/create-list-${lowerCase(className)}";
           {{tab}}${bracketEnd}
       - controllerMethodAnnotations: |
           {{tab}}@PutMapping("/{id}")
-        controllerMethodParameter: "{{tab}}${methodKeyword} ${valueReturnKeyword} update${majStart(className)}(${pathVariableKeyword} Long id, ${modelAttributeKeyword} ${majStart(className)}DTO ${lowerCase(className)}DTO, Model model) ${bracketStart}"
+        controllerMethodParameter: "String update${majStart(className)}(${pathVariableKeyword} Long id, ${modelAttributeKeyword} ${majStart(className)} ${lowerCase(className)}, Model model) ${bracketStart}"
         controllerMethodContent: |
-          {{tab}}     ${majStart(className)} update${majStart(className)} = ${lowerCase(className)}Service.update${majStart(className)}(id, ${lowerCase(className)}DTO.to${majStart(className)}());
-          {{tab}}     model.addAttribute("update${majStart(className)}", update${majStart(className)});
-          {{tab}}     ${returnKeyword} "${lowerCase(classNameLink)}/update";
+          {{tab}}   ${majStart(className)} update${majStart(className)} = ${lowerCase(className)}Service.update${majStart(className)}(id, ${lowerCase(className)});
+          {{tab}}   model.addAttribute("update${majStart(className)}", update${majStart(className)});
+          {{tab}}   return "${lowerCase(classNameLink)}/update-${lowerCase(className)}";
           {{tab}}${bracketEnd}
       - controllerMethodAnnotations: |
           {{tab}}@DeleteMapping("/{id}")
-        controllerMethodParameter: "{{tab}}${methodKeyword} ${valueReturnKeyword} delete${majStart(className)}ById(${pathVariableKeyword} Long id, Model model) ${bracketStart}"
+        controllerMethodParameter: "String delete${majStart(className)}ById(${pathVariableKeyword} Long id, Model model) ${bracketStart}"
         controllerMethodContent: |
-          {{tab}}     ${lowerCase(className)}Service.delete${majStart(className)}(id);
-          {{tab}}     model.addAttribute("message", "${majStart(className)} deleted successfully");
-          {{tab}}     ${returnKeyword} "redirect:/${lowerCase(classNameLink)}";
+          {{tab}}   ${lowerCase(className)}Service.delete${majStart(className)}(id);
+          {{tab}}   model.addAttribute("message", "${majStart(className)} deleted successfully");
+          {{tab}}   return "redirect:/${lowerCase(classNameLink)}";
           {{tab}}${bracketEnd}
     controllerSavePath: "${majStart(className)}/src/main/java/com/${lowerCase(className)}/controllers"
     controllerExtension: "java"
@@ -228,9 +249,9 @@
     modelConstructors: |
       {{tab}}public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) 
       {{tab}}{
-      {{tab}}    {{#each fields}}
-      {{tab}}    ${majStart(this.name)} = ${this.name};{{#if !@last}}
-      {{tab}}    {{/if}}{{/each}}
+      {{tab}}   {{#each fields}}
+      {{tab}}   ${majStart(this.name)} = ${this.name};{{#if !@last}}
+      {{tab}}   {{/if}}{{/each}}
       {{tab}}}
     modelSavePath: "[projectNameMaj]/Models"
     modelForeignContextAttr: "public DbSet<[classNameMaj]> [classNameMaj] { get; set; }"

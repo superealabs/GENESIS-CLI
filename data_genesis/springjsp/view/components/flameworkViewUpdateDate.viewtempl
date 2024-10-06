@@ -1,5 +1,0 @@
-<div class="mb-3"> 
-    <label for="[fieldNameMin]input" class="form-label">[fieldNameFormattedMaj]
-    </label> 
-    <input type="date" class="form-control" id="[fieldNameMin]input" aria-describedby="[fieldNameMin]help" name="[fieldNameMin]" value="<%= o.get[fieldNameMaj]() %>"> 
-</div>
