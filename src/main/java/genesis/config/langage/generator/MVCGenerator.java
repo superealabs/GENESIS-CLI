@@ -20,45 +20,6 @@ import java.util.Map;
 public class MVCGenerator implements GenesisGenerator {
     TemplateEngine engine = new TemplateEngine();
 
-    @Override
-    public String generateModel(Framework framework, Language language, TableMetadata tableMetadata, String projectName) throws Exception {
-        if (language.getId() != framework.getLangageId()) {
-            throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
-        }
-        String templateContent = loadModelTemplate(framework);
-
-        // Render le template intermédiaire
-        HashMap<String, Object> metadataPrimary = getHashMapPrimaire(framework, language, tableMetadata);
-        String result = engine.simpleRender(templateContent, metadataPrimary);
-
-        // Render le template final
-        HashMap<String, Object> metadataFinally = getHashMapIntermediaire(tableMetadata, projectName);
-        return engine.render(result, metadataFinally);
-    }
-
-
-    @Override
-    public String generateDao(Framework framework, Language language, TableMetadata tableMetadata, String projectName) throws Exception {
-        if (language.getId() != framework.getLangageId()) {
-            throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
-        }
-        String templateContent = framework.getModel().getModelDao().getContent();
-
-        HashMap<String, Object> metadata = getHashMapDao(framework, tableMetadata, projectName);
-        return engine.render(templateContent, metadata);
-    }
-
-    @Override
-    public String generateDao(Framework framework, Language language, TableMetadata[] tableMetadata, String projectName) throws Exception {
-        if (language.getId() != framework.getLangageId()) {
-            throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
-        }
-        String templateContent = framework.getModel().getModelDao().getContent();
-
-        Map<String, Object> metadata = getHashMapDaoUnique(framework, tableMetadata, projectName);
-        return engine.render(templateContent, metadata);
-    }
-
     private static HashMap<String, Object> getHashMapDao(Framework framework, TableMetadata tableMetadata, String projectName) {
         HashMap<String, Object> metadata = new HashMap<>();
 
@@ -115,31 +76,63 @@ public class MVCGenerator implements GenesisGenerator {
         );
     }
 
+    private static HashMap<String, Object> getRelatedLanguageMetadata(Language language, TableMetadata tableMetadata) {
+        HashMap<String, Object> metadata = new HashMap<>();
 
-    private static HashMap<String, Object> getHashMapPrimaire(Framework framework, Language language, TableMetadata tableMetadata) {
+        // Language-related metadata
+        metadata.put("className", tableMetadata.getClassName());
+        metadata.put("namespace", language.getSyntax().get("namespace"));
+        metadata.put("bracketEnd", language.getSyntax().get("bracketEnd"));
+        metadata.put("classKeyword", language.getSyntax().get("classKeyword"));
+        metadata.put("bracketStart", language.getSyntax().get("bracketStart"));
+        metadata.put("namespaceEnd", language.getSyntax().get("namespaceEnd"));
+        metadata.put("namespaceStart", language.getSyntax().get("namespaceStart"));
+
+        return metadata;
+    }
+
+    private static HashMap<String, Object> getPrimaryModelHashMap(Framework framework) {
         HashMap<String, Object> metadata = new HashMap<>();
 
         // Framework-related metadata
         metadata.put("package", framework.getModel().getModelPackage());
         metadata.put("imports", framework.getModel().getModelImports());
-        metadata.put("classAnnotations", framework.getModel().getModelAnnotations());
         metadata.put("extends", framework.getModel().getModelExtends());
         metadata.put("fields", framework.getModel().getModelFieldContent());
-        metadata.put("constructors", framework.getModel().getModelConstructors());
         metadata.put("getSets", framework.getModel().getModelGetterSetter());
-
-        // Language-related metadata
-        metadata.put("className", tableMetadata.getClassName());
-        metadata.put("namespace", language.getSyntax().get("namespace"));
-        metadata.put("namespaceStart", language.getSyntax().get("namespaceStart"));
-        metadata.put("classKeyword", language.getSyntax().get("classKeyword"));
-        metadata.put("bracketStart", language.getSyntax().get("bracketStart"));
-        metadata.put("bracketEnd", language.getSyntax().get("bracketEnd"));
-        metadata.put("namespaceEnd", language.getSyntax().get("namespaceEnd"));
+        metadata.put("constructors", framework.getModel().getModelConstructors());
+        metadata.put("classAnnotations", framework.getModel().getModelAnnotations());
 
         return metadata;
     }
 
+    private static HashMap<String, Object> getPrimaryControllerHashMap(Framework framework) {
+        HashMap<String, Object> metadata = new HashMap<>();
+
+        // Framework-related metadata
+        metadata.put("fields", framework.getController().getControllerFields());
+        metadata.put("package", framework.getController().getControllerPackage());
+        metadata.put("imports", framework.getController().getControllerImports());
+        metadata.put("extends", framework.getController().getControllerExtends());
+        metadata.put("classAnnotations", framework.getController().getControllerAnnotations());
+
+        // Framework-related-fields metadata
+        metadata.put("controllerField", framework.getController());
+
+        return metadata;
+    }
+
+    private static HashMap<String, Object> getModelHashMap(Framework framework, Language language, TableMetadata tableMetadata) {
+        HashMap<String, Object> metadata = new HashMap<>();
+
+        HashMap<String, Object> PrimaryModelMetadata = getPrimaryModelHashMap(framework);
+        HashMap<String, Object> languageMetadata = getRelatedLanguageMetadata(language, tableMetadata);
+
+        metadata.putAll(PrimaryModelMetadata);
+        metadata.putAll(languageMetadata);
+
+        return metadata;
+    }
 
     private static HashMap<String, Object> getHashMapIntermediaire(TableMetadata tableMetadata, String projectName) {
         HashMap<String, Object> metadata = new HashMap<>();
@@ -170,9 +163,62 @@ public class MVCGenerator implements GenesisGenerator {
         return fieldMap;
     }
 
+    @Override
+    public String generateModel(Framework framework, Language language, TableMetadata tableMetadata, String projectName) throws Exception {
+        if (language.getId() != framework.getLangageId()) {
+            throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
+        }
+        String templateContent = loadTemplate(framework);
+
+        // Render le template intermédiaire
+        HashMap<String, Object> metadataPrimary = getModelHashMap(framework, language, tableMetadata);
+
+        String result = engine.simpleRender(templateContent, metadataPrimary);
+
+        // Render le template final
+        HashMap<String, Object> metadataFinally = getHashMapIntermediaire(tableMetadata, projectName);
+        return engine.render(result, metadataFinally);
+    }
+
+
+    @Override
+    public String generateDao(Framework framework, Language language, TableMetadata tableMetadata, String projectName) throws Exception {
+        if (language.getId() != framework.getLangageId()) {
+            throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
+        }
+        String templateContent = framework.getModel().getModelDao().getContent();
+
+        HashMap<String, Object> metadata = getHashMapDao(framework, tableMetadata, projectName);
+        return engine.render(templateContent, metadata);
+    }
+
+    @Override
+    public String generateDao(Framework framework, Language language, TableMetadata[] tableMetadata, String projectName) throws Exception {
+        if (language.getId() != framework.getLangageId()) {
+            throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
+        }
+        String templateContent = framework.getModel().getModelDao().getContent();
+
+        Map<String, Object> metadata = getHashMapDaoUnique(framework, tableMetadata, projectName);
+        return engine.render(templateContent, metadata);
+    }
+
+    public String generateService(Framework framework, Language language, TableMetadata tableMetadata, Database database, Credentials credentials, String projectName) throws IOException {
+        if (language.getId() != framework.getLangageId()) {
+            throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
+        }
+        String templateContent = loadTemplate(framework);
+
+        return "";
+    }
 
     @Override
     public String generateController(Framework framework, Language language, TableMetadata tableMetadata, Database database, Credentials credentials, String projectName) throws IOException {
+        if (language.getId() != framework.getLangageId()) {
+            throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
+        }
+        String templateContent = loadTemplate(framework);
+
         return "";
     }
 
@@ -181,7 +227,7 @@ public class MVCGenerator implements GenesisGenerator {
         return "";
     }
 
-    private String loadModelTemplate(Framework framework) throws IOException {
-        return FileUtils.getFileContent(Constantes.DATA_PATH + "/" + framework.getModel().getModelTemplate() + "." + Constantes.MODEL_TEMPLATE_EXT);
+    private String loadTemplate(Framework framework) throws IOException {
+        return FileUtils.getFileContent(Constantes.DATA_PATH + "/" + framework.getTemplate() + "." + Constantes.MODEL_TEMPLATE_EXT);
     }
 }

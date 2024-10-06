@@ -1,6 +1,7 @@
 - id: 1
   langageId: 1
   name: "Spring MVC"
+  template: "Template"
   skeleton: "springmvc_skeleton"
   projectNameTags:
     - "[projectNameMaj]/settings.gradle"
@@ -70,7 +71,6 @@
         }
     modelExtension: "java"
     modelPackage: "com.${lowerCase(projectName)}.models"
-    modelTemplate: "ModelTemplate"
   service:
     serviceImports: |
       import com.${lowerCase(projectName)}.models.${majStart(className)};
@@ -113,7 +113,6 @@
     serviceSavePath: "${majStart(className)}/src/main/java/com/${lowerCase(className)}/services"
     serviceExtension: "java"
     servicePackage: "com.${lowerCase(projectName)}.services"
-    serviceTemplate: "ServiceTemplate"
   controller:
     controllerImports: |
       import org.springframework.ui.Model;
@@ -177,7 +176,6 @@
     controllerSavePath: "${majStart(className)}/src/main/java/com/${lowerCase(className)}/controllers"
     controllerExtension: "java"
     controllerPackage: "com.${lowerCase(projectName)}.controllers"
-    controllerTemplate: "ControllerTemplate"
   view:
     viewForeignList: ""
     viewTableHeader: "<th scope=\"col\">[fieldNameFormattedMaj]</th>"

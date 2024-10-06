@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class TemplateModelRepo {
     TemplateEngine engine = new TemplateEngine();
-    String templatePrimary = FileUtils.getFileContent("data_genesis/ModelTemplate.templ");
+    String templatePrimary = FileUtils.getFileContent("data_genesis/Template.templ");
 
     public TemplateModelRepo() throws FileNotFoundException {
     }

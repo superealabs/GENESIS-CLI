@@ -13,66 +13,55 @@ import genesis.config.CustomFile;
 @ToString
 public class Framework {
     private int id;
-    private int langageId;
+    private View view;
     private String name;
+    private Model model;
+    private int langageId;
     private String skeleton;
+    private String template;
+    private Controller controller;
+    private NavbarLink navbarLinks;
     private String[] projectNameTags;
     private CustomFile[] additionnalFiles;
-    private Model model;
-    private Controller controller;
-    private View view;
     private CustomChanges[] customChanges;
-    private NavbarLink navbarLinks;
 
     @Getter
     @Setter
     public static class Model {
+        private ModelDao modelDao;
         private String modelImports;
         private String modelExtends;
+        private String modelPackage;
+        private String modelSavePath;
+        private String modelExtension;
         private String modelAnnotations;
         private String modelFieldContent;
         private String modelGetterSetter;
         private String modelConstructors;
-        private String modelSavePath;
         private String modelForeignContextAttr;
-        private ModelDao modelDao;
-        private String modelExtension;
-        private String modelPackage;
-        private String modelTemplate;
     }
 
     @Getter
     @Setter
     public static class ModelDao {
         private String name;
-        private String packagePath;
-        private Boolean isUnique;
         private String content;
+        private Boolean isUnique;
+        private String packagePath;
     }
 
     @Getter
     @Setter
     public static class Controller {
-        private String controllerImports;
-        private String controllerAnnotations;
-        private String controllerExtends;
         private String controllerName;
-        private ControllerField[] controllerFields;
-        private ControllerField controllerFieldsForeign;
-        private Map<String, String> controllerChangeInstanciation;
-        private Map<String, String> controllerWhereInstanciation;
-        private Map<String, String> controllerForeignInstanciation;
-        private String controllerForeignList;
-        private String controllerForeignContextParam;
-        private String controllerForeignContextInstanciation;
-        private String controllerConstructors;
-        private String controllerForeignInclude;
-        private ControllerMethod[] controllerMethods;
-        private String controllerSavepath;
-        private String controllerExtension;
+        private String controllerImports;
+        private String controllerExtends;
         private String controllerPackage;
-        private String controllerTemplate;
-        private String controllerNameSuffix;
+        private String controllerSavePath;
+        private String controllerExtension;
+        private String controllerAnnotations;
+        private ControllerField[] controllerFields;
+        private ControllerMethod[] controllerMethods;
     }
 
     @Getter
