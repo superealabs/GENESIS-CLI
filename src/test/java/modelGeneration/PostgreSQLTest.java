@@ -20,13 +20,13 @@ public class PostgreSQLTest {
 
     Credentials credentials;
 
-    public PostgreSQLTest(Credentials credentials) {
-        this.credentials = credentials;
+    public PostgreSQLTest() {
+        this.credentials = new Credentials();
         credentials
                 .setHost("localhost")
                 .setDatabaseName("test_db")
-                .setUser("nomena")
-                .setPwd("root")
+                .setUser("postgres")
+                .setPwd("nikami")
                 .setTrustCertificate(true)
                 .setUseSSL(true)
                 .setAllowPublicKeyRetrieval(true);
@@ -54,13 +54,11 @@ public class PostgreSQLTest {
             GenesisGenerator mvcGenerator = new MVCGenerator();
             String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
             String dao = mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
-
-            System.out.println(database);
-            System.out.println(language);
-            System.out.println(framework);
+            String controller = mvcGenerator.generateController(framework, language, tableMetadata, "TestProject");
 
             System.out.println("\n====== GENERATED ======\n" + model);
             System.out.println("\n====== GENERATED ======\n" + dao);
+            System.out.println("\n====== GENERATED ======\n" + controller);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

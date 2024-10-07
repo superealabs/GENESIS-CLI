@@ -45,10 +45,10 @@
       {{tab}}public ${majStart(className)}() {
       {{tab}}}
       
-      {{tab}}public ${majStart(className)}({{#each fields}} {{#if !this.isPrimaryKey}} ${this.type} ${this.name} {{/if}} {{#if !@last}}, {{/if}}{{/each}}) {
+      {{tab}}public ${majStart(className)}({{#each fields}}{{#if !@first}}, {{/if}}{{#if !this.isPrimaryKey}}${this.type} ${this.name}{{/if}}{{/each}}) {
       {{tab}}   {{#each fields}} {{#if !this.isPrimaryKey}}
-      {{tab}}   this.${this.name} = ${this.name};{{#if !@last}}
-      {{tab}}   {{/if}}{{/if}}{{/each}}
+      {{tab}}   this.${this.name} = ${this.name};{{/if}}{{#if !@last}}
+      {{tab}}   {{/if}}{{/each}}
       {{tab}}}
       
       {{tab}}public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
@@ -71,48 +71,48 @@
         }
     modelExtension: "java"
     modelPackage: "com.${lowerCase(projectName)}.models"
-  service:
-    serviceImports: |
-      import com.${lowerCase(projectName)}.models.${majStart(className)};
-      import org.springframework.stereotype.Service;
-      import com.${lowerCase(projectName)}.repositories.${majStart(className)}Repository;
-      import org.springframework.beans.factory.annotation.Autowired;
-    serviceAnnotations: |
-      @Service
-    serviceExtends:
-    serviceName: "${majStart(className)}Service"
-    serviceFields:
-      - serviceFieldAnnotations: |
-          {{tab}}@Autowired
-        serviceFieldContent: |
-          {{tab}}private ${majStart(className)}Repository ${lowerCase(className)};
-    serviceMethods:
-      - serviceMethodParameter: "List<${majStart(className)}> getAll${majStart(className)}() ${bracketStart}"
-        serviceMethodContent: |
-          {{tab}}   return ${lowerCase(className)}Repository.findAll();
-          {{tab}}${bracketEnd}
-      - serviceMethodParameter: "${majStart(className)} get${majStart(className)}ById(Long id) ${bracketStart}"
-        serviceMethodContent: |
-          {{tab}}   return ${lowerCase(className)}Repository.findById(id);
-          {{tab}}${bracketEnd}
-      - serviceMethodParameter: "${majStart(className)} create${majStart(className)}(${majStart(className)} ${lowerCase(className)}) ${bracketStart}"
-        serviceMethodContent: |
-          {{tab}}   return ${lowerCase(className)}Repository.save(${lowerCase(className)});
-          {{tab}}${bracketEnd}
-      - serviceMethodParameter: "${majStart(className)} update${majStart(className)}(Long id, ${majStart(className)} ${lowerCase(className)}) ${bracketStart}"
-        serviceMethodContent: |
-          {{tab}}   ${majStart(className)} existing${majStart(className)} = ${lowerCase(className)}Repository.findById(id);
-          {{tab}}   existing${majStart(className)} = ${lowerCase(className)};
-          {{tab}}   existing${majStart(className)}.setId${majStart(className)}(id);
-          {{tab}}   return ${lowerCase(className)}Repository.save(existing${lowerCase(className)});
-          {{tab}}${bracketEnd}
-      - serviceMethodParameter: "void delete${majStart(className)}(Long id) ${bracketStart}"
-        serviceMethodContent: |
-          {{tab}}   ${lowerCase(className)}Repository.deleteById(id);
-          {{tab}}${bracketEnd}
-    serviceSavePath: "${majStart(className)}/src/main/java/com/${lowerCase(className)}/services"
-    serviceExtension: "java"
-    servicePackage: "com.${lowerCase(projectName)}.services"
+#  service:
+#    serviceImports: |
+#      import com.${lowerCase(projectName)}.models.${majStart(className)};
+#      import org.springframework.stereotype.Service;
+#      import com.${lowerCase(projectName)}.repositories.${majStart(className)}Repository;
+#      import org.springframework.beans.factory.annotation.Autowired;
+#    serviceAnnotations: |
+#      @Service
+#    serviceExtends:
+#    serviceName: "${majStart(className)}Service"
+#    serviceFields:
+#      - serviceFieldAnnotations: |
+#          {{tab}}@Autowired
+#        serviceFieldContent: |
+#          {{tab}}private ${majStart(className)}Repository ${lowerCase(className)};
+#    serviceMethods:
+#      - serviceMethodParameter: "List<${majStart(className)}> getAll${majStart(className)}() ${bracketStart}"
+#        serviceMethodContent: |
+#          {{tab}}   return ${lowerCase(className)}Repository.findAll();
+#          {{tab}}${bracketEnd}
+#      - serviceMethodParameter: "${majStart(className)} get${majStart(className)}ById(Long id) ${bracketStart}"
+#        serviceMethodContent: |
+#          {{tab}}   return ${lowerCase(className)}Repository.findById(id);
+#          {{tab}}${bracketEnd}
+#      - serviceMethodParameter: "${majStart(className)} create${majStart(className)}(${majStart(className)} ${lowerCase(className)}) ${bracketStart}"
+#        serviceMethodContent: |
+#          {{tab}}   return ${lowerCase(className)}Repository.save(${lowerCase(className)});
+#          {{tab}}${bracketEnd}
+#      - serviceMethodParameter: "${majStart(className)} update${majStart(className)}(Long id, ${majStart(className)} ${lowerCase(className)}) ${bracketStart}"
+#        serviceMethodContent: |
+#          {{tab}}   ${majStart(className)} existing${majStart(className)} = ${lowerCase(className)}Repository.findById(id);
+#          {{tab}}   existing${majStart(className)} = ${lowerCase(className)};
+#          {{tab}}   existing${majStart(className)}.setId${majStart(className)}(id);
+#          {{tab}}   return ${lowerCase(className)}Repository.save(existing${lowerCase(className)});
+#          {{tab}}${bracketEnd}
+#      - serviceMethodParameter: "void delete${majStart(className)}(Long id) ${bracketStart}"
+#        serviceMethodContent: |
+#          {{tab}}   ${lowerCase(className)}Repository.deleteById(id);
+#          {{tab}}${bracketEnd}
+#    serviceSavePath: "${majStart(className)}/src/main/java/com/${lowerCase(className)}/services"
+#    serviceExtension: "java"
+#    servicePackage: "com.${lowerCase(projectName)}.services"
   controller:
     controllerImports: |
       import org.springframework.ui.Model;
@@ -125,7 +125,7 @@
       import org.springframework.beans.factory.annotation.Autowired;
     controllerAnnotations: |
       @Controller
-      {{tab}}@RequestMapping("/${className}")
+      @RequestMapping("/${className}")
     controllerExtends: ""
     controllerName: "${majStart(className)}Controller"
     controllerFieldContent: |
@@ -166,6 +166,9 @@
       {{tab}}   model.addAttribute("message", "${majStart(className)} deleted successfully");
       {{tab}}   return "redirect:/${lowerCase(classNameLink)}";
       {{tab}}${bracketEnd}
+    controllerConstructors: ""
+    controllerPathVariableKeyword: "@PathVariable"
+    controllerModelAttributeKeyword: "@RequestBody"
     controllerSavePath: "${majStart(className)}/src/main/java/com/${lowerCase(className)}/controllers"
     controllerExtension: "java"
     controllerPackage: "com.${lowerCase(projectName)}.controllers"
@@ -202,6 +205,7 @@
 - id: 2
   langageId: 2
   name: ".NET MVC with EF"
+  template: "Template"
   skeleton: "csharppsql_skeleton"
   projectNameTags:
     - "[projectNameMaj]/Controllers/HomeController.cs"
@@ -269,7 +273,6 @@
         }
     modelExtension: "cs"
     modelPackage: "${majStart(projectName)}.Models"
-    modelTemplate: "ModelTemplate"
   controller:
     controllerImports: |
       using Microsoft.AspNetCore.Mvc;
@@ -278,53 +281,33 @@
     controllerAnnotations: ""
     controllerExtends: " : Controller"
     controllerName: "[classNameMaj]Controller"
-    controllerFields:
-      - controllerFieldAnnotations: ""
-        controllerFieldContent: "private readonly [classNameMaj]Context _context;"
-    controllerFieldsForeign:
-        controllerFieldAnnotations: ""
-        controllerFieldContent: "private readonly [foreignNameMaj]Context _context[foreignNameMaj];"
-    controllerChangeInstanciation:
-      template: "o.[fieldNameMaj]=[content];"
-      value: "[fieldNameMin]"
-    controllerWhereInstanciation:
-      template: ""
-      value: ""
-    controllerForeignInstanciation:
-      template: "o.[fieldNameMaj]=await _context.[foreignType].FirstOrDefaultAsync(o => o.[referencedFieldNameMaj] == [content]);"
-      value: "[foreignNameMin]"
-    controllerForeignList: "ViewData[\"[foreignNameMin]\"] = await _context[foreignType].[foreignType].ToListAsync();"
-    controllerForeignContextParam: "[foreignNameMaj]Context context[foreignNameMaj]"
-    controllerForeignContextInstanciation: "_context[foreignNameMaj] = context[foreignNameMaj];"
-    controllerConstructors: |
-      public [classNameMaj]Controller([classNameMaj]Context context[controllerForeignContextParam]){_context = context; [controllerForeignContextInstanciation]}"
-    controllerForeignInclude: ".Include(e=>e.[foreignNameMaj])"
-    controllerMethods:
-      - controllerMethodAnnotations: |
-          ...
-        controllerMethodParameter: ""
-        controllerMethodContent: "csharp/controller/csharpControllerRead"
-      - controllerMethodAnnotations: |
-          [HttpPost]"
-        controllerMethodParameter: "string [fieldNameMin]"
-        controllerMethodContent: "csharp/controller/csharpControllerCreate"
-      - controllerMethodAnnotations: |
-          [HttpPost]"
-        controllerMethodParameter: "string [fieldNameMin]"
-        controllerMethodContent: "csharp/controller/csharpControllerEdit"
-      - controllerMethodAnnotations: |
-          [HttpPost]
-        controllerMethodParameter: ""
-        controllerMethodContent: "csharp/controller/csharpControllerDelete"
-      - controllerMethodAnnotations: |
-          ...
-        controllerMethodParameter: ""
-        controllerMethodContent: "csharp/controller/csharpControllerExists"
-    controllerSavepath: "[projectNameMaj]/Controllers"
+    controllerFieldContent: |
+#      - controllerFieldAnnotations: ""
+#        controllerFieldContent: "private readonly [classNameMaj]Context _context;"
+    controllerMethodContent: |
+#      - controllerMethodAnnotations: |
+#          ...
+#        controllerMethodParameter: ""
+#        controllerMethodContent: "csharp/controller/csharpControllerRead"
+#      - controllerMethodAnnotations: |
+#          [HttpPost]"
+#        controllerMethodParameter: "string [fieldNameMin]"
+#        controllerMethodContent: "csharp/controller/csharpControllerCreate"
+#      - controllerMethodAnnotations: |
+#          [HttpPost]"
+#        controllerMethodParameter: "string [fieldNameMin]"
+#        controllerMethodContent: "csharp/controller/csharpControllerEdit"
+#      - controllerMethodAnnotations: |
+#          [HttpPost]
+#        controllerMethodParameter: ""
+#        controllerMethodContent: "csharp/controller/csharpControllerDelete"
+#      - controllerMethodAnnotations: |
+#          ...
+#        controllerMethodParameter: ""
+#        controllerMethodContent: "csharp/controller/csharpControllerExists"
+    controllerSavePath: "[projectNameMaj]/Controllers"
     controllerExtension: "cs"
     controllerPackage: "[projectNameMaj].Controllers"
-    controllerTemplate: "ControllerTemplate"
-    controllerNameSuffix: "Controller"
   view:
     viewForeignList: "var [foreignNameMin]=(List<[foreignNameMaj]>)ViewData[\"[foreignNameMin]\"];"
     viewTableHeader: "<th scope=\"col\">[fieldNameFormattedMaj]</th>"

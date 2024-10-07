@@ -5,13 +5,13 @@ import utils.FileUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 public class TemplateEngine {
 
     private static final String LOOP_START = "{{#each ";
     private static final String LOOP_INDEX = "@index";
+    private static final String IS_LOOP_FIRST_INDEX = "@first";
     private static final String IS_LOOP_LAST_INDEX = "@last";
     private static final String LOOP_ITEM = "this";
     private static final String LOOP_END = "{{/each}}";
@@ -160,6 +160,7 @@ public class TemplateEngine {
             }
 
             loopVariables.put(LOOP_INDEX, i);
+            loopVariables.put(IS_LOOP_FIRST_INDEX, (i == 0));
             loopVariables.put(IS_LOOP_LAST_INDEX, (i == loopVar.size() - 1));
 
             String renderedContent = render(loopContent, loopVariables).stripLeading();
@@ -189,6 +190,7 @@ public class TemplateEngine {
             replaceBlockWithResult(template, start, ifEndIdx, resultContent);
         }
     }
+
 
     private int findBlockEnd(StringBuilder template, int start) {
         return template.indexOf(IF_END, start);

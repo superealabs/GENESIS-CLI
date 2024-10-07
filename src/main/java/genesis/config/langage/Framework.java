@@ -61,7 +61,10 @@ public class Framework {
         private String controllerExtension;
         private String controllerAnnotations;
         private String controllerFieldContent;
+        private String controllerConstructors;
         private String controllerMethodContent;
+        private String controllerPathVariableKeyword;
+        private String controllerModelAttributeKeyword;
     }
 
     @Getter
