@@ -130,7 +130,6 @@ public class MVCGenerator implements GenesisGenerator {
 
         // Framework-related metadata
         metadata.put("className", tableMetadata.getClassName());
-        metadata.put("classNameLink", tableMetadata.getClassName() + "s");
         metadata.put("entityName", framework.getController().getControllerName());
         metadata.put("package", framework.getController().getControllerPackage());
         metadata.put("imports", framework.getController().getControllerImports());
@@ -171,6 +170,7 @@ public class MVCGenerator implements GenesisGenerator {
         HashMap<String, Object> metadata = new HashMap<>();
         metadata.put("tableName", tableMetadata.getTableName());
         metadata.put("className", tableMetadata.getClassName());
+        metadata.put("classNameLink", tableMetadata.getClassName() + "s");
         metadata.put("entityName", tableMetadata.getClassName());
         metadata.put("projectName", projectName);
 

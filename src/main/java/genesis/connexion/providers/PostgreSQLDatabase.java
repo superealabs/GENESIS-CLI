@@ -21,9 +21,13 @@ public class PostgreSQLDatabase extends Database {
 
     @Override
     protected String getJdbcUrl(Credentials credentials) {
+        String port;
+        if (credentials.getPort()!=null)
+            port = credentials.getPort();
+        else port = getPort();
         return String.format("jdbc:postgresql://%s:%s/%s?user=%s&password=%s",
                 credentials.getHost(),
-                getPort(),
+                port,
                 credentials.getDatabaseName(),
                 credentials.getUser(),
                 credentials.getPwd());

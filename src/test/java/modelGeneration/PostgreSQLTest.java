@@ -25,8 +25,9 @@ public class PostgreSQLTest {
         credentials
                 .setHost("localhost")
                 .setDatabaseName("test_db")
-                .setUser("postgres")
-                .setPwd("nikami")
+                .setUser("nomena")
+                .setPwd("root")
+                .setPort("5432")
                 .setTrustCertificate(true)
                 .setUseSSL(true)
                 .setAllowPublicKeyRetrieval(true);
@@ -52,12 +53,12 @@ public class PostgreSQLTest {
             TableMetadata tableMetadata = entities[1]; //Employe
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
-            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
+//            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
+//            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
             String controller = mvcGenerator.generateController(framework, language, tableMetadata, "TestProject");
 
-            System.out.println("\n====== GENERATED ======\n" + model);
-            System.out.println("\n====== GENERATED ======\n" + dao);
+//            System.out.println("\n====== GENERATED ======\n" + model);
+//            System.out.println("\n====== GENERATED ======\n" + dao);
             System.out.println("\n====== GENERATED ======\n" + controller);
         } catch (Exception e) {
             throw new RuntimeException(e);
