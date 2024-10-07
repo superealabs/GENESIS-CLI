@@ -19,7 +19,7 @@ public class ProjectSetup {
 
         for (CustomFile c : framework.getAdditionnalFiles()) {
             String customFilePath = c.getName().replace("[projectNameMaj]", FileUtils.majStart(projectName));
-            FileUtils.createFile(customFilePath);
+            FileUtils.createFileStructure(customFilePath);
             String customFileContent = FileUtils.getFileContent(Constantes.DATA_PATH + "/" + c.getContent())
                     .replace("[projectNameMaj]", FileUtils.majStart(projectName));
             FileUtils.overwriteFileContent(customFilePath, customFileContent);

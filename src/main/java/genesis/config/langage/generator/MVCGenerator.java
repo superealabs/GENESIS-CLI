@@ -20,24 +20,9 @@ import java.util.Map;
 public class MVCGenerator implements GenesisGenerator {
     TemplateEngine engine = new TemplateEngine();
 
-    private static HashMap<String, Object> getHashMapDao(Framework framework, TableMetadata tableMetadata, String projectName) {
-        HashMap<String, Object> metadata = new HashMap<>();
-
-        String packageDefault;
-        packageDefault = framework.getModel().getModelDao().getPackagePath();
-
-        metadata.put("packagePath", packageDefault);
-        metadata.put("projectName", projectName);
-        metadata.put("pkColumnType", tableMetadata.getPrimaryColumn().getType());
-        metadata.put("className", tableMetadata.getClassName());
-        metadata.put("entityName", tableMetadata.getClassName());
-
-        return metadata;
-    }
-
     private Map<String, Object> getHashMapDaoUnique(Framework framework, TableMetadata[] tableMetadata, String projectName) throws Exception {
         String packageDefault;
-        packageDefault = framework.getModel().getModelDao().getPackagePath();
+        packageDefault = framework.getModelDao().getModelDaoSavePath();
 
         Database database = tableMetadata[0].getDatabase();
         String connectionString = database.getConnectionString().get(framework.getLangageId());
@@ -99,11 +84,29 @@ public class MVCGenerator implements GenesisGenerator {
         metadata.put("entityName", tableMetadata.getClassName());
         metadata.put("package", framework.getModel().getModelPackage());
         metadata.put("imports", framework.getModel().getModelImports());
-        metadata.put("extends", framework.getModel().getModelExtends());
         metadata.put("fields", framework.getModel().getModelFieldContent());
         metadata.put("methods", framework.getModel().getModelGetterSetter());
         metadata.put("constructors", framework.getModel().getModelConstructors());
         metadata.put("classAnnotations", framework.getModel().getModelAnnotations());
+        metadata.put("extends", "extends " + framework.getModelDao().getModelDaoExtends());
+
+        return metadata;
+    }
+
+    private static HashMap<String, Object> getPrimaryModelDaoHashMap(Framework framework, TableMetadata tableMetadata) {
+        HashMap<String, Object> metadata = new HashMap<>();
+
+        // Framework-related metadata
+        metadata.put("className", tableMetadata.getClassName());
+        metadata.put("entityName", framework.getModelDao().getModelDaoName());
+        metadata.put("package", framework.getModelDao().getModelDaoPackage());
+        metadata.put("imports", framework.getModelDao().getModelDaoImports());
+        metadata.put("extends", framework.getModelDao().getModelDaoExtends());
+        metadata.put("pkColumnType", tableMetadata.getPrimaryColumn().getType());
+        metadata.put("fields", framework.getModelDao().getModelDaoFieldContent());
+        metadata.put("methods", framework.getModelDao().getModelDaoMethodContent());
+        metadata.put("constructors", framework.getModelDao().getModelDaoConstructors());
+        metadata.put("classAnnotations", framework.getModelDao().getModelDaoAnnotations());
 
         return metadata;
     }
@@ -154,6 +157,31 @@ public class MVCGenerator implements GenesisGenerator {
         return metadata;
     }
 
+    private static HashMap<String, Object> getModelDaoHashMap(Framework framework, Language language, TableMetadata tableMetadata) {
+        HashMap<String, Object> metadata = new HashMap<>();
+
+        HashMap<String, Object> PrimaryModelDaoMetadata = getPrimaryModelDaoHashMap(framework, tableMetadata);
+        HashMap<String, Object> languageMetadata = getRelatedLanguageMetadata(language);
+        languageMetadata.put("classKeyword", "public interface");
+
+        metadata.putAll(PrimaryModelDaoMetadata);
+        metadata.putAll(languageMetadata);
+
+        return metadata;
+    }
+
+    private static HashMap<String, Object> getServiceHashMap(Framework framework, Language language, TableMetadata tableMetadata) {
+        HashMap<String, Object> metadata = new HashMap<>();
+
+        HashMap<String, Object> PrimaryServiceMetadata = getPrimaryServiceHashMap(framework, tableMetadata);
+        HashMap<String, Object> languageMetadata = getRelatedLanguageMetadata(language);
+
+        metadata.putAll(PrimaryServiceMetadata);
+        metadata.putAll(languageMetadata);
+
+        return metadata;
+    }
+
     private static HashMap<String, Object> getControllerHashMap(Framework framework, Language language, TableMetadata tableMetadata) {
         HashMap<String, Object> metadata = new HashMap<>();
 
@@ -168,11 +196,12 @@ public class MVCGenerator implements GenesisGenerator {
 
     private static HashMap<String, Object> getHashMapIntermediaire(TableMetadata tableMetadata, String projectName) {
         HashMap<String, Object> metadata = new HashMap<>();
+
+        metadata.put("projectName", projectName);
         metadata.put("tableName", tableMetadata.getTableName());
         metadata.put("className", tableMetadata.getClassName());
-        metadata.put("classNameLink", tableMetadata.getClassName() + "s");
         metadata.put("entityName", tableMetadata.getClassName());
-        metadata.put("projectName", projectName);
+        metadata.put("classNameLink", tableMetadata.getClassName() + "s");
 
         List<Map<String, Object>> fields = new ArrayList<>();
         for (ColumnMetadata field : tableMetadata.getColumns()) {
@@ -186,14 +215,16 @@ public class MVCGenerator implements GenesisGenerator {
 
     private static @NotNull Map<String, Object> getStringObjectMap(ColumnMetadata field) {
         Map<String, Object> fieldMap = new HashMap<>();
+
+        fieldMap.put("withGetters", true);
+        fieldMap.put("withSetters", true);
         fieldMap.put("type", field.getType());
         fieldMap.put("name", field.getName());
         fieldMap.put("isPrimaryKey", field.isPrimary());
         fieldMap.put("isForeignKey", field.isForeign());
-        fieldMap.put("withGetters", true);
-        fieldMap.put("withSetters", true);
         fieldMap.put("columnType", field.getColumnType());
         fieldMap.put("columnName", field.getReferencedColumn());
+
         return fieldMap;
     }
 
@@ -214,16 +245,21 @@ public class MVCGenerator implements GenesisGenerator {
         return engine.render(result, metadataFinally);
     }
 
-
     @Override
     public String generateDao(Framework framework, Language language, TableMetadata tableMetadata, String projectName) throws Exception {
         if (language.getId() != framework.getLangageId()) {
             throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
         }
-        String templateContent = framework.getModel().getModelDao().getContent();
+        String templateContent = loadTemplate(framework);
 
-        HashMap<String, Object> metadata = getHashMapDao(framework, tableMetadata, projectName);
-        return engine.render(templateContent, metadata);
+        // Render le template intermédiaire
+        HashMap<String, Object> metadataPrimary = getModelDaoHashMap(framework, language, tableMetadata);
+
+        String result = engine.simpleRender(templateContent, metadataPrimary);
+
+        // Render le template final
+        HashMap<String, Object> metadataFinally = getHashMapIntermediaire(tableMetadata, projectName);
+        return engine.render(result, metadataFinally);
     }
 
     @Override
@@ -231,19 +267,28 @@ public class MVCGenerator implements GenesisGenerator {
         if (language.getId() != framework.getLangageId()) {
             throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
         }
-        String templateContent = framework.getModel().getModelDao().getContent();
-
-        Map<String, Object> metadata = getHashMapDaoUnique(framework, tableMetadata, projectName);
-        return engine.render(templateContent, metadata);
+//        String templateContent = framework.getModel().getModelDao().getContent();
+//
+//        Map<String, Object> metadata = getHashMapDaoUnique(framework, tableMetadata, projectName);
+//        return engine.render(templateContent, metadata);
+        return "";
     }
 
-    public String generateService(Framework framework, Language language, TableMetadata tableMetadata, Database database, Credentials credentials, String projectName) throws IOException {
+    @Override
+    public String generateService(Framework framework, Language language, TableMetadata tableMetadata, String projectName) throws Exception {
         if (language.getId() != framework.getLangageId()) {
             throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
         }
         String templateContent = loadTemplate(framework);
 
-        return "";
+        // Render le template intermédiaire
+        HashMap<String, Object> metadataPrimary = getServiceHashMap(framework, language, tableMetadata);
+
+        String result = engine.simpleRender(templateContent, metadataPrimary);
+
+        // Render le template final
+        HashMap<String, Object> metadataFinally = getHashMapIntermediaire(tableMetadata, projectName);
+        return engine.render(result, metadataFinally);
     }
 
     @Override

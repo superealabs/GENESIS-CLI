@@ -56,21 +56,21 @@
       {{tab}}   this.${this.name} = ${this.name};{{#if !@last}}
       {{tab}}   {{/if}}{{/each}}
       {{tab}}}
-    modelSavePath: "${majStart(projectName)}/src/main/java/com/${lowerCase(projectName)}/models"
+    modelSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/models"
     modelForeignContextAttr: ""
-    modelDao:
-      name: "${majStart(className)}Repository.java"
-      packagePath: "com.${lowerCase(projectName)}.repositories"
-      isUnique: false
-      content: |
-        package ${packagePath};
-        
-        import org.springframework.data.repository.JpaRepository;
-
-        public interface ${majStart(className)}Repository extends JpaRepository<${majStart(className)}, ${pkColumnType}> {
-        }
     modelExtension: "java"
-    modelPackage: "com.${lowerCase(projectName)}.models"
+    modelPackage: "java.${group}.${lowerCase(className)}.models"
+  modelDao:
+    modelDaoImports: "import org.springframework.data.repository.JpaRepository;"
+    modelDaoAnnotations: ""
+    modelDaoExtends: "JpaRepository<${majStart(className)}, ${pkColumnType}>"
+    modelDaoName: "${majStart(className)}Repository"
+    modelDaoFieldContent: ""
+    modelDaoMethodContent: ""
+    modelDaoConstructors: ""
+    modelDaoSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/repositories"
+    modelDaoExtension: "java"
+    modelDaoPackage: "java.${group}.${lowerCase(className)}.repositories"
   service:
     serviceImports: |
       import com.${lowerCase(projectName)}.models.${majStart(className)};
@@ -82,40 +82,42 @@
     serviceExtends: ""
     serviceName: "${majStart(className)}Service"
     serviceFieldContent: |
+      {{tab}}private final ${majStart(className)}Repository ${lowerCase(className)}Repository;
+    serviceConstructors: |
       {{tab}}@Autowired
-      {{tab}}private ${majStart(className)}Repository ${lowerCase(className)};
-    serviceMethodContent:
-      {{tab}}public List<${majStart(className)}> getAll${majStart(className)}() ${bracketStart}
+      {{tab}}public ${majStart(className)}Service(${majStart(className)}Repository ${lowerCase(className)}Repository) {
+      {{tab}}   this.${lowerCase(className)}Repository = ${lowerCase(className)}Repository;
+      {{tab}}}
+    serviceMethodContent: |
+      {{tab}}public List<${majStart(className)}> getAll${majStart(className)}() {
       {{tab}}   return ${lowerCase(className)}Repository.findAll();
-      {{tab}}${bracketEnd}
+      {{tab}}}
       
-      {{tab}}public ${majStart(className)} get${majStart(className)}ById(Long id) ${bracketStart}
+      {{tab}}public ${majStart(className)} get${majStart(className)}ById(Long id) {
       {{tab}}   return ${lowerCase(className)}Repository.findById(id);
-      {{tab}}${bracketEnd}
+      {{tab}}}
       
-      {{tab}}public ${majStart(className)} create${majStart(className)}(${majStart(className)} ${lowerCase(className)}) ${bracketStart}
+      {{tab}}public ${majStart(className)} create${majStart(className)}(${majStart(className)} ${lowerCase(className)}) {
       {{tab}}   return ${lowerCase(className)}Repository.save(${lowerCase(className)});
-      {{tab}}${bracketEnd}
+      {{tab}}}
       
-      {{tab}}public ${majStart(className)} update${majStart(className)}(Long id, ${majStart(className)} ${lowerCase(className)}) ${bracketStart}
+      {{tab}}public ${majStart(className)} update${majStart(className)}(Long id, ${majStart(className)} ${lowerCase(className)}) {
       {{tab}}   ${majStart(className)} existing${majStart(className)} = ${lowerCase(className)}Repository.findById(id);
       {{tab}}   existing${majStart(className)} = ${lowerCase(className)};
       {{tab}}   existing${majStart(className)}.setId${majStart(className)}(id);
       {{tab}}   return ${lowerCase(className)}Repository.save(existing${lowerCase(className)});
-      {{tab}}${bracketEnd}
+      {{tab}}}
       
-      {{tab}}public void delete${majStart(className)}(Long id) ${bracketStart}
+      {{tab}}public void delete${majStart(className)}(Long id) {
       {{tab}}   ${lowerCase(className)}Repository.deleteById(id);
-      {{tab}}${bracketEnd}
-    serviceConstructors: ""
-    serviceSavePath: "${majStart(className)}/src/main/java/com/${lowerCase(className)}/services"
+      {{tab}}}
+    serviceSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/services"
     serviceExtension: "java"
-    servicePackage: "com.${lowerCase(projectName)}.services"
+    servicePackage: "java.${group}.${lowerCase(className)}.services"
   controller:
     controllerImports: |
       import org.springframework.ui.Model;
       import com.${lowerCase(projectName)}.models.${majStart(className)};
-      import com.${lowerCase(projectName)}.entities.${majStart(className)};
       import org.springframework.stereotype.Controller;
       import org.springframework.web.bind.annotation.*;
       import com.${lowerCase(projectName)}.repositories.${majStart(className)}Repository;
@@ -123,54 +125,54 @@
       import org.springframework.beans.factory.annotation.Autowired;
     controllerAnnotations: |
       @Controller
-      @RequestMapping("/${className}")
+      @RequestMapping("/${lowerCase(classNameLink)}")
     controllerExtends: ""
     controllerName: "${majStart(className)}Controller"
     controllerFieldContent: |
       {{tab}}private final ${majStart(className)}Service ${lowerCase(className)}Service;
     controllerConstructors: |
       {{tab}}@Autowired
-      {{tab}}public ${majStart(className)}Controller(${majStart(className)}Service ${lowerCase(className)}Service) ${bracketStart}
+      {{tab}}public ${majStart(className)}Controller(${majStart(className)}Service ${lowerCase(className)}Service) {
       {{tab}}   this.${lowerCase(className)}Service = ${lowerCase(className)}Service;
-      {{tab}}${bracketEnd}n
+      {{tab}}}
     controllerMethodContent: |
       {{tab}}@GetMapping
-      {{tab}}public String getAll${majStart(classNameLink)}(Model model) ${bracketStart}
+      {{tab}}public String getAll${majStart(classNameLink)}(Model model) {
       {{tab}}   List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(className)}();
       {{tab}}   model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
       {{tab}}   return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
-      {{tab}}${bracketEnd}
+      {{tab}}}
   
       {{tab}}@GetMapping("/{id}")
-      {{tab}}public String get${majStart(className)}ById(@PathVariable Long id, Model model) ${bracketStart}
+      {{tab}}public String get${majStart(className)}ById(@PathVariable Long id, Model model) {
       {{tab}}   ${majStart(className)} ${lowerCase(className)} = ${lowerCase(className)}Service.get${majStart(className)}ById(id);
       {{tab}}   model.addAttribute("${lowerCase(className)}", ${lowerCase(className)});
       {{tab}}   return "${lowerCase(classNameLink)}/view-list-${lowerCase(className)}";
-      {{tab}}${bracketEnd}
+      {{tab}}}
   
       {{tab}}@PostMapping
-      {{tab}}public String create${majStart(className)}(@RequestBody ${majStart(className)} ${lowerCase(className)}, Model model) ${bracketStart}
+      {{tab}}public String create${majStart(className)}(@RequestBody ${majStart(className)} ${lowerCase(className)}, Model model) {
       {{tab}}   ${majStart(className)} new${majStart(className)} = ${lowerCase(className)}Service.create${majStart(className)}(${lowerCase(className)});
       {{tab}}   model.addAttribute("new${majStart(className)}", new${majStart(className)});
       {{tab}}   return "${lowerCase(classNameLink)}/create-list-${lowerCase(className)}";
-      {{tab}}${bracketEnd}
+      {{tab}}}
   
       {{tab}}@PutMapping("/{id}")
-      {{tab}}public String update${majStart(className)}(@PathVariable Long id, @RequestBody ${majStart(className)} ${lowerCase(className)}, Model model) ${bracketStart}
+      {{tab}}public String update${majStart(className)}(@PathVariable Long id, @RequestBody ${majStart(className)} ${lowerCase(className)}, Model model) {
       {{tab}}   ${majStart(className)} update${majStart(className)} = ${lowerCase(className)}Service.update${majStart(className)}(id, ${lowerCase(className)});
       {{tab}}   model.addAttribute("update${majStart(className)}", update${majStart(className)});
       {{tab}}   return "${lowerCase(classNameLink)}/update-list-${lowerCase(className)}";
-      {{tab}}${bracketEnd}
+      {{tab}}}
   
       {{tab}}@DeleteMapping("/{id}")
-      {{tab}}public String delete${majStart(className)}ById(@PathVariable Long id, Model model) ${bracketStart}
+      {{tab}}public String delete${majStart(className)}ById(@PathVariable Long id, Model model) {
       {{tab}}   ${lowerCase(className)}Service.delete${majStart(className)}(id);
       {{tab}}   model.addAttribute("message", "${majStart(className)} deleted successfully");
       {{tab}}   return "redirect:/${lowerCase(classNameLink)}";
-      {{tab}}${bracketEnd}
-    controllerSavePath: "${majStart(className)}/src/main/java/com/${lowerCase(className)}/controllers"
+      {{tab}}}
+    controllerSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/controllers"
     controllerExtension: "java"
-    controllerPackage: "com.${lowerCase(projectName)}.controllers"
+    controllerPackage: "java.${group}.${lowerCase(className)}.controllers"
   view:
     viewForeignList: ""
     viewTableHeader: "<th scope=\"col\">[fieldNameFormattedMaj]</th>"
@@ -249,29 +251,41 @@
       {{tab}}}
     modelSavePath: "[projectNameMaj]/Models"
     modelForeignContextAttr: "public DbSet<[classNameMaj]> [classNameMaj] { get; set; }"
-    modelDao:
-      name: "${majStart(className)}Repository.java"
-      packagePath: "${majStart(projectName)}.Data"
-      isUnique: true
-      content: |
-        using Microsoft.EntityFrameworkCore;
-        using System.ComponentModel.DataAnnotations;
-        using ${projectName}.Models;
-        
-        namespace ${packageValue};
-        
-        public class ${projectName}Context : DbContext
-        {
-            {{#each entities}}
-            public DbSet<${this}> ${this}s { get; set; }
-            {{/each}}
-            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            {
-                optionsBuilder.Use${DBType}(@"${connectionString}");
-            }
-        }
     modelExtension: "cs"
     modelPackage: "${majStart(projectName)}.Models"
+#    modelDao:
+#      name: "${majStart(className)}Repository.java"
+#      packagePath: "${majStart(projectName)}.Data"
+#      isUnique: true
+#      content: |
+#
+#
+#        namespace ${packageValue};
+#
+#        public class ${projectName}Context : DbContext
+#        {
+#            {{#each entities}}
+#            public DbSet<${this}> ${this}s { get; set; }
+#            {{/each}}
+#            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#            {
+#                optionsBuilder.Use${DBType}(@"${connectionString}");
+#            }
+#        }
+  modelDao:
+    modelDaoImports: |
+      using Microsoft.EntityFrameworkCore;
+      using System.ComponentModel.DataAnnotations;
+      using ${projectName}.Models;
+    modelDaoAnnotations: ""
+    modelDaoExtends: "JpaRepository<${majStart(className)}, ${pkColumnType}>"
+    modelDaoName: "interface ${majStart(className)}Repository"
+    modelDaoFieldContent: ""
+    modelDaoMethodContent: ""
+    modelDaoConstructors: ""
+    modelDaoSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/repositories"
+    modelDaoExtension: "java"
+    modelDaoPackage: "java.${group}.${lowerCase(className)}.repositories"
   controller:
     controllerImports: |
       using Microsoft.AspNetCore.Mvc;

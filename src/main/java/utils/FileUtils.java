@@ -1,17 +1,18 @@
 package utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.google.gson.GsonBuilder;
 import genesis.connexion.Database;
+import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import genesis.connexion.adapter.DatabaseTypeAdapter;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.io.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Scanner;
+import java.nio.file.Files;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.zip.ZipEntry;
+import java.time.LocalDateTime;
 import java.util.zip.ZipInputStream;
 
 public class FileUtils {
@@ -92,25 +93,32 @@ public class FileUtils {
     }
 
 
-    public static void createFile(String filePath) throws IOException {
+    public static void createFileStructure(String filePath) {
         filePath = filePath.replace("\\", "/");
-        String filename = "";
-        String currentChar;
+        String[] folders = filePath.split("/");
+        StringBuilder currentPath = new StringBuilder();
 
-        File file;
-        for (int i = 0; i < filePath.toCharArray().length; ++i) {
-            currentChar = String.valueOf(filePath.charAt(i));
-            if (currentChar.equals("/") && !filename.equals(".") && !filename.isEmpty()) {
-                file = new File(filename);
+        for (String folder : folders) {
+            currentPath.append(folder).append("/");
+            File file = new File(currentPath.toString());
+
+            if (!file.exists()) {
                 file.mkdir();
             }
-
-            filename = filename + currentChar;
         }
-
-        file = new File(filename);
-        file.createNewFile();
     }
+
+
+    public static void createFile(String filePath, String fileName, String fileExtension, String fileContent) throws IOException {
+        // creation de la structure du projet
+        createFileStructure(filePath);
+
+        // creation du fichier et son contenu
+        File file = new File(filePath + "/" + fileName + "." + fileExtension);
+        file.createNewFile();
+        Files.write(file.toPath(), fileContent.getBytes());
+    }
+
 
     public static void createDirectory(String filePath) {
         String filename = "";

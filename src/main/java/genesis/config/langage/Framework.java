@@ -20,6 +20,7 @@ public class Framework {
     private String skeleton;
     private String template;
     private Service service;
+    private ModelDao modelDao;
     private Controller controller;
     private NavbarLink navbarLinks;
     private String[] projectNameTags;
@@ -29,7 +30,6 @@ public class Framework {
     @Getter
     @Setter
     public static class Model {
-        private ModelDao modelDao;
         private String modelImports;
         private String modelExtends;
         private String modelPackage;
@@ -45,10 +45,16 @@ public class Framework {
     @Getter
     @Setter
     public static class ModelDao {
-        private String name;
-        private String content;
-        private Boolean isUnique;
-        private String packagePath;
+        private String modelDaoName;
+        private String modelDaoImports;
+        private String modelDaoExtends;
+        private String modelDaoPackage;
+        private String modelDaoSavePath;
+        private String modelDaoExtension;
+        private String modelDaoAnnotations;
+        private String modelDaoFieldContent;
+        private String modelDaoConstructors;
+        private String modelDaoMethodContent;
     }
 
     @Getter

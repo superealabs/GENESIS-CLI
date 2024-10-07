@@ -25,8 +25,8 @@ public class PostgreSQLTest {
         credentials
                 .setHost("localhost")
                 .setDatabaseName("test_db")
-                .setUser("nomena")
-                .setPwd("root")
+                .setUser("postgres")
+                .setPwd("nikami")
                 .setPort("5432")
                 .setTrustCertificate(true)
                 .setUseSSL(true)
@@ -53,13 +53,16 @@ public class PostgreSQLTest {
             TableMetadata tableMetadata = entities[1]; //Employe
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
-//            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
-//            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
+            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
+            String service = mvcGenerator.generateService(framework, language, tableMetadata, "TestProject");
             String controller = mvcGenerator.generateController(framework, language, tableMetadata, "TestProject");
 
-//            System.out.println("\n====== GENERATED ======\n" + model);
-//            System.out.println("\n====== GENERATED ======\n" + dao);
-            System.out.println("\n====== GENERATED ======\n" + controller);
+            FileUtils.createFile(framework.getModel().getModelSavePath(), tableMetadata.getClassName(), framework.getModel().getModelExtension(), model);
+            FileUtils.createFile(framework.getService().getServiceSavePath(), framework.getService().getServiceName(), framework.getService().getServiceExtension(), service);
+            FileUtils.createFile(framework.getModelDao().getModelDaoSavePath(), framework.getModelDao().getModelDaoName(), framework.getModelDao().getModelDaoExtension(), dao);
+            FileUtils.createFile(framework.getController().getControllerSavePath(), framework.getController().getControllerName(), framework.getController().getControllerExtension(), controller);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
