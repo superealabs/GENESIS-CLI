@@ -71,48 +71,46 @@
         }
     modelExtension: "java"
     modelPackage: "com.${lowerCase(projectName)}.models"
-#  service:
-#    serviceImports: |
-#      import com.${lowerCase(projectName)}.models.${majStart(className)};
-#      import org.springframework.stereotype.Service;
-#      import com.${lowerCase(projectName)}.repositories.${majStart(className)}Repository;
-#      import org.springframework.beans.factory.annotation.Autowired;
-#    serviceAnnotations: |
-#      @Service
-#    serviceExtends:
-#    serviceName: "${majStart(className)}Service"
-#    serviceFields:
-#      - serviceFieldAnnotations: |
-#          {{tab}}@Autowired
-#        serviceFieldContent: |
-#          {{tab}}private ${majStart(className)}Repository ${lowerCase(className)};
-#    serviceMethods:
-#      - serviceMethodParameter: "List<${majStart(className)}> getAll${majStart(className)}() ${bracketStart}"
-#        serviceMethodContent: |
-#          {{tab}}   return ${lowerCase(className)}Repository.findAll();
-#          {{tab}}${bracketEnd}
-#      - serviceMethodParameter: "${majStart(className)} get${majStart(className)}ById(Long id) ${bracketStart}"
-#        serviceMethodContent: |
-#          {{tab}}   return ${lowerCase(className)}Repository.findById(id);
-#          {{tab}}${bracketEnd}
-#      - serviceMethodParameter: "${majStart(className)} create${majStart(className)}(${majStart(className)} ${lowerCase(className)}) ${bracketStart}"
-#        serviceMethodContent: |
-#          {{tab}}   return ${lowerCase(className)}Repository.save(${lowerCase(className)});
-#          {{tab}}${bracketEnd}
-#      - serviceMethodParameter: "${majStart(className)} update${majStart(className)}(Long id, ${majStart(className)} ${lowerCase(className)}) ${bracketStart}"
-#        serviceMethodContent: |
-#          {{tab}}   ${majStart(className)} existing${majStart(className)} = ${lowerCase(className)}Repository.findById(id);
-#          {{tab}}   existing${majStart(className)} = ${lowerCase(className)};
-#          {{tab}}   existing${majStart(className)}.setId${majStart(className)}(id);
-#          {{tab}}   return ${lowerCase(className)}Repository.save(existing${lowerCase(className)});
-#          {{tab}}${bracketEnd}
-#      - serviceMethodParameter: "void delete${majStart(className)}(Long id) ${bracketStart}"
-#        serviceMethodContent: |
-#          {{tab}}   ${lowerCase(className)}Repository.deleteById(id);
-#          {{tab}}${bracketEnd}
-#    serviceSavePath: "${majStart(className)}/src/main/java/com/${lowerCase(className)}/services"
-#    serviceExtension: "java"
-#    servicePackage: "com.${lowerCase(projectName)}.services"
+  service:
+    serviceImports: |
+      import com.${lowerCase(projectName)}.models.${majStart(className)};
+      import org.springframework.stereotype.Service;
+      import com.${lowerCase(projectName)}.repositories.${majStart(className)}Repository;
+      import org.springframework.beans.factory.annotation.Autowired;
+    serviceAnnotations: |
+      @Service
+    serviceExtends: ""
+    serviceName: "${majStart(className)}Service"
+    serviceFieldContent: |
+      {{tab}}@Autowired
+      {{tab}}private ${majStart(className)}Repository ${lowerCase(className)};
+    serviceMethodContent:
+      {{tab}}public List<${majStart(className)}> getAll${majStart(className)}() ${bracketStart}
+      {{tab}}   return ${lowerCase(className)}Repository.findAll();
+      {{tab}}${bracketEnd}
+      
+      {{tab}}public ${majStart(className)} get${majStart(className)}ById(Long id) ${bracketStart}
+      {{tab}}   return ${lowerCase(className)}Repository.findById(id);
+      {{tab}}${bracketEnd}
+      
+      {{tab}}public ${majStart(className)} create${majStart(className)}(${majStart(className)} ${lowerCase(className)}) ${bracketStart}
+      {{tab}}   return ${lowerCase(className)}Repository.save(${lowerCase(className)});
+      {{tab}}${bracketEnd}
+      
+      {{tab}}public ${majStart(className)} update${majStart(className)}(Long id, ${majStart(className)} ${lowerCase(className)}) ${bracketStart}
+      {{tab}}   ${majStart(className)} existing${majStart(className)} = ${lowerCase(className)}Repository.findById(id);
+      {{tab}}   existing${majStart(className)} = ${lowerCase(className)};
+      {{tab}}   existing${majStart(className)}.setId${majStart(className)}(id);
+      {{tab}}   return ${lowerCase(className)}Repository.save(existing${lowerCase(className)});
+      {{tab}}${bracketEnd}
+      
+      {{tab}}public void delete${majStart(className)}(Long id) ${bracketStart}
+      {{tab}}   ${lowerCase(className)}Repository.deleteById(id);
+      {{tab}}${bracketEnd}
+    serviceConstructors: ""
+    serviceSavePath: "${majStart(className)}/src/main/java/com/${lowerCase(className)}/services"
+    serviceExtension: "java"
+    servicePackage: "com.${lowerCase(projectName)}.services"
   controller:
     controllerImports: |
       import org.springframework.ui.Model;
@@ -129,8 +127,12 @@
     controllerExtends: ""
     controllerName: "${majStart(className)}Controller"
     controllerFieldContent: |
+      {{tab}}private final ${majStart(className)}Service ${lowerCase(className)}Service;
+    controllerConstructors: |
       {{tab}}@Autowired
-      {{tab}}private ${majStart(className)}Service ${lowerCase(className)}Service;
+      {{tab}}public ${majStart(className)}Controller(${majStart(className)}Service ${lowerCase(className)}Service) ${bracketStart}
+      {{tab}}   this.${lowerCase(className)}Service = ${lowerCase(className)}Service;
+      {{tab}}${bracketEnd}n
     controllerMethodContent: |
       {{tab}}@GetMapping
       {{tab}}public String getAll${majStart(classNameLink)}(Model model) ${bracketStart}
@@ -140,35 +142,32 @@
       {{tab}}${bracketEnd}
   
       {{tab}}@GetMapping("/{id}")
-      {{tab}}public String get${majStart(className)}ById(${pathVariableKeyword} Long id, Model model) ${bracketStart}
+      {{tab}}public String get${majStart(className)}ById(@PathVariable Long id, Model model) ${bracketStart}
       {{tab}}   ${majStart(className)} ${lowerCase(className)} = ${lowerCase(className)}Service.get${majStart(className)}ById(id);
       {{tab}}   model.addAttribute("${lowerCase(className)}", ${lowerCase(className)});
       {{tab}}   return "${lowerCase(classNameLink)}/view-list-${lowerCase(className)}";
       {{tab}}${bracketEnd}
   
       {{tab}}@PostMapping
-      {{tab}}public String create${majStart(className)}(${modelAttributeKeyword} ${majStart(className)} ${lowerCase(className)}, Model model) ${bracketStart}
+      {{tab}}public String create${majStart(className)}(@RequestBody ${majStart(className)} ${lowerCase(className)}, Model model) ${bracketStart}
       {{tab}}   ${majStart(className)} new${majStart(className)} = ${lowerCase(className)}Service.create${majStart(className)}(${lowerCase(className)});
       {{tab}}   model.addAttribute("new${majStart(className)}", new${majStart(className)});
       {{tab}}   return "${lowerCase(classNameLink)}/create-list-${lowerCase(className)}";
       {{tab}}${bracketEnd}
   
       {{tab}}@PutMapping("/{id}")
-      {{tab}}public String update${majStart(className)}(${pathVariableKeyword} Long id, ${modelAttributeKeyword} ${majStart(className)} ${lowerCase(className)}, Model model) ${bracketStart}
+      {{tab}}public String update${majStart(className)}(@PathVariable Long id, @RequestBody ${majStart(className)} ${lowerCase(className)}, Model model) ${bracketStart}
       {{tab}}   ${majStart(className)} update${majStart(className)} = ${lowerCase(className)}Service.update${majStart(className)}(id, ${lowerCase(className)});
       {{tab}}   model.addAttribute("update${majStart(className)}", update${majStart(className)});
       {{tab}}   return "${lowerCase(classNameLink)}/update-list-${lowerCase(className)}";
       {{tab}}${bracketEnd}
   
       {{tab}}@DeleteMapping("/{id}")
-      {{tab}}public String delete${majStart(className)}ById(${pathVariableKeyword} Long id, Model model) ${bracketStart}
+      {{tab}}public String delete${majStart(className)}ById(@PathVariable Long id, Model model) ${bracketStart}
       {{tab}}   ${lowerCase(className)}Service.delete${majStart(className)}(id);
       {{tab}}   model.addAttribute("message", "${majStart(className)} deleted successfully");
       {{tab}}   return "redirect:/${lowerCase(classNameLink)}";
       {{tab}}${bracketEnd}
-    controllerConstructors: ""
-    controllerPathVariableKeyword: "@PathVariable"
-    controllerModelAttributeKeyword: "@RequestBody"
     controllerSavePath: "${majStart(className)}/src/main/java/com/${lowerCase(className)}/controllers"
     controllerExtension: "java"
     controllerPackage: "com.${lowerCase(projectName)}.controllers"

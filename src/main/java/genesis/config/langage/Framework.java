@@ -19,6 +19,7 @@ public class Framework {
     private int langageId;
     private String skeleton;
     private String template;
+    private Service service;
     private Controller controller;
     private NavbarLink navbarLinks;
     private String[] projectNameTags;
@@ -52,6 +53,21 @@ public class Framework {
 
     @Getter
     @Setter
+    public static class Service {
+        private String serviceName;
+        private String serviceImports;
+        private String serviceExtends;
+        private String servicePackage;
+        private String serviceSavePath;
+        private String serviceExtension;
+        private String serviceAnnotations;
+        private String serviceFieldContent;
+        private String serviceConstructors;
+        private String serviceMethodContent;
+    }
+
+    @Getter
+    @Setter
     public static class Controller {
         private String controllerName;
         private String controllerImports;
@@ -63,8 +79,6 @@ public class Framework {
         private String controllerFieldContent;
         private String controllerConstructors;
         private String controllerMethodContent;
-        private String controllerPathVariableKeyword;
-        private String controllerModelAttributeKeyword;
     }
 
     @Getter

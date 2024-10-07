@@ -108,6 +108,23 @@ public class MVCGenerator implements GenesisGenerator {
         return metadata;
     }
 
+    private static HashMap<String, Object> getPrimaryServiceHashMap(Framework framework, TableMetadata tableMetadata) {
+        HashMap<String, Object> metadata = new HashMap<>();
+
+        // Framework-related metadata
+        metadata.put("className", tableMetadata.getClassName());
+        metadata.put("entityName", framework.getService().getServiceName());
+        metadata.put("package", framework.getService().getServicePackage());
+        metadata.put("imports", framework.getService().getServiceImports());
+        metadata.put("extends", framework.getService().getServiceExtends());
+        metadata.put("fields", framework.getService().getServiceFieldContent());
+        metadata.put("methods", framework.getService().getServiceMethodContent());
+        metadata.put("constructors", framework.getService().getServiceConstructors());
+        metadata.put("classAnnotations", framework.getService().getServiceAnnotations());
+
+        return metadata;
+    }
+
     private static HashMap<String, Object> getPrimaryControllerHashMap(Framework framework, TableMetadata tableMetadata) {
         HashMap<String, Object> metadata = new HashMap<>();
 
@@ -122,8 +139,6 @@ public class MVCGenerator implements GenesisGenerator {
         metadata.put("methods", framework.getController().getControllerMethodContent());
         metadata.put("constructors", framework.getController().getControllerConstructors());
         metadata.put("classAnnotations", framework.getController().getControllerAnnotations());
-        metadata.put("pathVariableKeyword", framework.getController().getControllerPathVariableKeyword());
-        metadata.put("modelAttributeKeyword", framework.getController().getControllerModelAttributeKeyword());
 
         return metadata;
     }
