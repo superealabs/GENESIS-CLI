@@ -242,7 +242,13 @@ public class MVCGenerator implements GenesisGenerator {
 
         // Render le template final
         HashMap<String, Object> metadataFinally = getHashMapIntermediaire(tableMetadata, projectName);
-        return engine.render(result, metadataFinally);
+
+        // Creation of the corresponding file
+        result = engine.render(result, metadataFinally);
+        String fileSavePath = framework.getModel().getModelSavePath();
+        FileUtils.createFile(engine.simpleRender(fileSavePath, metadataFinally), tableMetadata.getClassName(), framework.getModel().getModelExtension(), result);
+
+        return result;
     }
 
     @Override
@@ -259,6 +265,13 @@ public class MVCGenerator implements GenesisGenerator {
 
         // Render le template final
         HashMap<String, Object> metadataFinally = getHashMapIntermediaire(tableMetadata, projectName);
+
+        // Creation of the corresponding file
+        result = engine.render(result, metadataFinally);
+        String fileSavePath = framework.getModelDao().getModelDaoSavePath();
+        String fileName = framework.getModelDao().getModelDaoName();
+        FileUtils.createFile(engine.simpleRender(fileSavePath, metadataFinally), engine.simpleRender(fileName, metadataFinally), framework.getModelDao().getModelDaoExtension(), result);
+
         return engine.render(result, metadataFinally);
     }
 
@@ -288,6 +301,13 @@ public class MVCGenerator implements GenesisGenerator {
 
         // Render le template final
         HashMap<String, Object> metadataFinally = getHashMapIntermediaire(tableMetadata, projectName);
+
+        // Creation of the corresponding file
+        result = engine.render(result, metadataFinally);
+        String fileSavePath = framework.getService().getServiceSavePath();
+        String fileName = framework.getService().getServiceName();
+        FileUtils.createFile(engine.simpleRender(fileSavePath, metadataFinally), engine.simpleRender(fileName, metadataFinally), framework.getService().getServiceExtension(), result);
+
         return engine.render(result, metadataFinally);
     }
 
@@ -305,6 +325,13 @@ public class MVCGenerator implements GenesisGenerator {
 
         // Render le template final
         HashMap<String, Object> metadataFinally = getHashMapIntermediaire(tableMetadata, projectName);
+
+        // Creation of the corresponding file
+        result = engine.render(result, metadataFinally);
+        String fileSavePath = framework.getController().getControllerSavePath();
+        String fileName = framework.getController().getControllerName();
+        FileUtils.createFile(engine.simpleRender(fileSavePath, metadataFinally), engine.simpleRender(fileName, metadataFinally), framework.getController().getControllerExtension(), result);
+
         return engine.render(result, metadataFinally);
     }
 
