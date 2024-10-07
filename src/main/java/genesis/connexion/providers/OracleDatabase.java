@@ -20,9 +20,13 @@ public class OracleDatabase extends Database {
 
     @Override
     protected String getJdbcUrl(Credentials credentials) {
+        String port;
+        if (credentials.getPort()!=null)
+            port = credentials.getPort();
+        else port = getPort();
         return String.format("jdbc:oracle:thin:@//%s:%d/%s",
                 credentials.getHost(),
-                Integer.parseInt(getPort()),
+                Integer.parseInt(port),
                 credentials.getDatabaseName());
     }
 
