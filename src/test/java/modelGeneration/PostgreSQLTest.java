@@ -5,6 +5,7 @@ import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.config.langage.generator.GenesisGenerator;
 import genesis.config.langage.generator.MVCGenerator;
+import genesis.config.langage.generator.ProjectGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.connexion.providers.PostgreSQLDatabase;
@@ -50,19 +51,30 @@ public class PostgreSQLTest {
 
         try (Connection connection = database.getConnection(credentials)) {
             TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
-            TableMetadata tableMetadata = entities[1]; //Employe
-
             GenesisGenerator mvcGenerator = new MVCGenerator();
-            mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
-            mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
-            mvcGenerator.generateService(framework, language, tableMetadata, "TestProject");
-            mvcGenerator.generateController(framework, language, tableMetadata, "TestProject");
+
+            for (int i = 0; i < entities.length; i++) {
+                TableMetadata tableMetadata = entities[i];
+                mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
+                mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
+                mvcGenerator.generateService(framework, language, tableMetadata, "TestProject");
+                mvcGenerator.generateController(framework, language, tableMetadata, "TestProject");
+            }
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    @Test
+    void generateProject() throws IOException {
+        try {
+            ProjectGenerator projectGenerator = new ProjectGenerator();
+            projectGenerator.generateMavenProject(1, 0, 0, 0, credentials, "TestProject");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Test
     void PostgreSQLxNET() throws IOException {

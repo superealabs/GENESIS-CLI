@@ -7,10 +7,14 @@ import genesis.connexion.adapter.DatabaseTypeAdapter;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Scanner;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.time.LocalDateTime;
 import java.util.zip.ZipInputStream;
@@ -119,6 +123,39 @@ public class FileUtils {
         Files.write(file.toPath(), fileContent.getBytes());
     }
 
+    public static void copyFile(String sourceFilePath, String destinationFilePath) throws IOException {
+        Path destinationPath = Paths.get(destinationFilePath);
+
+        try (InputStream inputStream = new FileInputStream(sourceFilePath)) {
+            Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new IOException("Erreur lors de la copie du fichier: " + e.getMessage(), e);
+        }
+    }
+
+    public static void copyDirectory(String sourceDir, String destDir) throws IOException {
+        Path srcPath = Paths.get(sourceDir);
+        Path destPath = Paths.get(destDir);
+
+        if (!Files.exists(destPath)) {
+            Files.createDirectories(destPath);
+        }
+
+        try (Stream<Path> paths = Files.walk(srcPath)) {
+            paths.forEach(path -> {
+                Path destination = destPath.resolve(srcPath.relativize(path));
+                try {
+                    if (Files.isDirectory(path)) {
+                        Files.createDirectories(destination);
+                    } else {
+                        copyFile(path.toString(), destination.toString());
+                    }
+                } catch (IOException e) {
+                    e.getMessage();
+                }
+            });
+        }
+    }
 
     public static void createDirectory(String filePath) {
         String filename = "";

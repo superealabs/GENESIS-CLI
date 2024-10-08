@@ -1,0 +1,60 @@
+- id: 1
+  name: "Maven"
+  projectFilesEdits:
+    - fileType: "MainFile"
+      fileName: "${majStart(projectName)}Application.java"
+      content: |
+
+      sourcePath: "data_genesis/maven/src/main/java/${groupLink}/test/"
+      destinationPath: "${majStart(projectName)}/src/main/java/${groupLink}/test/"
+
+    - fileType: "TestFile"
+      fileName: "${majStart(projectName)}ApplicationTests.java"
+      content: |
+
+      sourcePath: "data_genesis/maven/src/test/java/${groupLink}/test/"
+      destinationPath: "${majStart(projectName)}/src/test/java/${groupLink}/test/"
+
+    - fileType: "ApplicationProperties"
+      fileName: "application.properties"
+      content: |
+
+      sourcePath: "data_genesis/maven/src/main/resources/"
+      destinationPath: "${majStart(projectName)}/src/main/resources/"
+
+    - fileType: "Xml"
+      fileName: "pom.xml"
+      content: |
+
+      sourcePath: "data_genesis/maven/"
+      destinationPath: "${majStart(projectName)}/"
+  projectFiles:
+    - fileType: "GitIgnore"
+      fileName: ".gitignore"
+      sourcePath: "data_genesis/maven/"
+      destinationPath: "${majStart(projectName)}/"
+
+    - fileType: "Helper"
+      fileName: "HELP.md"
+      sourcePath: "data_genesis/maven/"
+      destinationPath: "${majStart(projectName)}/"
+
+    - fileType: "Script"
+      fileName: "mvnw"
+      sourcePath: "data_genesis/maven/"
+      destinationPath: "${majStart(projectName)}/"
+
+    - fileType: "ScriptWin"
+      fileName: "mvnw.cmd"
+      sourcePath: "data_genesis/maven/"
+      destinationPath: "${majStart(projectName)}/"
+  projectFolders:
+    - folderType: "MavenFolder"
+      folderName: ".mvn"
+      sourcePath: "data_genesis/maven/.mvn"
+      destinationPath: "${majStart(projectName)}/"
+
+    - folderType: "resourceFolder"
+      folderName: "resources"
+      sourcePath: "data_genesis/maven/src/main/resources"
+      destinationPath: "${majStart(projectName)}/src/main/"

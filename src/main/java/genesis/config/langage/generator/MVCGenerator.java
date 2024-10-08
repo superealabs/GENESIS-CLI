@@ -194,7 +194,7 @@ public class MVCGenerator implements GenesisGenerator {
         return metadata;
     }
 
-    private static HashMap<String, Object> getHashMapIntermediaire(TableMetadata tableMetadata, String projectName) {
+    public static HashMap<String, Object> getHashMapIntermediaire(TableMetadata tableMetadata, String projectName) {
         HashMap<String, Object> metadata = new HashMap<>();
 
         metadata.put("projectName", projectName);
