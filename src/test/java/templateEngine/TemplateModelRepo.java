@@ -595,45 +595,45 @@ public class TemplateModelRepo {
     @Test
     void templateEngineRenderService() throws Exception {
         String template = """
-                    ${namespace} ${package}${namespaceStart}
+                ${namespace} ${package}${namespaceStart}
                
-                    import com.${lowerCase(projectName)}.models.${majStart(className)};
-                    import org.springframework.stereotype.Service;
-                    import com.${lowerCase(projectName)}.repositories.${majStart(className)}Repository;
-                    import org.springframework.beans.factory.annotation.Autowired;
-               
-                    ${serviceAnnotations}
-                    ${classKeyword} ${serviceName} ${extends}${bracketStart}
-               
-                    {{tab}}@Autowired
-                    {{tab}}private ${majStart(className)}Repository ${lowerCase(className)}Repository;
-               
-                    {{tab}}public List<${majStart(className)}> getAll${majStart(className)}() ${bracketStart}
-                    {{tab}}    return ${lowerCase(className)}Repository.findAll();
-                    {{tab}}${bracketEnd}
-               
-                    {{tab}}public ${majStart(className)} get${majStart(className)}ById(Long id) ${bracketStart}
-                    {{tab}}    return ${lowerCase(className)}Repository.findById(id);
-                    {{tab}}${bracketEnd}
-               
-                    {{tab}}public ${majStart(className)} create${majStart(className)}(${majStart(className)} ${lowerCase(className)}) ${bracketStart}
-                    {{tab}}    return ${lowerCase(className)}Repository.save(${lowerCase(className)});
-                    {{tab}}${bracketEnd}
-              
-                    {{tab}}public ${majStart(className)} update${majStart(className)}(Long id, ${majStart(className)} ${lowerCase(className)}) ${bracketStart}
-                    {{tab}}    ${majStart(className)} existing${majStart(className)} = ${lowerCase(className)}Repository.findById(id);
-                    {{tab}}    existing${majStart(className)} = ${lowerCase(className)};
-                    {{tab}}    existing${majStart(className)}.setId${majStart(className)}(id);
-                    {{tab}}    return ${lowerCase(className)}Repository.save(existing${lowerCase(className)});
-                    {{tab}}${bracketEnd}
-               
-                    {{tab}}public void delete${majStart(className)}(Long id) ${bracketStart}
-                    {{tab}}    ${lowerCase(className)}Repository.deleteById(id);
-                    {{tab}}${bracketEnd}
-               
-                    ${bracketEnd}
-                    ${namespaceEnd}
-               """;
+                import com.${lowerCase(projectName)}.models.${majStart(className)};
+                import org.springframework.stereotype.Service;
+                import com.${lowerCase(projectName)}.repositories.${majStart(className)}Repository;
+                import org.springframework.beans.factory.annotation.Autowired;
+                
+                ${serviceAnnotations}
+                ${classKeyword} ${serviceName} ${extends}${bracketStart}
+                
+                {{tab}}@Autowired
+                {{tab}}private ${majStart(className)}Repository ${lowerCase(className)}Repository;
+                
+                {{tab}}public List<${majStart(className)}> getAll${majStart(className)}() ${bracketStart}
+                {{tab}}    return ${lowerCase(className)}Repository.findAll();
+                {{tab}}${bracketEnd}
+                
+                {{tab}}public ${majStart(className)} get${majStart(className)}ById(Long id) ${bracketStart}
+                {{tab}}    return ${lowerCase(className)}Repository.findById(id);
+                {{tab}}${bracketEnd}
+                
+                {{tab}}public ${majStart(className)} create${majStart(className)}(${majStart(className)} ${lowerCase(className)}) ${bracketStart}
+                {{tab}}    return ${lowerCase(className)}Repository.save(${lowerCase(className)});
+                {{tab}}${bracketEnd}
+                
+                {{tab}}public ${majStart(className)} update${majStart(className)}(Long id, ${majStart(className)} ${lowerCase(className)}) ${bracketStart}
+                {{tab}}    ${majStart(className)} existing${majStart(className)} = ${lowerCase(className)}Repository.findById(id);
+                {{tab}}    existing${majStart(className)} = ${lowerCase(className)};
+                {{tab}}    existing${majStart(className)}.setId${majStart(className)}(id);
+                {{tab}}    return ${lowerCase(className)}Repository.save(existing${lowerCase(className)});
+                {{tab}}${bracketEnd}
+                
+                {{tab}}public void delete${majStart(className)}(Long id) ${bracketStart}
+                {{tab}}    ${lowerCase(className)}Repository.deleteById(id);
+                {{tab}}${bracketEnd}
+                
+                ${bracketEnd}
+                ${namespaceEnd}
+                """;
 
         HashMap<String, Object> metadata = getHashMapService();
 

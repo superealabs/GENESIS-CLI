@@ -37,15 +37,16 @@ public class ProjectGenerator {
     public ProjectGenerator() throws IOException {
     }
 
-    private static HashMap<String, Object> getInitializeHashMap(String projectName) {
+    private static HashMap<String, Object> getInitializeHashMap(String projectName, String groupLink) {
         HashMap<String, Object> metadata = new HashMap<>();
         metadata.put("projectName", projectName);
+        metadata.put("groupLink", projectName);
 
         return metadata;
     }
 
 
-    public void generateMavenProject(int databaseId, int languageId, int frameworkId, int projectId, Credentials credentials, String projectName){
+    public void generateMavenProject(int databaseId, int languageId, int frameworkId, int projectId, Credentials credentials, String projectName, String groupLink) {
         PostgreSQLDatabase database = (PostgreSQLDatabase) databases[databaseId];
         Framework framework = frameworks[frameworkId];
         Language language = languages[languageId];
@@ -56,14 +57,14 @@ public class ProjectGenerator {
             GenesisGenerator genesisGenerator = new MVCGenerator();
 
             for (TableMetadata tableMetadata : entities) {
-                genesisGenerator.generateModel(framework, language, tableMetadata, "TestProject");
-                genesisGenerator.generateDao(framework, language, tableMetadata, "TestProject");
-                genesisGenerator.generateService(framework, language, tableMetadata, "TestProject");
-                genesisGenerator.generateController(framework, language, tableMetadata, "TestProject");
+                genesisGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
+                genesisGenerator.generateDao(framework, language, tableMetadata, projectName, groupLink);
+                genesisGenerator.generateService(framework, language, tableMetadata, projectName, groupLink);
+                genesisGenerator.generateController(framework, language, tableMetadata, projectName, groupLink);
             }
 
             // Template with basic hash map
-            HashMap<String, Object> initializaHashMap = getInitializeHashMap(projectName);
+            HashMap<String, Object> initializaHashMap = getInitializeHashMap(projectName, groupLink);
 
             // Rendering local files
             for (Project.ProjectFiles projectFile : project.getProjectFiles()) {

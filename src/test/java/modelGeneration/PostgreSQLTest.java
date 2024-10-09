@@ -26,8 +26,10 @@ public class PostgreSQLTest {
         credentials
                 .setHost("localhost")
                 .setDatabaseName("test_db")
-                .setUser("postgres")
-                .setPwd("nikami")
+                //.setUser("postgres")
+                //.setPwd("nikami")
+                .setUser("nomena")
+                .setPwd("root")
                 .setPort("5432")
                 .setTrustCertificate(true)
                 .setUseSSL(true)
@@ -49,16 +51,17 @@ public class PostgreSQLTest {
         Language language = languages[0];                                   // Java
         Framework framework = frameworks[0];                                // Spring MVC
 
+        String projectName = "TestProject", groupLink = "com";
+
         try (Connection connection = database.getConnection(credentials)) {
             TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
             GenesisGenerator mvcGenerator = new MVCGenerator();
 
-            for (int i = 0; i < entities.length; i++) {
-                TableMetadata tableMetadata = entities[i];
-                mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
-                mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
-                mvcGenerator.generateService(framework, language, tableMetadata, "TestProject");
-                mvcGenerator.generateController(framework, language, tableMetadata, "TestProject");
+            for (TableMetadata tableMetadata : entities) {
+                mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
+                mvcGenerator.generateDao(framework, language, tableMetadata, projectName, groupLink);
+                mvcGenerator.generateService(framework, language, tableMetadata, projectName, groupLink);
+                mvcGenerator.generateController(framework, language, tableMetadata, projectName, groupLink);
             }
 
         } catch (Exception e) {
@@ -67,10 +70,10 @@ public class PostgreSQLTest {
     }
 
     @Test
-    void generateProject() throws IOException {
+    void generateProject() {
         try {
             ProjectGenerator projectGenerator = new ProjectGenerator();
-            projectGenerator.generateMavenProject(1, 0, 0, 0, credentials, "TestProject");
+            projectGenerator.generateMavenProject(1, 0, 0, 0, credentials, "TestProject", "com");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -91,8 +94,10 @@ public class PostgreSQLTest {
             TableMetadata tableMetadata = entities[1]; //Employe
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
-            String dao = mvcGenerator.generateDao(framework, language, entities, "TestProject");
+            String projectName = "TestProject", groupLink = "com";
+
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
+            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, projectName, groupLink);
 
             System.out.println(database);
             System.out.println(language);

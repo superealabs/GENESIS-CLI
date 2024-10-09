@@ -10,7 +10,7 @@
     - "[projectNameMaj]/src/main/resources/application.properties"
     - "[projectNameMaj]/src/main/java/com/controllers/LoginController.java"
     - "[projectNameMaj]/src/main/java/com/controllers/HelloController.java"
-  additionnalFiles: [ ]
+  additionalFiles: [ ]
   model:
     modelImports: |
       import jakarta.persistence.*;
@@ -45,9 +45,9 @@
       {{tab}}public ${majStart(className)}() {
       {{tab}}}
       
-      {{tab}}public ${majStart(className)}({{#each fields}}{{#if !@first}}, {{/if}}{{#if !this.isPrimaryKey}}${this.type} ${this.name}{{/if}}{{/each}}) {
-      {{tab}}   {{#each fields}} {{#if !this.isPrimaryKey}}
-      {{tab}}   this.${this.name} = ${this.name};{{/if}}{{#if !@last}}
+      {{tab}}public ${majStart(className)}({{#each fieldsPK}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
+      {{tab}}   {{#each fieldsPK}}
+      {{tab}}   this.${this.name} = ${this.name};{{#if !@last}}
       {{tab}}   {{/if}}{{/each}}
       {{tab}}}
       
@@ -59,18 +59,20 @@
     modelSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/models"
     modelForeignContextAttr: ""
     modelExtension: "java"
-    modelPackage: "java.${group}.${lowerCase(className)}.models"
+    modelPackage: "${groupLink}.${lowerCase(projectName)}.models;"
   modelDao:
+    isUnique: false
     modelDaoImports: "import org.springframework.data.repository.JpaRepository;"
-    modelDaoAnnotations: ""
+    modelDaoAnnotations: "{{newline}}"
     modelDaoExtends: "JpaRepository<${majStart(className)}, ${pkColumnType}>"
     modelDaoName: "${majStart(className)}Repository"
-    modelDaoFieldContent: ""
-    modelDaoMethodContent: ""
-    modelDaoConstructors: ""
+    modelDaoFieldContent: "{{removeLine}}"
+    modelDaoMethodContent: "{{removeLine}}"
+    modelDaoConstructors: "{{removeLine}}"
     modelDaoSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/repositories"
     modelDaoExtension: "java"
-    modelDaoPackage: "java.${group}.${lowerCase(className)}.repositories"
+    modelDaoPackage: "${groupLink}.${lowerCase(projectName)}.repositories;"
+
   service:
     serviceImports: |
       import com.${lowerCase(projectName)}.models.${majStart(className)};
@@ -113,7 +115,7 @@
       {{tab}}}
     serviceSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/services"
     serviceExtension: "java"
-    servicePackage: "java.${group}.${lowerCase(className)}.services"
+    servicePackage: "${groupLink}.${lowerCase(projectName)}.services;"
   controller:
     controllerImports: |
       import org.springframework.ui.Model;
@@ -142,28 +144,28 @@
       {{tab}}   model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
       {{tab}}   return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
       {{tab}}}
-  
+      
       {{tab}}@GetMapping("/{id}")
       {{tab}}public String get${majStart(className)}ById(@PathVariable Long id, Model model) {
       {{tab}}   ${majStart(className)} ${lowerCase(className)} = ${lowerCase(className)}Service.get${majStart(className)}ById(id);
       {{tab}}   model.addAttribute("${lowerCase(className)}", ${lowerCase(className)});
       {{tab}}   return "${lowerCase(classNameLink)}/view-list-${lowerCase(className)}";
       {{tab}}}
-  
+      
       {{tab}}@PostMapping
       {{tab}}public String create${majStart(className)}(@RequestBody ${majStart(className)} ${lowerCase(className)}, Model model) {
       {{tab}}   ${majStart(className)} new${majStart(className)} = ${lowerCase(className)}Service.create${majStart(className)}(${lowerCase(className)});
       {{tab}}   model.addAttribute("new${majStart(className)}", new${majStart(className)});
       {{tab}}   return "${lowerCase(classNameLink)}/create-list-${lowerCase(className)}";
       {{tab}}}
-  
+      
       {{tab}}@PutMapping("/{id}")
       {{tab}}public String update${majStart(className)}(@PathVariable Long id, @RequestBody ${majStart(className)} ${lowerCase(className)}, Model model) {
       {{tab}}   ${majStart(className)} update${majStart(className)} = ${lowerCase(className)}Service.update${majStart(className)}(id, ${lowerCase(className)});
       {{tab}}   model.addAttribute("update${majStart(className)}", update${majStart(className)});
       {{tab}}   return "${lowerCase(classNameLink)}/update-list-${lowerCase(className)}";
       {{tab}}}
-  
+      
       {{tab}}@DeleteMapping("/{id}")
       {{tab}}public String delete${majStart(className)}ById(@PathVariable Long id, Model model) {
       {{tab}}   ${lowerCase(className)}Service.delete${majStart(className)}(id);
@@ -172,7 +174,7 @@
       {{tab}}}
     controllerSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/controllers"
     controllerExtension: "java"
-    controllerPackage: "java.${group}.${lowerCase(className)}.controllers"
+    controllerPackage: "${groupLink}.${lowerCase(projectName)}.controllers;"
   view:
     viewForeignList: ""
     viewTableHeader: "<th scope=\"col\">[fieldNameFormattedMaj]</th>"
@@ -214,7 +216,7 @@
     - "[projectNameMaj]/Views/Shared/_Layout.cshtml"
     - "[projectNameMaj]/Views/_ViewImports.cshtml"
     - "[projectNameMaj]/Program.cs"
-  additionnalFiles:
+  additionalFiles:
     - name: "[projectNameMaj].sln"
       content: "csharp/data/solution.templ"
     - name: "[projectNameMaj]/[projectNameMaj].csproj"
@@ -225,7 +227,7 @@
       using System.ComponentModel.DataAnnotations.Schema;
     modelExtends: ""
     modelAnnotations: ""
-    modelFieldContent: |      
+    modelFieldContent: |
       {{tab}}{{#each fields}}{{#if this.isPrimaryKey}}
       {{tab}}[Key]
       {{tab}}[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -253,26 +255,27 @@
     modelForeignContextAttr: "public DbSet<[classNameMaj]> [classNameMaj] { get; set; }"
     modelExtension: "cs"
     modelPackage: "${majStart(projectName)}.Models"
-#    modelDao:
-#      name: "${majStart(className)}Repository.java"
-#      packagePath: "${majStart(projectName)}.Data"
-#      isUnique: true
-#      content: |
-#
-#
-#        namespace ${packageValue};
-#
-#        public class ${projectName}Context : DbContext
-#        {
-#            {{#each entities}}
-#            public DbSet<${this}> ${this}s { get; set; }
-#            {{/each}}
-#            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#            {
-#                optionsBuilder.Use${DBType}(@"${connectionString}");
-#            }
-#        }
+  #    modelDao:
+  #      name: "${majStart(className)}Repository.java"
+  #      packagePath: "${majStart(projectName)}.Data"
+  #      isUnique: true
+  #      content: |
+  #
+  #
+  #        namespace ${packageValue};
+  #
+  #        public class ${projectName}Context : DbContext
+  #        {
+  #            {{#each entities}}
+  #            public DbSet<${this}> ${this}s { get; set; }
+  #            {{/each}}
+  #            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+  #            {
+  #                optionsBuilder.Use${DBType}(@"${connectionString}");
+  #            }
+  #        }
   modelDao:
+    isUnique: true
     modelDaoImports: |
       using Microsoft.EntityFrameworkCore;
       using System.ComponentModel.DataAnnotations;
@@ -285,7 +288,7 @@
     modelDaoConstructors: ""
     modelDaoSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/repositories"
     modelDaoExtension: "java"
-    modelDaoPackage: "java.${group}.${lowerCase(className)}.repositories"
+    modelDaoPackage: "${group}.${lowerCase(projectName)}.repositories;"
   controller:
     controllerImports: |
       using Microsoft.AspNetCore.Mvc;
@@ -295,29 +298,29 @@
     controllerExtends: " : Controller"
     controllerName: "[classNameMaj]Controller"
     controllerFieldContent: |
-#      - controllerFieldAnnotations: ""
-#        controllerFieldContent: "private readonly [classNameMaj]Context _context;"
+    #      - controllerFieldAnnotations: ""
+    #        controllerFieldContent: "private readonly [classNameMaj]Context _context;"
     controllerMethodContent: |
-#      - controllerMethodAnnotations: |
-#          ...
-#        controllerMethodParameter: ""
-#        controllerMethodContent: "csharp/controller/csharpControllerRead"
-#      - controllerMethodAnnotations: |
-#          [HttpPost]"
-#        controllerMethodParameter: "string [fieldNameMin]"
-#        controllerMethodContent: "csharp/controller/csharpControllerCreate"
-#      - controllerMethodAnnotations: |
-#          [HttpPost]"
-#        controllerMethodParameter: "string [fieldNameMin]"
-#        controllerMethodContent: "csharp/controller/csharpControllerEdit"
-#      - controllerMethodAnnotations: |
-#          [HttpPost]
-#        controllerMethodParameter: ""
-#        controllerMethodContent: "csharp/controller/csharpControllerDelete"
-#      - controllerMethodAnnotations: |
-#          ...
-#        controllerMethodParameter: ""
-#        controllerMethodContent: "csharp/controller/csharpControllerExists"
+    #      - controllerMethodAnnotations: |
+    #          ...
+    #        controllerMethodParameter: ""
+    #        controllerMethodContent: "csharp/controller/csharpControllerRead"
+    #      - controllerMethodAnnotations: |
+    #          [HttpPost]"
+    #        controllerMethodParameter: "string [fieldNameMin]"
+    #        controllerMethodContent: "csharp/controller/csharpControllerCreate"
+    #      - controllerMethodAnnotations: |
+    #          [HttpPost]"
+    #        controllerMethodParameter: "string [fieldNameMin]"
+    #        controllerMethodContent: "csharp/controller/csharpControllerEdit"
+    #      - controllerMethodAnnotations: |
+    #          [HttpPost]
+    #        controllerMethodParameter: ""
+    #        controllerMethodContent: "csharp/controller/csharpControllerDelete"
+    #      - controllerMethodAnnotations: |
+    #          ...
+    #        controllerMethodParameter: ""
+    #        controllerMethodContent: "csharp/controller/csharpControllerExists"
     controllerSavePath: "[projectNameMaj]/Controllers"
     controllerExtension: "cs"
     controllerPackage: "[projectNameMaj].Controllers"

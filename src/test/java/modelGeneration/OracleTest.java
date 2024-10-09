@@ -51,8 +51,10 @@ public class OracleTest {
             tableMetadata.initialize(connection, credentials, database, language);
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
-            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
+            String projectName = "TestProject", groupLink = "com";
+
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
+            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, projectName, groupLink);
 
             System.out.println(database);
             System.out.println(language);
@@ -81,8 +83,10 @@ public class OracleTest {
             TableMetadata tableMetadata = entities[1]; //Employe
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
-            String dao = mvcGenerator.generateDao(framework, language, entities, "TestProject");
+            String projectName = "TestProject", groupLink = "com";
+
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
+            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, projectName, groupLink);
 
             System.out.println(database);
             System.out.println(language);

@@ -23,6 +23,7 @@ public class TemplateEngine {
     private static final String VARIABLE_PLACEHOLDER_SUFFIX = "}";
     private static final String NEWLINE_TAG = "{{newline}}";
     private static final String TAB_TAG = "{{tab}}";
+    private static final String REMOVE_LINE_TAG = "{{removeLine}}";
     private static final String BLOCK_END = "}}";
     private static final String FUNCTION_OPEN_PARENTHESIS = "(";
     private static final String FUNCTION_CLOSED_PARENTHESIS = ")";
@@ -396,11 +397,27 @@ public class TemplateEngine {
     }
 
     private void processSpecialTags(StringBuilder template) {
-
         replaceAllOccurrences(template, NEWLINE_TAG, "\n");
-
-
         replaceAllOccurrences(template, TAB_TAG, "\t");
+
+        // Supprimer les lignes contenant le tag {{removeLine}}
+        int start;
+        while ((start = template.indexOf(REMOVE_LINE_TAG)) != -1) {
+            int lineStart = template.lastIndexOf("\n", start);
+            int lineEnd = template.indexOf("\n", start);
+
+            if (lineStart == -1) {
+                lineStart = 0; // Si c'est le début du fichier
+            } else {
+                lineStart++; // Ne pas inclure le \n lui-même
+            }
+
+            if (lineEnd == -1) {
+                lineEnd = template.length(); // Si c'est la dernière ligne du fichier
+            }
+
+            template.delete(lineStart, lineEnd + 1);
+        }
     }
 
     private record LoopInfo(String loopVarName, String loopContent, int start) {
