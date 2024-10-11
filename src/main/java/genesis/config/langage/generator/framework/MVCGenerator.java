@@ -1,4 +1,4 @@
-package genesis.config.langage.generator;
+package genesis.config.langage.generator.framework;
 
 import genesis.config.Constantes;
 import genesis.config.langage.Framework;
@@ -6,18 +6,13 @@ import genesis.config.langage.Language;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.engine.TemplateEngine;
-import genesis.model.ColumnMetadata;
 import genesis.model.TableMetadata;
-import org.jetbrains.annotations.NotNull;
 import utils.FileUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import static genesis.config.langage.generator.MetadataProvider.*;
+import static genesis.config.langage.generator.framework.FrameworkMetadataProvider.*;
 
 public class MVCGenerator implements GenesisGenerator {
     private static final TemplateEngine engine = new TemplateEngine();

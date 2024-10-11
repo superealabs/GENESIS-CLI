@@ -1,4 +1,4 @@
-package genesis.config.langage.generator;
+package genesis.config.langage.generator.framework;
 
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
@@ -7,7 +7,6 @@ import genesis.connexion.Database;
 import genesis.model.TableMetadata;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 public interface GenesisGenerator {
     String generateModel(Framework framework, Language language, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception;

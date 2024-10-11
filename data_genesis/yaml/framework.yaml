@@ -11,6 +11,15 @@
     - "[projectNameMaj]/src/main/java/com/controllers/LoginController.java"
     - "[projectNameMaj]/src/main/java/com/controllers/HelloController.java"
   additionalFiles: [ ]
+  dependencies:
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-data-jpa"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-web"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-thymeleaf"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-test"
   model:
     modelImports: |
       import jakarta.persistence.*;
@@ -62,9 +71,12 @@
     modelPackage: "${groupLink}.${lowerCase(projectName)}.models;"
   modelDao:
     isUnique: false
-    modelDaoImports: "import org.springframework.data.repository.JpaRepository;"
+    modelDaoImports: |
+      import org.springframework.data.jpa.repository.JpaRepository;
+      import ${groupLink}.${lowerCase(projectName)}.models.${majStart(className)};
+
     modelDaoAnnotations: "{{newline}}"
-    modelDaoExtends: "JpaRepository<${majStart(className)}, ${pkColumnType}>"
+    modelDaoExtends: "extends JpaRepository<${majStart(className)}, ${pkColumnType}>"
     modelDaoName: "${majStart(className)}Repository"
     modelDaoFieldContent: "{{removeLine}}"
     modelDaoMethodContent: "{{removeLine}}"
@@ -75,42 +87,53 @@
 
   service:
     serviceImports: |
-      import com.${lowerCase(projectName)}.models.${majStart(className)};
+      import ${groupLink}.${lowerCase(projectName)}.models.${majStart(className)};
       import org.springframework.stereotype.Service;
-      import com.${lowerCase(projectName)}.repositories.${majStart(className)}Repository;
+      import ${groupLink}.${lowerCase(projectName)}.repositories.${majStart(className)}Repository;
       import org.springframework.beans.factory.annotation.Autowired;
+      import java.util.List;
+      import java.util.Optional;
+
     serviceAnnotations: |
       @Service
     serviceExtends: ""
     serviceName: "${majStart(className)}Service"
     serviceFieldContent: |
-      {{tab}}private final ${majStart(className)}Repository ${lowerCase(className)}Repository;
+      {{tab}}private final ${majStart(className)}Repository ${minStart(className)}Repository;
     serviceConstructors: |
       {{tab}}@Autowired
-      {{tab}}public ${majStart(className)}Service(${majStart(className)}Repository ${lowerCase(className)}Repository) {
-      {{tab}}   this.${lowerCase(className)}Repository = ${lowerCase(className)}Repository;
+      {{tab}}public ${majStart(className)}Service(${majStart(className)}Repository ${minStart(className)}Repository) {
+      {{tab}}   this.${lowerCase(className)}Repository = ${minStart(className)}Repository;
       {{tab}}}
     serviceMethodContent: |
       {{tab}}public List<${majStart(className)}> getAll${majStart(className)}() {
-      {{tab}}   return ${lowerCase(className)}Repository.findAll();
+      {{tab}}   return ${minStart(className)}Repository.findAll();
       {{tab}}}
       
-      {{tab}}public ${majStart(className)} get${majStart(className)}ById(Long id) {
-      {{tab}}   return ${lowerCase(className)}Repository.findById(id);
+      {{tab}}public ${majStart(className)} get${majStart(className)}ById(${pkColumnType} id) {
+      {{tab}}   Optional<${majStart(className)}> ${minStart(className)} = ${minStart(className)}Repository.findById(id);
+      {{tab}}   if (${minStart(className)}.isPresent()) {
+      {{tab}}     return ${minStart(className)}.get();
+      {{tab}}   } else {
+      {{tab}}     throw new RuntimeException("${majStart(className)} not found with id " + id);
+      {{tab}}   }
       {{tab}}}
       
-      {{tab}}public ${majStart(className)} create${majStart(className)}(${majStart(className)} ${lowerCase(className)}) {
-      {{tab}}   return ${lowerCase(className)}Repository.save(${lowerCase(className)});
+      {{tab}}public ${majStart(className)} create${majStart(className)}(${majStart(className)} ${minStart(className)}) {
+      {{tab}}   return ${minStart(className)}Repository.save(${minStart(className)});
+      {{tab}}}
+
+      {{tab}}public ${majStart(className)} update${majStart(className)}(${pkColumnType} id, ${majStart(className)} ${lowerCase(className)}) {
+      {{tab}}   Optional<${majStart(className)}> existing${majStart(className)} = ${lowerCase(className)}Repository.findById(id);
+      {{tab}}		if (existing${majStart(className)}.isPresent()) {
+      {{tab}}		    ${lowerCase(className)}.setId(id);
+      {{tab}}           return ${lowerCase(className)}Repository.save(${lowerCase(className)});
+      {{tab}}       } else {
+      {{tab}}         throw new RuntimeException("${majStart(className)} not found with id " + id);
+      {{tab}}       }
       {{tab}}}
       
-      {{tab}}public ${majStart(className)} update${majStart(className)}(Long id, ${majStart(className)} ${lowerCase(className)}) {
-      {{tab}}   ${majStart(className)} existing${majStart(className)} = ${lowerCase(className)}Repository.findById(id);
-      {{tab}}   existing${majStart(className)} = ${lowerCase(className)};
-      {{tab}}   existing${majStart(className)}.setId${majStart(className)}(id);
-      {{tab}}   return ${lowerCase(className)}Repository.save(existing${lowerCase(className)});
-      {{tab}}}
-      
-      {{tab}}public void delete${majStart(className)}(Long id) {
+      {{tab}}public void delete${majStart(className)}(${pkColumnType} id) {
       {{tab}}   ${lowerCase(className)}Repository.deleteById(id);
       {{tab}}}
     serviceSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/services"
@@ -119,12 +142,12 @@
   controller:
     controllerImports: |
       import org.springframework.ui.Model;
-      import com.${lowerCase(projectName)}.models.${majStart(className)};
+      import ${groupLink}.${lowerCase(projectName)}.models.${majStart(className)};
       import org.springframework.stereotype.Controller;
       import org.springframework.web.bind.annotation.*;
-      import com.${lowerCase(projectName)}.repositories.${majStart(className)}Repository;
-      import org.springframework.web.servlet.view.RedirectView;
+      import ${groupLink}.${lowerCase(projectName)}.services.${majStart(className)}Service;
       import org.springframework.beans.factory.annotation.Autowired;
+      import java.util.List;
     controllerAnnotations: |
       @Controller
       @RequestMapping("/${lowerCase(classNameLink)}")
@@ -133,7 +156,6 @@
     controllerFieldContent: |
       {{tab}}private final ${majStart(className)}Service ${lowerCase(className)}Service;
     controllerConstructors: |
-      {{tab}}@Autowired
       {{tab}}public ${majStart(className)}Controller(${majStart(className)}Service ${lowerCase(className)}Service) {
       {{tab}}   this.${lowerCase(className)}Service = ${lowerCase(className)}Service;
       {{tab}}}
@@ -146,7 +168,7 @@
       {{tab}}}
       
       {{tab}}@GetMapping("/{id}")
-      {{tab}}public String get${majStart(className)}ById(@PathVariable Long id, Model model) {
+      {{tab}}public String get${majStart(className)}ById(@PathVariable ${pkColumnType} id, Model model) {
       {{tab}}   ${majStart(className)} ${lowerCase(className)} = ${lowerCase(className)}Service.get${majStart(className)}ById(id);
       {{tab}}   model.addAttribute("${lowerCase(className)}", ${lowerCase(className)});
       {{tab}}   return "${lowerCase(classNameLink)}/view-list-${lowerCase(className)}";
@@ -160,14 +182,14 @@
       {{tab}}}
       
       {{tab}}@PutMapping("/{id}")
-      {{tab}}public String update${majStart(className)}(@PathVariable Long id, @RequestBody ${majStart(className)} ${lowerCase(className)}, Model model) {
+      {{tab}}public String update${majStart(className)}(@PathVariable ${pkColumnType} id, @RequestBody ${majStart(className)} ${lowerCase(className)}, Model model) {
       {{tab}}   ${majStart(className)} update${majStart(className)} = ${lowerCase(className)}Service.update${majStart(className)}(id, ${lowerCase(className)});
       {{tab}}   model.addAttribute("update${majStart(className)}", update${majStart(className)});
       {{tab}}   return "${lowerCase(classNameLink)}/update-list-${lowerCase(className)}";
       {{tab}}}
       
       {{tab}}@DeleteMapping("/{id}")
-      {{tab}}public String delete${majStart(className)}ById(@PathVariable Long id, Model model) {
+      {{tab}}public String delete${majStart(className)}ById(@PathVariable ${pkColumnType} id, Model model) {
       {{tab}}   ${lowerCase(className)}Service.delete${majStart(className)}(id);
       {{tab}}   model.addAttribute("message", "${majStart(className)} deleted successfully");
       {{tab}}   return "redirect:/${lowerCase(classNameLink)}";
@@ -221,6 +243,15 @@
       content: "csharp/data/solution.templ"
     - name: "[projectNameMaj]/[projectNameMaj].csproj"
       content: "csharp/data/csprojmysql.templ"
+  dependencies:
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-data-jpa"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-web"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-thymeleaf"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-test"
   model:
     modelImports: |
       using System.ComponentModel.DataAnnotations;

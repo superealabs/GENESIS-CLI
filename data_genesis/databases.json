@@ -2,6 +2,16 @@
   {
     "id": 1,
     "name": "MySQL",
+    "dependencies": {
+      "1": {
+        "groupId": "com.mysql",
+        "artifactId": "mysql-connector-j"
+      },
+        "2": {
+            "groupId": "",
+            "artifactId": "MySql.EntityFrameworkCore"
+        }
+    },
     "driverType": "",
     "serviceName": "",
     "connectionString": {
@@ -33,6 +43,16 @@
   {
     "id": 2,
     "name": "PostgreSQL",
+    "dependencies": {
+      "1": {
+        "groupId": "org.postgresql",
+        "artifactId": "postgresql"
+      },
+      "2": {
+        "groupId": "",
+        "artifactId": "Npgsql.EntityFrameworkCore.PostgreSQL"
+      }
+    },
     "driverType": "",
     "serviceName": "",
     "connectionString": {
@@ -73,6 +93,16 @@
   {
     "id": 3,
     "name": "SQL Server",
+    "dependencies": {
+      "1": {
+        "groupId": "com.microsoft.sqlserver",
+        "artifactId": "mssql-jdbc"
+      },
+      "2": {
+        "groupId": "",
+        "artifactId": "Microsoft.EntityFrameworkCore.SqlServer"
+      }
+    },
     "driverType": "",
     "serviceName": "",
     "connectionString": {
@@ -105,6 +135,16 @@
   {
     "id": 4,
     "name": "Oracle",
+    "dependencies": {
+      "1": {
+        "groupId": "com.oracle.database.jdbc",
+        "artifactId": "ojdbc8"
+      },
+      "2": {
+        "groupId": "",
+        "artifactId": "Oracle.EntityFrameworkCore"
+      }
+    },
     "driverType": "thin",
     "serviceName": "ORCLCDB",
     "connectionString": {

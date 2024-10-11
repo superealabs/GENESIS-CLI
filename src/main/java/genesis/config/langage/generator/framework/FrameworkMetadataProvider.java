@@ -1,4 +1,4 @@
-package genesis.config.langage.generator;
+package genesis.config.langage.generator.framework;
 
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
@@ -14,10 +14,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MetadataProvider {
+public class FrameworkMetadataProvider {
     private static final TemplateEngine engine = new TemplateEngine();
 
-    public static @NotNull Map<String, Object> getStringObjectMap(Database database) {
+    public static @NotNull Map<String, Object> getCredentialsHashMap(Database database) {
         Credentials credentials = database.getCredentials();
 
         return new HashMap<>(
@@ -164,6 +164,7 @@ public class MetadataProvider {
 
         metadata.put("projectName", projectName);
         metadata.put("groupLink", groupLink);
+        metadata.put("pkColumnType", tableMetadata.getPrimaryColumn().getType());
         metadata.put("tableName", tableMetadata.getTableName());
         metadata.put("className", tableMetadata.getClassName());
         metadata.put("entityName", tableMetadata.getClassName());
@@ -171,7 +172,7 @@ public class MetadataProvider {
 
         List<Map<String, Object>> fields = new ArrayList<>();
         for (ColumnMetadata field : tableMetadata.getColumns()) {
-            Map<String, Object> fieldMap = getStringObjectMap(field);
+            Map<String, Object> fieldMap = getFieldHashMap(field);
             fields.add(fieldMap);
         }
         metadata.put("fields", fields);
@@ -180,7 +181,7 @@ public class MetadataProvider {
         for (ColumnMetadata field : tableMetadata.getColumns()) {
             if (field.isPrimary())
                 continue;
-            Map<String, Object> fieldMap = getStringObjectMap(field);
+            Map<String, Object> fieldMap = getFieldHashMap(field);
             fieldsPK.add(fieldMap);
         }
         metadata.put("fieldsPK", fieldsPK);
@@ -188,7 +189,7 @@ public class MetadataProvider {
         return metadata;
     }
 
-    public static @NotNull Map<String, Object> getStringObjectMap(ColumnMetadata field) {
+    public static @NotNull Map<String, Object> getFieldHashMap(ColumnMetadata field) {
         Map<String, Object> fieldMap = new HashMap<>();
 
         fieldMap.put("withGetters", true);
@@ -209,7 +210,7 @@ public class MetadataProvider {
 
         Database database = tableMetadata[0].getDatabase();
         String connectionString = database.getConnectionString().get(framework.getLangageId());
-        Map<String, Object> connectionStringMetadata = getStringObjectMap(database);
+        Map<String, Object> connectionStringMetadata = getCredentialsHashMap(database);
         connectionString = engine.render(connectionString, connectionStringMetadata);
 
         Map<String, Object> metadata = new HashMap<>(Map.of(

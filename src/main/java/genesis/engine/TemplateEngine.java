@@ -35,6 +35,7 @@ public class TemplateEngine {
         FUNCTIONS_MAP.put("upperCase", str -> str == null ? "" : str.toUpperCase());
         FUNCTIONS_MAP.put("lowerCase", str -> str == null ? "" : str.toLowerCase());
         FUNCTIONS_MAP.put("majStart", FileUtils::majStart);
+        FUNCTIONS_MAP.put("minStart", FileUtils::minStart);
         FUNCTIONS_MAP.put("toCamelCase", FileUtils::toCamelCase);
     }
 

@@ -25,6 +25,7 @@ public class Framework {
     private NavbarLink navbarLinks;
     private String[] projectNameTags;
     private CustomFile[] additionalFiles;
+    private Dependency[] dependencies;
     private CustomChanges[] customChanges;
 
     @Getter
@@ -120,5 +121,13 @@ public class Framework {
     public static class NavbarLink {
         private String path;
         private String link;
+    }
+
+    @Getter
+    @Setter
+    public static class Dependency {
+        private String groupId;
+        private String artifactId;
+        private String version;
     }
 }

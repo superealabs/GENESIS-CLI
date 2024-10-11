@@ -3,8 +3,8 @@ package modelGeneration;
 import genesis.config.Constantes;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
-import genesis.config.langage.generator.GenesisGenerator;
-import genesis.config.langage.generator.MVCGenerator;
+import genesis.config.langage.generator.framework.GenesisGenerator;
+import genesis.config.langage.generator.framework.MVCGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.connexion.providers.OracleDatabase;
@@ -110,6 +110,19 @@ public class OracleTest {
         try (Connection connection = database.getConnection(credentials)) {
             DatabaseMetaData metaData = connection.getMetaData();
 
+            String driverName = metaData.getDriverName();
+            String driverVersion = metaData.getDriverVersion();
+            String majorVersion = String.valueOf(metaData.getDatabaseMajorVersion());
+            String minorVersion = String.valueOf(metaData.getDatabaseMinorVersion());
+            String databaseProductName = metaData.getDatabaseProductName();
+
+            System.out.println("\n\nDriver Name: " + driverName);
+            System.out.println("Driver Version: " + driverVersion);
+            System.out.println("Major Version: " + majorVersion);
+            System.out.println("Minor Version: " + minorVersion);
+            System.out.println("Database Product Name: " + databaseProductName+"\n\n");
+
+/*
             ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"});
 
             while (tables.next()) {
@@ -126,10 +139,6 @@ public class OracleTest {
                     int columnSize = columns.getInt("COLUMN_SIZE");
                     boolean nullable = columns.getBoolean("NULLABLE");
 
-                    // Convertir le type de données entier en nom de type pour une meilleure lisibilité
-                    String dataTypeName = JDBCType.valueOf(dataType).getName(); // Utilisation de JdbcType pour convertir le type de données entier en nom
-
-                    System.out.println("\t" + columnName + " (" + dataTypeName + "), TypeName: "+typeName+", Size: " + columnSize + ", Nullable: " + nullable);
                 }
 
 
@@ -154,7 +163,7 @@ public class OracleTest {
 
                 System.out.println(); // Séparation entre les tables
             }
-
+*/
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

@@ -3,9 +3,9 @@ package modelGeneration;
 import genesis.config.Constantes;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
-import genesis.config.langage.generator.GenesisGenerator;
-import genesis.config.langage.generator.MVCGenerator;
-import genesis.config.langage.generator.ProjectGenerator;
+import genesis.config.langage.generator.framework.GenesisGenerator;
+import genesis.config.langage.generator.framework.MVCGenerator;
+import genesis.config.langage.generator.project.ProjectGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.connexion.providers.PostgreSQLDatabase;
@@ -72,12 +72,44 @@ public class PostgreSQLTest {
     @Test
     void generateProject() {
         try {
+            // Déclaration et initialisation des variables
+            int databaseId = 1;
+            int languageId = 0;
+            int frameworkId = 0;
+            int projectId = 0;
+            String projectName = "Begin";
+            String groupLink = "labs";
+            String projectPort = "8000";
+            String logLevel = "INFO";
+            String hibernateDdlAuto = "update";
+            String frameworkVersion = "3.0.1";
+            String projectDescription = "A Spring Boot BEGIN Project";
+            String languageVersion = "21";
+
+            // Création de l'instance du générateur de projet
             ProjectGenerator projectGenerator = new ProjectGenerator();
-            projectGenerator.generateMavenProject(1, 0, 0, 0, credentials, "TestProject", "com");
+
+            // Appel de la méthode generateProject avec les arguments
+            projectGenerator.generateProject(
+                    databaseId,
+                    languageId,
+                    frameworkId,
+                    projectId,
+                    credentials,
+                    projectName,
+                    groupLink,
+                    projectPort,
+                    logLevel,
+                    hibernateDdlAuto,
+                    frameworkVersion,
+                    projectDescription,
+                    languageVersion
+            );
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
 
     @Test
     void PostgreSQLxNET() throws IOException {
@@ -103,8 +135,8 @@ public class PostgreSQLTest {
             System.out.println(language);
             System.out.println(framework);
 
-            System.out.println("\n====== GENERATED ======\n"+model);
-            System.out.println("\n====== GENERATED ======\n"+dao);
+            System.out.println("\n====== GENERATED ======\n" + model);
+            System.out.println("\n====== GENERATED ======\n" + dao);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -119,6 +151,18 @@ public class PostgreSQLTest {
 
         try (Connection connection = database.getConnection(credentials)) {
             DatabaseMetaData metaData = connection.getMetaData();
+
+            String driverName = metaData.getDriverName();
+            String driverVersion = metaData.getDriverVersion();
+            String majorVersion = String.valueOf(metaData.getDatabaseMajorVersion());
+            String minorVersion = String.valueOf(metaData.getDatabaseMinorVersion());
+            String databaseProductName = metaData.getDatabaseProductName();
+
+            System.out.println("\n\nDriver Name: " + driverName);
+            System.out.println("Driver Version: " + driverVersion);
+            System.out.println("Major Version: " + majorVersion);
+            System.out.println("Minor Version: " + minorVersion);
+            System.out.println("Database Product Name: " + databaseProductName + "\n\n");
 
             ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"});
 

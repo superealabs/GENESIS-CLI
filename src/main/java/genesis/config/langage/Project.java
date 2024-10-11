@@ -20,7 +20,7 @@ public class Project {
         private String content;
         private String fileType;
         private String fileName;
-        private String sourcePath;
+        private String extension;
         private String destinationPath;
     }
 

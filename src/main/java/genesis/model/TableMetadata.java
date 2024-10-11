@@ -35,8 +35,16 @@ public class TableMetadata {
         }
 
         try {
-            setDatabase(database);
             DatabaseMetaData metaData = connect.getMetaData();
+
+            String driverName = metaData.getDriverName();
+            String driverVersion = metaData.getDriverVersion();
+
+            database.setDriverName(driverName);
+            database.setDriverVersion(driverVersion);
+
+            setDatabase(database);
+
             String tableName = getTableName();
 
             List<ColumnMetadata> listeCols = fetchColumns(metaData, tableName, language, database);
