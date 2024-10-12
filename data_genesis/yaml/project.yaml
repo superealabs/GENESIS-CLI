@@ -1,0 +1,144 @@
+- id: 1
+  name: "Maven"
+  projectFilesEdits:
+    - fileType: "MainFile"
+      fileName: "${majStart(projectName)}Application"
+      extension: "java"
+      content: |
+        package ${groupLink}.${lowerCase(projectName)};
+        
+        import org.springframework.boot.SpringApplication;
+        import org.springframework.boot.autoconfigure.SpringBootApplication;
+        
+        @SpringBootApplication
+        public class ${majStart(projectName)}Application {
+        {{tab}}public static void main(String[] args) {
+        {{tab}}{{tab}}SpringApplication.run(${majStart(projectName)}Application.class, args);
+        {{tab}}}
+        }
+      destinationPath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}"
+
+    - fileType: "TestFile"
+      fileName: "${majStart(projectName)}ApplicationTests"
+      extension: "java"
+      content: |
+        package ${groupLink}.${lowerCase(projectName)};
+        
+        import org.junit.jupiter.api.Test;
+        import org.springframework.boot.test.context.SpringBootTest;
+        
+        @SpringBootTest
+        class ${majStart(projectName)}ApplicationTests {
+        
+        {{tab}}@Test
+        {{tab}}void contextLoads() {
+        {{tab}}}
+        
+        }
+      destinationPath: "${majStart(projectName)}/src/test/java/${groupLink}/${lowerCase(projectName)}/"
+
+    - fileType: "ApplicationProperties"
+      fileName: "application"
+      extension: "properties"
+      content: |
+        spring.application.name=${lowerCase(projectName)}
+        
+        server.port=${projectPort}
+        
+        # Configuration logs
+        logging.level.root=${logLevel}
+        {{#if useDB}}
+        logging.level.org.hibernate.SQL=${logLevel}
+        
+        # Configuration datasource
+        spring.datasource.url=${databaseUrl}
+        spring.datasource.username=${databaseUsername}
+        spring.datasource.password=${databasePassword}
+        
+        # Configuration Hibernate
+        spring.jpa.hibernate.ddl-auto=${hibernateDdlAuto}
+        spring.jpa.properties.hibernate.format_sql=true
+        {{/if}}
+
+      destinationPath: "${majStart(projectName)}/src/main/resources/"
+
+    - fileType: "Xml"
+      fileName: "pom"
+      extension: "xml"
+      content: |
+        <?xml version="1.0" encoding="UTF-8"?>
+        <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+        {{tab}}<modelVersion>4.0.0</modelVersion>
+        {{tab}}<parent>
+        {{tab}}{{tab}}<groupId>org.springframework.boot</groupId>
+        {{tab}}{{tab}}<artifactId>spring-boot-starter-parent</artifactId>
+        {{tab}}{{tab}}<version>${frameworkVersion}</version>
+        {{tab}}{{tab}}<relativePath/>
+        {{tab}}</parent>
+        {{tab}}<groupId>${groupLink}</groupId>
+        {{tab}}<artifactId>${projectName}</artifactId>
+        {{tab}}<version>0.0.1-SNAPSHOT</version>
+        {{tab}}<name>${projectName}</name>
+        {{tab}}<description>${projectDescription}</description>
+        {{tab}}<url/>
+        {{tab}}<licenses>
+        {{tab}}{{tab}}<license/>
+        {{tab}}</licenses>
+        {{tab}}<developers>
+        {{tab}}{{tab}}<developer/>
+        {{tab}}</developers>
+        {{tab}}<scm>
+        {{tab}}{{tab}}<connection/>
+        {{tab}}{{tab}}<developerConnection/>
+        {{tab}}{{tab}}<tag/>
+        {{tab}}{{tab}}<url/>
+        {{tab}}</scm>
+        {{tab}}<properties>
+        {{tab}}{{tab}}<java.version>${languageVersion}</java.version>
+        {{tab}}</properties>
+        {{tab}}<dependencies>
+        {{tab}}{{tab}}{{#each dependencies}}
+        {{tab}}{{tab}}<dependency>
+        {{tab}}{{tab}}{{tab}}<groupId>${this.groupId}</groupId>
+        {{tab}}{{tab}}{{tab}}<artifactId>${this.artifactId}</artifactId>
+        {{tab}}{{tab}}</dependency>{{#if !@last}}{{newline}}{{tab}}{{tab}}{{/if}}{{/each}}
+        {{tab}}{{tab}}{{#if useDB}}<dependency>
+        {{tab}}{{tab}}{{tab}}<groupId>${DBgroupId}</groupId>
+        {{tab}}{{tab}}{{tab}}<artifactId>${DBartifactId}</artifactId>
+        {{tab}}{{tab}}{{tab}}<version>${DBversion}</version>
+        {{tab}}{{tab}}</dependency>{{/if}}
+        {{tab}}</dependencies>
+        </project>
+
+      destinationPath: "${majStart(projectName)}/"
+  projectFiles:
+    - fileType: "GitIgnore"
+      fileName: ".gitignore"
+      sourcePath: "data_genesis/maven/"
+      destinationPath: "${majStart(projectName)}/"
+
+    - fileType: "Helper"
+      fileName: "HELP.md"
+      sourcePath: "data_genesis/maven/"
+      destinationPath: "${majStart(projectName)}/"
+
+    - fileType: "Script"
+      fileName: "mvnw"
+      sourcePath: "data_genesis/maven/"
+      destinationPath: "${majStart(projectName)}/"
+
+    - fileType: "ScriptWin"
+      fileName: "mvnw.cmd"
+      sourcePath: "data_genesis/maven/"
+      destinationPath: "${majStart(projectName)}/"
+  projectFolders:
+    - folderType: "MavenFolder"
+      folderName: ".mvn"
+      sourcePath: "data_genesis/maven/.mvn"
+      destinationPath: "${majStart(projectName)}/"
+
+    - folderType: "resourceFolder"
+      folderName: "resources"
+      sourcePath: "data_genesis/maven/src/main/resources"
+      destinationPath: "${majStart(projectName)}/src/main/"

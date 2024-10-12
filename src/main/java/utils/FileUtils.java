@@ -1,17 +1,22 @@
 package utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.google.gson.GsonBuilder;
 import genesis.connexion.Database;
+import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import genesis.connexion.adapter.DatabaseTypeAdapter;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.io.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Scanner;
+import java.nio.file.Files;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
+import java.time.LocalDateTime;
 import java.util.zip.ZipInputStream;
 
 public class FileUtils {
@@ -92,24 +97,70 @@ public class FileUtils {
     }
 
 
-    public static void createFile(String filePath) throws IOException {
+    public static void createFileStructure(String filePath) {
         filePath = filePath.replace("\\", "/");
-        String filename = "";
-        String currentChar;
+        String[] folders = filePath.split("/");
+        StringBuilder currentPath = new StringBuilder();
 
-        File file;
-        for (int i = 0; i < filePath.toCharArray().length; ++i) {
-            currentChar = String.valueOf(filePath.charAt(i));
-            if (currentChar.equals("/") && !filename.equals(".") && !filename.isEmpty()) {
-                file = new File(filename);
+        for (String folder : folders) {
+            currentPath.append(folder).append("/");
+            File file = new File(currentPath.toString());
+
+            if (!file.exists()) {
                 file.mkdir();
             }
+        }
+    }
 
-            filename = filename + currentChar;
+
+    public static void createFile(String filePath, String fileName, String fileExtension, String fileContent) throws IOException {
+        // creation de la structure du projet
+        createFileStructure(filePath);
+
+        // creation du fichier et son contenu
+        createSimpleFile(filePath, fileName, fileExtension, fileContent);
+    }
+
+    public static void createSimpleFile(String filePath, String fileName, String fileExtension, String fileContent) throws IOException {
+        // creation du fichier et son contenu
+        File file = new File(filePath + "/" + fileName + "." + fileExtension);
+        file.createNewFile();
+        Files.write(file.toPath(), fileContent.getBytes());
+    }
+
+
+    public static void copyFile(String sourceFilePath, String destinationFilePath) throws IOException {
+        Path destinationPath = Paths.get(destinationFilePath);
+
+        try (InputStream inputStream = new FileInputStream(sourceFilePath)) {
+            Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new IOException("Erreur lors de la copie du fichier: " + e.getMessage(), e);
+        }
+    }
+
+    public static void copyDirectory(String sourceDir, String destDir) throws IOException {
+        Path srcPath = Paths.get(sourceDir);
+        Path destPath = Paths.get(destDir);
+
+        if (!Files.exists(destPath)) {
+            Files.createDirectories(destPath);
         }
 
-        file = new File(filename);
-        file.createNewFile();
+        try (Stream<Path> paths = Files.walk(srcPath)) {
+            paths.forEach(path -> {
+                Path destination = destPath.resolve(srcPath.relativize(path));
+                try {
+                    if (Files.isDirectory(path)) {
+                        Files.createDirectories(destination);
+                    } else {
+                        copyFile(path.toString(), destination.toString());
+                    }
+                } catch (IOException e) {
+                    e.getMessage();
+                }
+            });
+        }
     }
 
     public static void createDirectory(String filePath) {

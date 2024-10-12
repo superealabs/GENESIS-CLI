@@ -1,6 +1,0 @@
-public [classNameMaj][] read(Integer indice_actu) throws SQLException, Exception{
-    try(Connection connex=DAOConnexion.getConnexion("org.postgresql.Driver", "postgresql", "localhost", "5432", "scott", "eriq", "root", false, true)){
-        [classNameMaj][] o=dao.select(connex, [classNameMaj].class, Constantes.PAGINATION_LIMIT, (indice_actu-1)*Constantes.PAGINATION_LIMIT);
-        return o;
-    }
-}

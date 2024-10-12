@@ -5,13 +5,13 @@ import utils.FileUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 public class TemplateEngine {
 
     private static final String LOOP_START = "{{#each ";
     private static final String LOOP_INDEX = "@index";
+    private static final String IS_LOOP_FIRST_INDEX = "@first";
     private static final String IS_LOOP_LAST_INDEX = "@last";
     private static final String LOOP_ITEM = "this";
     private static final String LOOP_END = "{{/each}}";
@@ -23,6 +23,7 @@ public class TemplateEngine {
     private static final String VARIABLE_PLACEHOLDER_SUFFIX = "}";
     private static final String NEWLINE_TAG = "{{newline}}";
     private static final String TAB_TAG = "{{tab}}";
+    private static final String REMOVE_LINE_TAG = "{{removeLine}}";
     private static final String BLOCK_END = "}}";
     private static final String FUNCTION_OPEN_PARENTHESIS = "(";
     private static final String FUNCTION_CLOSED_PARENTHESIS = ")";
@@ -34,6 +35,7 @@ public class TemplateEngine {
         FUNCTIONS_MAP.put("upperCase", str -> str == null ? "" : str.toUpperCase());
         FUNCTIONS_MAP.put("lowerCase", str -> str == null ? "" : str.toLowerCase());
         FUNCTIONS_MAP.put("majStart", FileUtils::majStart);
+        FUNCTIONS_MAP.put("minStart", FileUtils::minStart);
         FUNCTIONS_MAP.put("toCamelCase", FileUtils::toCamelCase);
     }
 
@@ -160,6 +162,7 @@ public class TemplateEngine {
             }
 
             loopVariables.put(LOOP_INDEX, i);
+            loopVariables.put(IS_LOOP_FIRST_INDEX, (i == 0));
             loopVariables.put(IS_LOOP_LAST_INDEX, (i == loopVar.size() - 1));
 
             String renderedContent = render(loopContent, loopVariables).stripLeading();
@@ -189,6 +192,7 @@ public class TemplateEngine {
             replaceBlockWithResult(template, start, ifEndIdx, resultContent);
         }
     }
+
 
     private int findBlockEnd(StringBuilder template, int start) {
         return template.indexOf(IF_END, start);
@@ -394,11 +398,27 @@ public class TemplateEngine {
     }
 
     private void processSpecialTags(StringBuilder template) {
-
         replaceAllOccurrences(template, NEWLINE_TAG, "\n");
-
-
         replaceAllOccurrences(template, TAB_TAG, "\t");
+
+        // Supprimer les lignes contenant le tag {{removeLine}}
+        int start;
+        while ((start = template.indexOf(REMOVE_LINE_TAG)) != -1) {
+            int lineStart = template.lastIndexOf("\n", start);
+            int lineEnd = template.indexOf("\n", start);
+
+            if (lineStart == -1) {
+                lineStart = 0; // Si c'est le début du fichier
+            } else {
+                lineStart++; // Ne pas inclure le \n lui-même
+            }
+
+            if (lineEnd == -1) {
+                lineEnd = template.length(); // Si c'est la dernière ligne du fichier
+            }
+
+            template.delete(lineStart, lineEnd + 1);
+        }
     }
 
     private record LoopInfo(String loopVarName, String loopContent, int start) {

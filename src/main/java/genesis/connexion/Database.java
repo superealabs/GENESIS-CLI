@@ -2,6 +2,7 @@ package genesis.connexion;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.connexion.providers.MySQLDatabase;
 import genesis.connexion.providers.OracleDatabase;
@@ -13,10 +14,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +34,10 @@ import java.util.Map;
 })
 public abstract class Database {
     private int id;
+    private String groupId;
+    private String artifactId;
+    private String driverName;
+    private String driverVersion;
     private String name;
     private String driverType;
     private String serviceName;
@@ -46,6 +48,8 @@ public abstract class Database {
     private Map<String, String> types;
     private List<String> excludeSchemas;
     private Credentials credentials;
+    private Map<String, Object> databaseMetadata;
+    private Map<String, Framework.Dependency> dependencies;
 
     public abstract Connection getConnection(Credentials credentials) throws ClassNotFoundException, SQLException;
 
@@ -65,6 +69,22 @@ public abstract class Database {
 
     public abstract List<String> getAllTableNames(Connection connection) throws SQLException;
 
+
+    public Map<String, Object> getDatabaseMetadataHashMap(Credentials credentials) {
+        Map<String, Object> databaseMetadata = new HashMap<>();
+
+        databaseMetadata.put("host", credentials.getHost());
+        databaseMetadata.put("port", credentials.getPort());
+        databaseMetadata.put("database", credentials.getDatabaseName());
+        databaseMetadata.put("username", credentials.getUser());
+        databaseMetadata.put("password", credentials.getPwd());
+        databaseMetadata.put("useSSL", String.valueOf(credentials.isUseSSL()));
+        databaseMetadata.put("allowPublicKeyRetrieval", String.valueOf(credentials.isAllowPublicKeyRetrieval()));
+        databaseMetadata.put("driverType", driverType);
+        databaseMetadata.put("serviceName", serviceName);
+
+        return databaseMetadata;
+    }
 /*
     private Connection getOrCreateConnection(Connection connection, Credentials credentials) throws SQLException {
         if (connection != null) {

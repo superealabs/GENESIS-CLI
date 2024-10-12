@@ -1,6 +1,7 @@
 - id: 1
   langageId: 1
   name: "Spring MVC"
+  template: "Template"
   skeleton: "springmvc_skeleton"
   projectNameTags:
     - "[projectNameMaj]/settings.gradle"
@@ -9,7 +10,16 @@
     - "[projectNameMaj]/src/main/resources/application.properties"
     - "[projectNameMaj]/src/main/java/com/controllers/LoginController.java"
     - "[projectNameMaj]/src/main/java/com/controllers/HelloController.java"
-  additionnalFiles: [ ]
+  additionalFiles: [ ]
+  dependencies:
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-data-jpa"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-web"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-thymeleaf"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-test"
   model:
     modelImports: |
       import jakarta.persistence.*;
@@ -32,11 +42,11 @@
       {{tab}}{{#each fields}}
       {{tab}}{{#if this.withGetters}}
       {{tab}}public ${this.type} get${majStart(this.name)}() {
-      {{tab}}    return ${this.name};
+      {{tab}}   return ${this.name};
       {{tab}}}{{/if}}
       {{#if this.withSetters}}
       {{tab}}public void set${majStart(this.name)}(${this.type} ${this.name}) {
-      {{tab}}    this.${this.name} = ${this.name};
+      {{tab}}   this.${this.name} = ${this.name};
       {{tab}}}{{#if !@last}}
       {{tab}}{{/if}}
       {{tab}}{{/if}}{{/each}}
@@ -44,100 +54,149 @@
       {{tab}}public ${majStart(className)}() {
       {{tab}}}
       
-      {{tab}}public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
-      {{tab}}    {{#each fields}}
-      {{tab}}    this.${this.name} = ${this.name};{{#if !@last}}
-      {{tab}}    {{/if}}{{/each}}
+      {{tab}}public ${majStart(className)}({{#each fieldsPK}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
+      {{tab}}   {{#each fieldsPK}}
+      {{tab}}   this.${this.name} = ${this.name};{{#if !@last}}
+      {{tab}}   {{/if}}{{/each}}
       {{tab}}}
-    modelSavePath: "${majStart(projectName)}/src/main/java/com/${lowerCase(projectName)}/models"
+      
+      {{tab}}public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
+      {{tab}}   {{#each fields}}
+      {{tab}}   this.${this.name} = ${this.name};{{#if !@last}}
+      {{tab}}   {{/if}}{{/each}}
+      {{tab}}}
+    modelSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/models"
     modelForeignContextAttr: ""
-    modelDao:
-      name: "${majStart(className)}Repository.java"
-      packagePath: "com.${lowerCase(projectName)}.repositories"
-      isUnique: false
-      content: |
-        package ${packagePath};
-        
-        import org.springframework.data.repository.JpaRepository;
-
-        public interface ${majStart(className)}Repository extends JpaRepository<${majStart(className)}, ${pkColumnType}> {
-        }
     modelExtension: "java"
-    modelPackage: "com.${lowerCase(projectName)}.models"
-    modelTemplate: "ModelTemplate"
+    modelPackage: "${groupLink}.${lowerCase(projectName)}.models;"
+  modelDao:
+    isUnique: false
+    modelDaoImports: |
+      import org.springframework.data.jpa.repository.JpaRepository;
+      import ${groupLink}.${lowerCase(projectName)}.models.${majStart(className)};
+
+    modelDaoAnnotations: "{{newline}}"
+    modelDaoExtends: "extends JpaRepository<${majStart(className)}, ${pkColumnType}>"
+    modelDaoName: "${majStart(className)}Repository"
+    modelDaoFieldContent: "{{removeLine}}"
+    modelDaoMethodContent: "{{removeLine}}"
+    modelDaoConstructors: "{{removeLine}}"
+    modelDaoSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/repositories"
+    modelDaoExtension: "java"
+    modelDaoPackage: "${groupLink}.${lowerCase(projectName)}.repositories;"
+
+  service:
+    serviceImports: |
+      import ${groupLink}.${lowerCase(projectName)}.models.${majStart(className)};
+      import org.springframework.stereotype.Service;
+      import ${groupLink}.${lowerCase(projectName)}.repositories.${majStart(className)}Repository;
+      import org.springframework.beans.factory.annotation.Autowired;
+      import java.util.List;
+      import java.util.Optional;
+
+    serviceAnnotations: |
+      @Service
+    serviceExtends: ""
+    serviceName: "${majStart(className)}Service"
+    serviceFieldContent: |
+      {{tab}}private final ${majStart(className)}Repository ${minStart(className)}Repository;
+    serviceConstructors: |
+      {{tab}}@Autowired
+      {{tab}}public ${majStart(className)}Service(${majStart(className)}Repository ${minStart(className)}Repository) {
+      {{tab}}   this.${lowerCase(className)}Repository = ${minStart(className)}Repository;
+      {{tab}}}
+    serviceMethodContent: |
+      {{tab}}public List<${majStart(className)}> getAll${majStart(className)}() {
+      {{tab}}   return ${minStart(className)}Repository.findAll();
+      {{tab}}}
+      
+      {{tab}}public ${majStart(className)} get${majStart(className)}ById(${pkColumnType} id) {
+      {{tab}}   Optional<${majStart(className)}> ${minStart(className)} = ${minStart(className)}Repository.findById(id);
+      {{tab}}   if (${minStart(className)}.isPresent()) {
+      {{tab}}     return ${minStart(className)}.get();
+      {{tab}}   } else {
+      {{tab}}     throw new RuntimeException("${majStart(className)} not found with id " + id);
+      {{tab}}   }
+      {{tab}}}
+      
+      {{tab}}public ${majStart(className)} create${majStart(className)}(${majStart(className)} ${minStart(className)}) {
+      {{tab}}   return ${minStart(className)}Repository.save(${minStart(className)});
+      {{tab}}}
+
+      {{tab}}public ${majStart(className)} update${majStart(className)}(${pkColumnType} id, ${majStart(className)} ${lowerCase(className)}) {
+      {{tab}}   Optional<${majStart(className)}> existing${majStart(className)} = ${lowerCase(className)}Repository.findById(id);
+      {{tab}}		if (existing${majStart(className)}.isPresent()) {
+      {{tab}}		    ${lowerCase(className)}.setId(id);
+      {{tab}}           return ${lowerCase(className)}Repository.save(${lowerCase(className)});
+      {{tab}}       } else {
+      {{tab}}         throw new RuntimeException("${majStart(className)} not found with id " + id);
+      {{tab}}       }
+      {{tab}}}
+      
+      {{tab}}public void delete${majStart(className)}(${pkColumnType} id) {
+      {{tab}}   ${lowerCase(className)}Repository.deleteById(id);
+      {{tab}}}
+    serviceSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/services"
+    serviceExtension: "java"
+    servicePackage: "${groupLink}.${lowerCase(projectName)}.services;"
   controller:
     controllerImports: |
-      import org.springframework.beans.factory.annotation.Autowired;
-      import org.springframework.stereotype.Controller;
       import org.springframework.ui.Model;
-      import org.springframework.web.bind.annotation.GetMapping;
-      import org.springframework.web.bind.annotation.PostMapping;
-      import org.springframework.web.servlet.view.RedirectView;
-      import com.[projectNameMin].entities.[classNameMaj];
-      import com.[projectNameMin].entities.[classNameMaj]Repository;
-      import com.config.Constantes;
-      import veda.godao.DAO;
-      import veda.godao.utils.DAOConnexion;
-      import jakarta.servlet.http.HttpServletRequest;
-      import jakarta.servlet.http.HttpSession;
-      import java.sql.Connection;
-      import java.sql.SQLException;
-      import java.net.URLDecoder;
-      import java.net.URLEncoder;
-      import java.nio.charset.StandardCharsets;
-      import java.util.Base64;
+      import ${groupLink}.${lowerCase(projectName)}.models.${majStart(className)};
+      import org.springframework.stereotype.Controller;
+      import org.springframework.web.bind.annotation.*;
+      import ${groupLink}.${lowerCase(projectName)}.services.${majStart(className)}Service;
+      import org.springframework.beans.factory.annotation.Autowired;
+      import java.util.List;
     controllerAnnotations: |
       @Controller
+      @RequestMapping("/${lowerCase(classNameLink)}")
     controllerExtends: ""
-    controllerName: "[classNameMaj]Controller"
-    controllerFields:
-      - controllerFieldAnnotations: ""
-        controllerFieldContent: |
-          "private DAO dao=new DAO(\"[databaseDriver]\", \"[databaseSgbd]\", \"[databaseHost]\", \"[databasePort]\", \"[databaseName]\", \"[user]\", \"[pwd]\", [databaseUseSSL], [databaseAllowKey], [databaseID]);"
-      - controllerFieldAnnotations: |
-          @Autowired
-        controllerFieldContent: "private [classNameMaj]Repository repo;"
-    controllerFieldsForeign:
-      controllerFieldAnnotations: |
-        @Autowired
-      controllerFieldContent: "private com.[projectNameMin].entities.[foreignNameMaj]Repository repo[foreignNameMaj];"
-    controllerChangeInstanciation:
-      template: "o.set[fieldNameMaj]([content]);"
-      value: "[fieldNameMin]"
-    controllerWhereInstanciation:
-      template: "where.set[primaryNameMaj]([content]);"
-      value: "[primaryNameMin]"
-    controllerForeignInstanciation:
-      template: "o.set[fieldNameMaj](repo[foreignType].findById([content]).orElseThrow());"
-      value: "[fieldNameMin]"
-    controllerForeignList: "model.addAttribute(\"[foreignNameMin]s\", repo[foreignType].findAll());"
-    controllerForeignContextParam: ""
-    controllerForeignContextInstanciation: ""
+    controllerName: "${majStart(className)}Controller"
+    controllerFieldContent: |
+      {{tab}}private final ${majStart(className)}Service ${lowerCase(className)}Service;
     controllerConstructors: |
-      ...
-    controllerForeignInclude: ""
-    controllerMethods:
-      - controllerMethodAnnotations: |
-          @PostMapping(\"/insert[classNameMin].do\")"
-        controllerMethodParameter: "String [fieldNameMin]"
-        controllerMethodContent: "spring/controller/springControllerInsert"
-      - controllerMethodAnnotations: |
-          "@GetMapping(\"/tocrud[classNameMin].do\")"
-        controllerMethodParameter: ""
-        controllerMethodContent: "spring/controller/springControllerRead"
-      - controllerMethodAnnotations: |
-          @PostMapping(\"/update[classNameMin].do\")"
-        controllerMethodParameter: "String [fieldNameMin]"
-        controllerMethodContent: "spring/controller/springControllerUpdate"
-      - controllerMethodAnnotations: |
-          "@PostMapping(\"/delete[classNameMin].do\")"
-        controllerMethodParameter: ""
-        controllerMethodContent: "spring/controller/springControllerDelete"
-    controllerSavepath: "[projectNameMaj]/src/main/java/com/[projectNameMin]/controllers"
+      {{tab}}public ${majStart(className)}Controller(${majStart(className)}Service ${lowerCase(className)}Service) {
+      {{tab}}   this.${lowerCase(className)}Service = ${lowerCase(className)}Service;
+      {{tab}}}
+    controllerMethodContent: |
+      {{tab}}@GetMapping
+      {{tab}}public String getAll${majStart(classNameLink)}(Model model) {
+      {{tab}}   List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(className)}();
+      {{tab}}   model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
+      {{tab}}   return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
+      {{tab}}}
+      
+      {{tab}}@GetMapping("/{id}")
+      {{tab}}public String get${majStart(className)}ById(@PathVariable ${pkColumnType} id, Model model) {
+      {{tab}}   ${majStart(className)} ${lowerCase(className)} = ${lowerCase(className)}Service.get${majStart(className)}ById(id);
+      {{tab}}   model.addAttribute("${lowerCase(className)}", ${lowerCase(className)});
+      {{tab}}   return "${lowerCase(classNameLink)}/view-list-${lowerCase(className)}";
+      {{tab}}}
+      
+      {{tab}}@PostMapping
+      {{tab}}public String create${majStart(className)}(@RequestBody @Valid ${majStart(className)} ${lowerCase(className)}, Model model) {
+      {{tab}}   ${majStart(className)} new${majStart(className)} = ${lowerCase(className)}Service.create${majStart(className)}(${lowerCase(className)});
+      {{tab}}   model.addAttribute("new${majStart(className)}", new${majStart(className)});
+      {{tab}}   return "${lowerCase(classNameLink)}/create-list-${lowerCase(className)}";
+      {{tab}}}
+      
+      {{tab}}@PutMapping("/{id}")
+      {{tab}}public String update${majStart(className)}(@PathVariable ${pkColumnType} id, @RequestBody @Valid ${majStart(className)} ${lowerCase(className)}, Model model) {
+      {{tab}}   ${majStart(className)} update${majStart(className)} = ${lowerCase(className)}Service.update${majStart(className)}(id, ${lowerCase(className)});
+      {{tab}}   model.addAttribute("update${majStart(className)}", update${majStart(className)});
+      {{tab}}   return "${lowerCase(classNameLink)}/update-list-${lowerCase(className)}";
+      {{tab}}}
+      
+      {{tab}}@DeleteMapping("/{id}")
+      {{tab}}public String delete${majStart(className)}ById(@PathVariable ${pkColumnType} id, Model model) {
+      {{tab}}   ${lowerCase(className)}Service.delete${majStart(className)}(id);
+      {{tab}}   model.addAttribute("message", "${majStart(className)} deleted successfully");
+      {{tab}}   return "redirect:/${lowerCase(classNameLink)}";
+      {{tab}}}
+    controllerSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/controllers"
     controllerExtension: "java"
-    controllerPackage: "com.[projectNameMin].controllers"
-    controllerTemplate: "ControllerTemplate"
-    controllerNameSuffix: "Controller"
+    controllerPackage: "${groupLink}.${lowerCase(projectName)}.controllers;"
   view:
     viewForeignList: ""
     viewTableHeader: "<th scope=\"col\">[fieldNameFormattedMaj]</th>"
@@ -171,6 +230,7 @@
 - id: 2
   langageId: 2
   name: ".NET MVC with EF"
+  template: "Template"
   skeleton: "csharppsql_skeleton"
   projectNameTags:
     - "[projectNameMaj]/Controllers/HomeController.cs"
@@ -178,18 +238,27 @@
     - "[projectNameMaj]/Views/Shared/_Layout.cshtml"
     - "[projectNameMaj]/Views/_ViewImports.cshtml"
     - "[projectNameMaj]/Program.cs"
-  additionnalFiles:
+  additionalFiles:
     - name: "[projectNameMaj].sln"
       content: "csharp/data/solution.templ"
     - name: "[projectNameMaj]/[projectNameMaj].csproj"
       content: "csharp/data/csprojmysql.templ"
+  dependencies:
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-data-jpa"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-web"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-thymeleaf"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-test"
   model:
     modelImports: |
       using System.ComponentModel.DataAnnotations;
       using System.ComponentModel.DataAnnotations.Schema;
     modelExtends: ""
     modelAnnotations: ""
-    modelFieldContent: |      
+    modelFieldContent: |
       {{tab}}{{#each fields}}{{#if this.isPrimaryKey}}
       {{tab}}[Key]
       {{tab}}[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -209,36 +278,48 @@
     modelConstructors: |
       {{tab}}public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) 
       {{tab}}{
-      {{tab}}    {{#each fields}}
-      {{tab}}    ${majStart(this.name)} = ${this.name};{{#if !@last}}
-      {{tab}}    {{/if}}{{/each}}
+      {{tab}}   {{#each fields}}
+      {{tab}}   ${majStart(this.name)} = ${this.name};{{#if !@last}}
+      {{tab}}   {{/if}}{{/each}}
       {{tab}}}
     modelSavePath: "[projectNameMaj]/Models"
     modelForeignContextAttr: "public DbSet<[classNameMaj]> [classNameMaj] { get; set; }"
-    modelDao:
-      name: "${majStart(className)}Repository.java"
-      packagePath: "${majStart(projectName)}.Data"
-      isUnique: true
-      content: |
-        using Microsoft.EntityFrameworkCore;
-        using System.ComponentModel.DataAnnotations;
-        using ${projectName}.Models;
-        
-        namespace ${packageValue};
-        
-        public class ${projectName}Context : DbContext
-        {
-            {{#each entities}}
-            public DbSet<${this}> ${this}s { get; set; }
-            {{/each}}
-            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            {
-                optionsBuilder.Use${DBType}(@"${connectionString}");
-            }
-        }
     modelExtension: "cs"
     modelPackage: "${majStart(projectName)}.Models"
-    modelTemplate: "ModelTemplate"
+  #    modelDao:
+  #      name: "${majStart(className)}Repository.java"
+  #      packagePath: "${majStart(projectName)}.Data"
+  #      isUnique: true
+  #      content: |
+  #
+  #
+  #        namespace ${packageValue};
+  #
+  #        public class ${projectName}Context : DbContext
+  #        {
+  #            {{#each entities}}
+  #            public DbSet<${this}> ${this}s { get; set; }
+  #            {{/each}}
+  #            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+  #            {
+  #                optionsBuilder.Use${DBType}(@"${connectionString}");
+  #            }
+  #        }
+  modelDao:
+    isUnique: true
+    modelDaoImports: |
+      using Microsoft.EntityFrameworkCore;
+      using System.ComponentModel.DataAnnotations;
+      using ${projectName}.Models;
+    modelDaoAnnotations: ""
+    modelDaoExtends: "JpaRepository<${majStart(className)}, ${pkColumnType}>"
+    modelDaoName: "interface ${majStart(className)}Repository"
+    modelDaoFieldContent: ""
+    modelDaoMethodContent: ""
+    modelDaoConstructors: ""
+    modelDaoSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/repositories"
+    modelDaoExtension: "java"
+    modelDaoPackage: "${group}.${lowerCase(projectName)}.repositories;"
   controller:
     controllerImports: |
       using Microsoft.AspNetCore.Mvc;
@@ -247,53 +328,33 @@
     controllerAnnotations: ""
     controllerExtends: " : Controller"
     controllerName: "[classNameMaj]Controller"
-    controllerFields:
-      - controllerFieldAnnotations: ""
-        controllerFieldContent: "private readonly [classNameMaj]Context _context;"
-    controllerFieldsForeign:
-        controllerFieldAnnotations: ""
-        controllerFieldContent: "private readonly [foreignNameMaj]Context _context[foreignNameMaj];"
-    controllerChangeInstanciation:
-      template: "o.[fieldNameMaj]=[content];"
-      value: "[fieldNameMin]"
-    controllerWhereInstanciation:
-      template: ""
-      value: ""
-    controllerForeignInstanciation:
-      template: "o.[fieldNameMaj]=await _context.[foreignType].FirstOrDefaultAsync(o => o.[referencedFieldNameMaj] == [content]);"
-      value: "[foreignNameMin]"
-    controllerForeignList: "ViewData[\"[foreignNameMin]\"] = await _context[foreignType].[foreignType].ToListAsync();"
-    controllerForeignContextParam: "[foreignNameMaj]Context context[foreignNameMaj]"
-    controllerForeignContextInstanciation: "_context[foreignNameMaj] = context[foreignNameMaj];"
-    controllerConstructors: |
-      public [classNameMaj]Controller([classNameMaj]Context context[controllerForeignContextParam]){_context = context; [controllerForeignContextInstanciation]}"
-    controllerForeignInclude: ".Include(e=>e.[foreignNameMaj])"
-    controllerMethods:
-      - controllerMethodAnnotations: |
-          ...
-        controllerMethodParameter: ""
-        controllerMethodContent: "csharp/controller/csharpControllerRead"
-      - controllerMethodAnnotations: |
-          [HttpPost]"
-        controllerMethodParameter: "string [fieldNameMin]"
-        controllerMethodContent: "csharp/controller/csharpControllerCreate"
-      - controllerMethodAnnotations: |
-          [HttpPost]"
-        controllerMethodParameter: "string [fieldNameMin]"
-        controllerMethodContent: "csharp/controller/csharpControllerEdit"
-      - controllerMethodAnnotations: |
-          [HttpPost]
-        controllerMethodParameter: ""
-        controllerMethodContent: "csharp/controller/csharpControllerDelete"
-      - controllerMethodAnnotations: |
-          ...
-        controllerMethodParameter: ""
-        controllerMethodContent: "csharp/controller/csharpControllerExists"
-    controllerSavepath: "[projectNameMaj]/Controllers"
+    controllerFieldContent: |
+    #      - controllerFieldAnnotations: ""
+    #        controllerFieldContent: "private readonly [classNameMaj]Context _context;"
+    controllerMethodContent: |
+    #      - controllerMethodAnnotations: |
+    #          ...
+    #        controllerMethodParameter: ""
+    #        controllerMethodContent: "csharp/controller/csharpControllerRead"
+    #      - controllerMethodAnnotations: |
+    #          [HttpPost]"
+    #        controllerMethodParameter: "string [fieldNameMin]"
+    #        controllerMethodContent: "csharp/controller/csharpControllerCreate"
+    #      - controllerMethodAnnotations: |
+    #          [HttpPost]"
+    #        controllerMethodParameter: "string [fieldNameMin]"
+    #        controllerMethodContent: "csharp/controller/csharpControllerEdit"
+    #      - controllerMethodAnnotations: |
+    #          [HttpPost]
+    #        controllerMethodParameter: ""
+    #        controllerMethodContent: "csharp/controller/csharpControllerDelete"
+    #      - controllerMethodAnnotations: |
+    #          ...
+    #        controllerMethodParameter: ""
+    #        controllerMethodContent: "csharp/controller/csharpControllerExists"
+    controllerSavePath: "[projectNameMaj]/Controllers"
     controllerExtension: "cs"
     controllerPackage: "[projectNameMaj].Controllers"
-    controllerTemplate: "ControllerTemplate"
-    controllerNameSuffix: "Controller"
   view:
     viewForeignList: "var [foreignNameMin]=(List<[foreignNameMaj]>)ViewData[\"[foreignNameMin]\"];"
     viewTableHeader: "<th scope=\"col\">[fieldNameFormattedMaj]</th>"

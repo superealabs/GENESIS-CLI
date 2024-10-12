@@ -13,80 +13,79 @@ import genesis.config.CustomFile;
 @ToString
 public class Framework {
     private int id;
-    private int langageId;
-    private String name;
-    private String skeleton;
-    private String[] projectNameTags;
-    private CustomFile[] additionnalFiles;
-    private Model model;
-    private Controller controller;
     private View view;
-    private CustomChanges[] customChanges;
+    private String name;
+    private Model model;
+    private int langageId;
+    private String skeleton;
+    private String template;
+    private Service service;
+    private ModelDao modelDao;
+    private Controller controller;
     private NavbarLink navbarLinks;
+    private String[] projectNameTags;
+    private CustomFile[] additionalFiles;
+    private Dependency[] dependencies;
+    private CustomChanges[] customChanges;
 
     @Getter
     @Setter
     public static class Model {
         private String modelImports;
         private String modelExtends;
+        private String modelPackage;
+        private String modelSavePath;
+        private String modelExtension;
         private String modelAnnotations;
         private String modelFieldContent;
         private String modelGetterSetter;
         private String modelConstructors;
-        private String modelSavePath;
         private String modelForeignContextAttr;
-        private ModelDao modelDao;
-        private String modelExtension;
-        private String modelPackage;
-        private String modelTemplate;
     }
 
     @Getter
     @Setter
     public static class ModelDao {
-        private String name;
-        private String packagePath;
-        private Boolean isUnique;
-        private String content;
+        private String isUnique;
+        private String modelDaoName;
+        private String modelDaoImports;
+        private String modelDaoExtends;
+        private String modelDaoPackage;
+        private String modelDaoSavePath;
+        private String modelDaoExtension;
+        private String modelDaoAnnotations;
+        private String modelDaoFieldContent;
+        private String modelDaoConstructors;
+        private String modelDaoMethodContent;
+    }
+
+    @Getter
+    @Setter
+    public static class Service {
+        private String serviceName;
+        private String serviceImports;
+        private String serviceExtends;
+        private String servicePackage;
+        private String serviceSavePath;
+        private String serviceExtension;
+        private String serviceAnnotations;
+        private String serviceFieldContent;
+        private String serviceConstructors;
+        private String serviceMethodContent;
     }
 
     @Getter
     @Setter
     public static class Controller {
-        private String controllerImports;
-        private String controllerAnnotations;
-        private String controllerExtends;
         private String controllerName;
-        private ControllerField[] controllerFields;
-        private ControllerField controllerFieldsForeign;
-        private Map<String, String> controllerChangeInstanciation;
-        private Map<String, String> controllerWhereInstanciation;
-        private Map<String, String> controllerForeignInstanciation;
-        private String controllerForeignList;
-        private String controllerForeignContextParam;
-        private String controllerForeignContextInstanciation;
-        private String controllerConstructors;
-        private String controllerForeignInclude;
-        private ControllerMethod[] controllerMethods;
-        private String controllerSavepath;
-        private String controllerExtension;
+        private String controllerImports;
+        private String controllerExtends;
         private String controllerPackage;
-        private String controllerTemplate;
-        private String controllerNameSuffix;
-    }
-
-    @Getter
-    @Setter
-    public static class ControllerField {
-        private String controllerFieldAnnotations;
+        private String controllerSavePath;
+        private String controllerExtension;
+        private String controllerAnnotations;
         private String controllerFieldContent;
-    }
-
-    @Getter
-    @Setter
-    public static class ControllerMethod {
-        private String controllerMethodAnnotations;
-        private String controllerMethodParameter;
+        private String controllerConstructors;
         private String controllerMethodContent;
     }
 
@@ -122,5 +121,13 @@ public class Framework {
     public static class NavbarLink {
         private String path;
         private String link;
+    }
+
+    @Getter
+    @Setter
+    public static class Dependency {
+        private String groupId;
+        private String artifactId;
+        private String version;
     }
 }
