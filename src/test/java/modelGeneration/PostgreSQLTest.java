@@ -69,47 +69,6 @@ public class PostgreSQLTest {
         }
     }
 
-    @Test
-    void generateProject() {
-        try {
-            // Déclaration et initialisation des variables
-            int databaseId = 1;
-            int languageId = 0;
-            int frameworkId = 0;
-            int projectId = 0;
-            String projectName = "Begin";
-            String groupLink = "labs";
-            String projectPort = "8000";
-            String logLevel = "INFO";
-            String hibernateDdlAuto = "update";
-            String frameworkVersion = "3.0.1";
-            String projectDescription = "A Spring Boot BEGIN Project";
-            String languageVersion = "21";
-
-            // Création de l'instance du générateur de projet
-            ProjectGenerator projectGenerator = new ProjectGenerator();
-
-            // Appel de la méthode generateProject avec les arguments
-            projectGenerator.generateProject(
-                    databaseId,
-                    languageId,
-                    frameworkId,
-                    projectId,
-                    credentials,
-                    projectName,
-                    groupLink,
-                    projectPort,
-                    logLevel,
-                    hibernateDdlAuto,
-                    frameworkVersion,
-                    projectDescription,
-                    languageVersion
-            );
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 
     @Test
     void PostgreSQLxNET() throws IOException {

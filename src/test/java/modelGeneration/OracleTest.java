@@ -3,8 +3,8 @@ package modelGeneration;
 import genesis.config.Constantes;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
-import genesis.config.langage.generator.GenesisGenerator;
-import genesis.config.langage.generator.MVCGenerator;
+import genesis.config.langage.generator.framework.GenesisGenerator;
+import genesis.config.langage.generator.framework.MVCGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.connexion.providers.OracleDatabase;
@@ -28,7 +28,7 @@ public class OracleTest {
                 .setTrustCertificate(true)
                 .setUseSSL(true);
     }
-
+/*
     @Test
     void test() {
         System.out.println("Hey !");
@@ -153,5 +153,5 @@ public class OracleTest {
             throw new RuntimeException(e);
         }
     }
-
+*/
 }

@@ -17,7 +17,7 @@ import java.util.List;
 
 
 public class TableMetadataTest {
-    private Connection connection;
+    private final Connection connection;
     private Credentials credentials;
     private Database database;
     private Language language;

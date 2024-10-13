@@ -23,12 +23,12 @@ public class ProjectMetadataProvider {
         return metadata;
     }
 
-    static HashMap<String, Object> getApplicationPropertiesHashMap(String projectPort,
-                                                                   String logLevel,
-                                                                   Database database,
-                                                                   Credentials credentials,
-                                                                   Language language,
-                                                                   String hibernateDdlAuto) throws Exception {
+    static HashMap<String, Object> getConfigFileHashMap(String projectPort,
+                                                        String logLevel,
+                                                        Database database,
+                                                        Credentials credentials,
+                                                        Language language,
+                                                        String hibernateDdlAuto) throws Exception {
         HashMap<String, Object> appPropertiesMap = new HashMap<>();
         appPropertiesMap.put("projectPort", projectPort);
         appPropertiesMap.put("logLevel", logLevel);
@@ -54,7 +54,6 @@ public class ProjectMetadataProvider {
         List<HashMap<String, String>> dependencies = getDependenciesHashMaps(framework);
         pomXmlMap.put("dependencies", dependencies);
 
-        // Database dependency example (conditionally added)
         if (database != null) {
             pomXmlMap.put("useDB", true);
 
@@ -104,7 +103,7 @@ public class ProjectMetadataProvider {
 
 
         // Ajoute les propriétés de l'application
-        combinedMap.putAll(getApplicationPropertiesHashMap(
+        combinedMap.putAll(getConfigFileHashMap(
                 projectPort,
                 logLevel,
                 database,

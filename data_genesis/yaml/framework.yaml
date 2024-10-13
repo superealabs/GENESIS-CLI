@@ -1,6 +1,6 @@
 - id: 1
   langageId: 1
-  name: "Spring MVC"
+  name: "Spring Boot REST API"
   template: "Template"
   skeleton: "springmvc_skeleton"
   projectNameTags:
@@ -16,8 +16,6 @@
       artifactId: "spring-boot-starter-data-jpa"
     - groupId: "org.springframework.boot"
       artifactId: "spring-boot-starter-web"
-    - groupId: "org.springframework.boot"
-      artifactId: "spring-boot-starter-thymeleaf"
     - groupId: "org.springframework.boot"
       artifactId: "spring-boot-starter-test"
   model:
@@ -115,7 +113,7 @@
       {{tab}}   if (${minStart(className)}.isPresent()) {
       {{tab}}     return ${minStart(className)}.get();
       {{tab}}   } else {
-      {{tab}}     throw new RuntimeException("${majStart(className)} not found with id " + id);
+      {{tab}}     throw new RuntimeException("${majStart(className)} not found with id : " + id);
       {{tab}}   }
       {{tab}}}
       
@@ -129,7 +127,7 @@
       {{tab}}		    ${lowerCase(className)}.setId(id);
       {{tab}}           return ${lowerCase(className)}Repository.save(${lowerCase(className)});
       {{tab}}       } else {
-      {{tab}}         throw new RuntimeException("${majStart(className)} not found with id " + id);
+      {{tab}}         throw new RuntimeException("${majStart(className)} not found with id : " + id);
       {{tab}}       }
       {{tab}}}
       
@@ -141,15 +139,14 @@
     servicePackage: "${groupLink}.${lowerCase(projectName)}.services;"
   controller:
     controllerImports: |
-      import org.springframework.ui.Model;
+      import org.springframework.http.HttpStatus;
+      import org.springframework.http.ResponseEntity;
       import ${groupLink}.${lowerCase(projectName)}.models.${majStart(className)};
-      import org.springframework.stereotype.Controller;
       import org.springframework.web.bind.annotation.*;
       import ${groupLink}.${lowerCase(projectName)}.services.${majStart(className)}Service;
-      import org.springframework.beans.factory.annotation.Autowired;
       import java.util.List;
     controllerAnnotations: |
-      @Controller
+      @RestController
       @RequestMapping("/${lowerCase(classNameLink)}")
     controllerExtends: ""
     controllerName: "${majStart(className)}Controller"
@@ -161,38 +158,38 @@
       {{tab}}}
     controllerMethodContent: |
       {{tab}}@GetMapping
-      {{tab}}public String getAll${majStart(classNameLink)}(Model model) {
+      {{tab}}public ResponseEntity<List<${majStart(className)}>> getAll${majStart(classNameLink)}() {
       {{tab}}   List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(className)}();
-      {{tab}}   model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
-      {{tab}}   return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
+      {{tab}}   return ${lowerCase(classNameLink)}.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(${lowerCase(classNameLink)});
       {{tab}}}
       
       {{tab}}@GetMapping("/{id}")
-      {{tab}}public String get${majStart(className)}ById(@PathVariable ${pkColumnType} id, Model model) {
+      {{tab}}public ResponseEntity<${majStart(className)}> get${majStart(className)}ById(@PathVariable ${pkColumnType} id) {
       {{tab}}   ${majStart(className)} ${lowerCase(className)} = ${lowerCase(className)}Service.get${majStart(className)}ById(id);
-      {{tab}}   model.addAttribute("${lowerCase(className)}", ${lowerCase(className)});
-      {{tab}}   return "${lowerCase(classNameLink)}/view-list-${lowerCase(className)}";
+      {{tab}}   return ResponseEntity.ok(${lowerCase(className)});
       {{tab}}}
       
       {{tab}}@PostMapping
-      {{tab}}public String create${majStart(className)}(@RequestBody @Valid ${majStart(className)} ${lowerCase(className)}, Model model) {
+      {{tab}}public ResponseEntity<${majStart(className)}> create${majStart(className)}(@RequestBody ${majStart(className)} ${lowerCase(className)}) {
       {{tab}}   ${majStart(className)} new${majStart(className)} = ${lowerCase(className)}Service.create${majStart(className)}(${lowerCase(className)});
-      {{tab}}   model.addAttribute("new${majStart(className)}", new${majStart(className)});
-      {{tab}}   return "${lowerCase(classNameLink)}/create-list-${lowerCase(className)}";
+      {{tab}}   return ResponseEntity.status(HttpStatus.CREATED).body(new${majStart(className)});
       {{tab}}}
       
       {{tab}}@PutMapping("/{id}")
-      {{tab}}public String update${majStart(className)}(@PathVariable ${pkColumnType} id, @RequestBody @Valid ${majStart(className)} ${lowerCase(className)}, Model model) {
+      {{tab}}public ResponseEntity<${majStart(className)}> update${majStart(className)}(@PathVariable ${pkColumnType} id, @RequestBody ${majStart(className)} ${lowerCase(className)}) {
       {{tab}}   ${majStart(className)} update${majStart(className)} = ${lowerCase(className)}Service.update${majStart(className)}(id, ${lowerCase(className)});
-      {{tab}}   model.addAttribute("update${majStart(className)}", update${majStart(className)});
-      {{tab}}   return "${lowerCase(classNameLink)}/update-list-${lowerCase(className)}";
+      {{tab}}   return ResponseEntity.ok(update${majStart(className)});
       {{tab}}}
       
       {{tab}}@DeleteMapping("/{id}")
-      {{tab}}public String delete${majStart(className)}ById(@PathVariable ${pkColumnType} id, Model model) {
+      {{tab}}public ResponseEntity<Void> delete${majStart(className)}ById(@PathVariable ${pkColumnType} id) {
       {{tab}}   ${lowerCase(className)}Service.delete${majStart(className)}(id);
-      {{tab}}   model.addAttribute("message", "${majStart(className)} deleted successfully");
-      {{tab}}   return "redirect:/${lowerCase(classNameLink)}";
+      {{tab}}   return ResponseEntity.noContent().build();
+      {{tab}}}
+      
+      {{tab}}@ExceptionHandler(RuntimeException.class)
+      {{tab}}public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+      {{tab}}	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
       {{tab}}}
     controllerSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/controllers"
     controllerExtension: "java"
