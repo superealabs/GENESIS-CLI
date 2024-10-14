@@ -33,11 +33,11 @@
       {{tab}}{{#each fields}}
       {{tab}}{{#if this.withGetters}}
       {{tab}}public ${this.type} get${majStart(this.name)}() {
-      {{tab}}   return ${this.name};
+      {{tab}}    return ${this.name};
       {{tab}}}{{/if}}
       {{#if this.withSetters}}
       {{tab}}public void set${majStart(this.name)}(${this.type} ${this.name}) {
-      {{tab}}   this.${this.name} = ${this.name};
+      {{tab}}    this.${this.name} = ${this.name};
       {{tab}}}{{#if !@last}}
       {{tab}}{{/if}}
       {{tab}}{{/if}}{{/each}}
@@ -46,15 +46,15 @@
       {{tab}}}
       
       {{tab}}public ${majStart(className)}({{#each fields}}{{#if !@first}}, {{/if}}{{#if !this.isPrimaryKey}}${this.type} ${this.name}{{/if}}{{/each}}) {
-      {{tab}}   {{#each fields}} {{#if !this.isPrimaryKey}}
-      {{tab}}   this.${this.name} = ${this.name};{{/if}}{{#if !@last}}
-      {{tab}}   {{/if}}{{/each}}
+      {{tab}}    {{#each fields}} {{#if !this.isPrimaryKey}}
+      {{tab}}    this.${this.name} = ${this.name};{{/if}}{{#if !@last}}
+      {{tab}}    {{/if}}{{/each}}
       {{tab}}}
       
       {{tab}}public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
-      {{tab}}   {{#each fields}}
-      {{tab}}   this.${this.name} = ${this.name};{{#if !@last}}
-      {{tab}}   {{/if}}{{/each}}
+      {{tab}}    {{#each fields}}
+      {{tab}}    this.${this.name} = ${this.name};{{#if !@last}}
+      {{tab}}    {{/if}}{{/each}}
       {{tab}}}
     modelSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/models"
     modelForeignContextAttr: ""
@@ -86,30 +86,30 @@
     serviceConstructors: |
       {{tab}}@Autowired
       {{tab}}public ${majStart(className)}Service(${majStart(className)}Repository ${lowerCase(className)}Repository) {
-      {{tab}}   this.${lowerCase(className)}Repository = ${lowerCase(className)}Repository;
+      {{tab}}    this.${lowerCase(className)}Repository = ${lowerCase(className)}Repository;
       {{tab}}}
     serviceMethodContent: |
       {{tab}}public List<${majStart(className)}> getAll${majStart(className)}() {
-      {{tab}}   return ${lowerCase(className)}Repository.findAll();
+      {{tab}}    return ${lowerCase(className)}Repository.findAll();
       {{tab}}}
       
       {{tab}}public ${majStart(className)} get${majStart(className)}ById(Long id) {
-      {{tab}}   return ${lowerCase(className)}Repository.findById(id);
+      {{tab}}    return ${lowerCase(className)}Repository.findById(id);
       {{tab}}}
       
       {{tab}}public ${majStart(className)} create${majStart(className)}(${majStart(className)} ${lowerCase(className)}) {
-      {{tab}}   return ${lowerCase(className)}Repository.save(${lowerCase(className)});
+      {{tab}}    return ${lowerCase(className)}Repository.save(${lowerCase(className)});
       {{tab}}}
       
       {{tab}}public ${majStart(className)} update${majStart(className)}(Long id, ${majStart(className)} ${lowerCase(className)}) {
-      {{tab}}   ${majStart(className)} existing${majStart(className)} = ${lowerCase(className)}Repository.findById(id);
-      {{tab}}   existing${majStart(className)} = ${lowerCase(className)};
-      {{tab}}   existing${majStart(className)}.setId${majStart(className)}(id);
-      {{tab}}   return ${lowerCase(className)}Repository.save(existing${lowerCase(className)});
+      {{tab}}    ${majStart(className)} existing${majStart(className)} = ${lowerCase(className)}Repository.findById(id);
+      {{tab}}    existing${majStart(className)} = ${lowerCase(className)};
+      {{tab}}    existing${majStart(className)}.setId${majStart(className)}(id);
+      {{tab}}    return ${lowerCase(className)}Repository.save(existing${lowerCase(className)});
       {{tab}}}
       
       {{tab}}public void delete${majStart(className)}(Long id) {
-      {{tab}}   ${lowerCase(className)}Repository.deleteById(id);
+      {{tab}}    ${lowerCase(className)}Repository.deleteById(id);
       {{tab}}}
     serviceSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/services"
     serviceExtension: "java"
@@ -133,42 +133,42 @@
     controllerConstructors: |
       {{tab}}@Autowired
       {{tab}}public ${majStart(className)}Controller(${majStart(className)}Service ${lowerCase(className)}Service) {
-      {{tab}}   this.${lowerCase(className)}Service = ${lowerCase(className)}Service;
+      {{tab}}    this.${lowerCase(className)}Service = ${lowerCase(className)}Service;
       {{tab}}}
     controllerMethodContent: |
       {{tab}}@GetMapping
       {{tab}}public String getAll${majStart(classNameLink)}(Model model) {
-      {{tab}}   List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(className)}();
-      {{tab}}   model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
-      {{tab}}   return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
+      {{tab}}    List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(className)}();
+      {{tab}}    model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
+      {{tab}}    return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
       {{tab}}}
   
       {{tab}}@GetMapping("/{id}")
       {{tab}}public String get${majStart(className)}ById(@PathVariable Long id, Model model) {
-      {{tab}}   ${majStart(className)} ${lowerCase(className)} = ${lowerCase(className)}Service.get${majStart(className)}ById(id);
-      {{tab}}   model.addAttribute("${lowerCase(className)}", ${lowerCase(className)});
-      {{tab}}   return "${lowerCase(classNameLink)}/view-list-${lowerCase(className)}";
+      {{tab}}    ${majStart(className)} ${lowerCase(className)} = ${lowerCase(className)}Service.get${majStart(className)}ById(id);
+      {{tab}}    model.addAttribute("${lowerCase(className)}", ${lowerCase(className)});
+      {{tab}}    return "${lowerCase(classNameLink)}/view-list-${lowerCase(className)}";
       {{tab}}}
   
       {{tab}}@PostMapping
       {{tab}}public String create${majStart(className)}(@RequestBody ${majStart(className)} ${lowerCase(className)}, Model model) {
-      {{tab}}   ${majStart(className)} new${majStart(className)} = ${lowerCase(className)}Service.create${majStart(className)}(${lowerCase(className)});
-      {{tab}}   model.addAttribute("new${majStart(className)}", new${majStart(className)});
-      {{tab}}   return "${lowerCase(classNameLink)}/create-list-${lowerCase(className)}";
+      {{tab}}    ${majStart(className)} new${majStart(className)} = ${lowerCase(className)}Service.create${majStart(className)}(${lowerCase(className)});
+      {{tab}}    model.addAttribute("new${majStart(className)}", new${majStart(className)});
+      {{tab}}    return "${lowerCase(classNameLink)}/create-list-${lowerCase(className)}";
       {{tab}}}
   
       {{tab}}@PutMapping("/{id}")
       {{tab}}public String update${majStart(className)}(@PathVariable Long id, @RequestBody ${majStart(className)} ${lowerCase(className)}, Model model) {
-      {{tab}}   ${majStart(className)} update${majStart(className)} = ${lowerCase(className)}Service.update${majStart(className)}(id, ${lowerCase(className)});
-      {{tab}}   model.addAttribute("update${majStart(className)}", update${majStart(className)});
-      {{tab}}   return "${lowerCase(classNameLink)}/update-list-${lowerCase(className)}";
+      {{tab}}    ${majStart(className)} update${majStart(className)} = ${lowerCase(className)}Service.update${majStart(className)}(id, ${lowerCase(className)});
+      {{tab}}    model.addAttribute("update${majStart(className)}", update${majStart(className)});
+      {{tab}}    return "${lowerCase(classNameLink)}/update-list-${lowerCase(className)}";
       {{tab}}}
   
       {{tab}}@DeleteMapping("/{id}")
       {{tab}}public String delete${majStart(className)}ById(@PathVariable Long id, Model model) {
-      {{tab}}   ${lowerCase(className)}Service.delete${majStart(className)}(id);
-      {{tab}}   model.addAttribute("message", "${majStart(className)} deleted successfully");
-      {{tab}}   return "redirect:/${lowerCase(classNameLink)}";
+      {{tab}}    ${lowerCase(className)}Service.delete${majStart(className)}(id);
+      {{tab}}    model.addAttribute("message", "${majStart(className)} deleted successfully");
+      {{tab}}    return "redirect:/${lowerCase(classNameLink)}";
       {{tab}}}
     controllerSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/controllers"
     controllerExtension: "java"
@@ -245,9 +245,9 @@
     modelConstructors: |
       {{tab}}public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) 
       {{tab}}{
-      {{tab}}   {{#each fields}}
-      {{tab}}   ${majStart(this.name)} = ${this.name};{{#if !@last}}
-      {{tab}}   {{/if}}{{/each}}
+      {{tab}}    {{#each fields}}
+      {{tab}}    ${majStart(this.name)} = ${this.name};{{#if !@last}}
+      {{tab}}    {{/if}}{{/each}}
       {{tab}}}
     modelSavePath: "[projectNameMaj]/Models"
     modelForeignContextAttr: "public DbSet<[classNameMaj]> [classNameMaj] { get; set; }"
