@@ -1,16 +1,16 @@
-package java..departement.controllers
+package dada.testdada.controllers;
 
 import org.springframework.ui.Model;
-import com.testproject.models.Departement;
+import dada.testdada.models.Departement;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import com.testproject.repositories.DepartementRepository;
-import org.springframework.web.servlet.view.RedirectView;
+import dada.testdada.services.DepartementService;
 import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
 
 @Controller
 @RequestMapping("/departements")
-public class DepartementController {
+public class DepartementController  {
 	private final DepartementService departementService;
 
 	@Autowired

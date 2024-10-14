@@ -118,10 +118,16 @@ public class FileUtils {
         createFileStructure(filePath);
 
         // creation du fichier et son contenu
+        createSimpleFile(filePath, fileName, fileExtension, fileContent);
+    }
+
+    public static void createSimpleFile(String filePath, String fileName, String fileExtension, String fileContent) throws IOException {
+        // creation du fichier et son contenu
         File file = new File(filePath + "/" + fileName + "." + fileExtension);
         file.createNewFile();
         Files.write(file.toPath(), fileContent.getBytes());
     }
+
 
     public static void copyFile(String sourceFilePath, String destinationFilePath) throws IOException {
         Path destinationPath = Paths.get(destinationFilePath);

@@ -3,11 +3,10 @@ package modelGeneration;
 import genesis.config.Constantes;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
-import genesis.config.langage.generator.GenesisGenerator;
-import genesis.config.langage.generator.MVCGenerator;
+import genesis.config.langage.generator.framework.GenesisGenerator;
+import genesis.config.langage.generator.framework.MVCGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
-import genesis.connexion.providers.OracleDatabase;
 import genesis.connexion.providers.SQLServerDatabase;
 import genesis.model.TableMetadata;
 import org.junit.jupiter.api.Test;
@@ -53,8 +52,10 @@ public class SQLServerTest {
             tableMetadata.initialize(connection, credentials, database, language);
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
-            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
+            String projectName = "TestProject", groupLink = "com";
+
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
+            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, projectName, groupLink);
 
             System.out.println(database);
             System.out.println(language);
@@ -83,8 +84,10 @@ public class SQLServerTest {
             TableMetadata tableMetadata = entities[1]; //Employe
 
             GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
-            String dao = mvcGenerator.generateDao(framework, language, entities, "TestProject");
+            String projectName = "TestProject", groupLink = "com";
+
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
+            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, projectName, groupLink);
 
             System.out.println(database);
             System.out.println(language);

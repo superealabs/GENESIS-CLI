@@ -1,16 +1,16 @@
-package java..employe.controllers
+package dada.testdada.controllers;
 
 import org.springframework.ui.Model;
-import com.testproject.models.Employe;
+import dada.testdada.models.Employe;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import com.testproject.repositories.EmployeRepository;
-import org.springframework.web.servlet.view.RedirectView;
+import dada.testdada.services.EmployeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
 
 @Controller
 @RequestMapping("/employes")
-public class EmployeController {
+public class EmployeController  {
 	private final EmployeService employeService;
 
 	@Autowired

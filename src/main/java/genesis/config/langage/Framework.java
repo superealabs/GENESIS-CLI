@@ -24,7 +24,8 @@ public class Framework {
     private Controller controller;
     private NavbarLink navbarLinks;
     private String[] projectNameTags;
-    private CustomFile[] additionnalFiles;
+    private CustomFile[] additionalFiles;
+    private Dependency[] dependencies;
     private CustomChanges[] customChanges;
 
     @Getter
@@ -45,6 +46,7 @@ public class Framework {
     @Getter
     @Setter
     public static class ModelDao {
+        private String isUnique;
         private String modelDaoName;
         private String modelDaoImports;
         private String modelDaoExtends;
@@ -119,5 +121,13 @@ public class Framework {
     public static class NavbarLink {
         private String path;
         private String link;
+    }
+
+    @Getter
+    @Setter
+    public static class Dependency {
+        private String groupId;
+        private String artifactId;
+        private String version;
     }
 }

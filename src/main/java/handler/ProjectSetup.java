@@ -17,7 +17,7 @@ public class ProjectSetup {
         File project = new File(projectName);
         project.mkdir();
 
-        for (CustomFile c : framework.getAdditionnalFiles()) {
+        for (CustomFile c : framework.getAdditionalFiles()) {
             String customFilePath = c.getName().replace("[projectNameMaj]", FileUtils.majStart(projectName));
             FileUtils.createFileStructure(customFilePath);
             String customFileContent = FileUtils.getFileContent(Constantes.DATA_PATH + "/" + c.getContent())
