@@ -110,7 +110,6 @@
         {{tab}}{{tab}}</dependency>{{/if}}
         {{tab}}</dependencies>
         </project>
-
       destinationPath: "${majStart(projectName)}/"
   projectFiles:
     - fileType: "GitIgnore"
