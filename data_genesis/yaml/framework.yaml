@@ -74,7 +74,6 @@
     modelDaoImports: |
       import org.springframework.data.jpa.repository.JpaRepository;
       import ${groupLink}.${lowerCase(projectName)}.models.${majStart(className)};
-
     modelDaoAnnotations: "{{newline}}"
     modelDaoExtends: "extends JpaRepository<${majStart(className)}, ${pkColumnType}>"
     modelDaoName: "${majStart(className)}Repository"
@@ -84,7 +83,6 @@
     modelDaoSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/repositories"
     modelDaoExtension: "java"
     modelDaoPackage: "${groupLink}.${lowerCase(projectName)}.repositories;"
-
   service:
     serviceImports: |
       import ${groupLink}.${lowerCase(projectName)}.models.${majStart(className)};

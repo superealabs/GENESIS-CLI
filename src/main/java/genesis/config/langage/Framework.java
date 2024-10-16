@@ -24,8 +24,8 @@ public class Framework {
     private Controller controller;
     private NavbarLink navbarLinks;
     private String[] projectNameTags;
-    private CustomFile[] additionalFiles;
     private Dependency[] dependencies;
+    private CustomFile[] additionalFiles;
     private CustomChanges[] customChanges;
 
     @Getter
@@ -92,20 +92,20 @@ public class Framework {
     @Getter
     @Setter
     public static class View {
-        private String viewForeignList;
-        private String viewTableHeader;
-        private String foreignFieldGet;
-        private String viewTableLine;
-        private String viewUpdateFormForeignField;
-        private Map<String, String> viewUpdateFormField;
-        private String viewInsertFormForeignField;
-        private Map<String, String> viewInsertFormField;
         private String viewName;
         private String viewContent;
         private String viewSavePath;
+        private String viewTableLine;
         private String viewExtension;
-        private String viewCommentStart;
         private String viewCommentEnd;
+        private String viewForeignList;
+        private String viewTableHeader;
+        private String foreignFieldGet;
+        private String viewCommentStart;
+        private String viewUpdateFormForeignField;
+        private String viewInsertFormForeignField;
+        private Map<String, String> viewInsertFormField;
+        private Map<String, String> viewUpdateFormField;
     }
 
     @Getter
@@ -127,7 +127,7 @@ public class Framework {
     @Setter
     public static class Dependency {
         private String groupId;
-        private String artifactId;
         private String version;
+        private String artifactId;
     }
 }

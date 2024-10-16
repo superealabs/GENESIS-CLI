@@ -78,7 +78,7 @@ public class PostgreSQLTest {
             int frameworkId = 0;
             int projectId = 0;
             String projectName = "Begin";
-            String groupLink = "labs";
+            String groupLink = "com.labs";
             String projectPort = "8000";
             String logLevel = "INFO";
             String hibernateDdlAuto = "update";
