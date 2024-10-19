@@ -42,11 +42,11 @@
       {{tab}}{{#each fields}}
       {{tab}}{{#if this.withGetters}}
       {{tab}}public ${this.type} get${majStart(this.name)}() {
-      {{tab}}    return ${this.name};
+      {{tab}}   return ${this.name};
       {{tab}}}{{/if}}
       {{#if this.withSetters}}
       {{tab}}public void set${majStart(this.name)}(${this.type} ${this.name}) {
-      {{tab}}    this.${this.name} = ${this.name};
+      {{tab}}   this.${this.name} = ${this.name};
       {{tab}}}{{#if !@last}}
       {{tab}}{{/if}}
       {{tab}}{{/if}}{{/each}}
@@ -61,9 +61,9 @@
       {{tab}}}
       
       {{tab}}public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
-      {{tab}}    {{#each fields}}
-      {{tab}}    this.${this.name} = ${this.name};{{#if !@last}}
-      {{tab}}    {{/if}}{{/each}}
+      {{tab}}   {{#each fields}}
+      {{tab}}   this.${this.name} = ${this.name};{{#if !@last}}
+      {{tab}}   {{/if}}{{/each}}
       {{tab}}}
     modelSavePath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/models"
     modelForeignContextAttr: ""
@@ -111,9 +111,9 @@
       {{tab}}public ${majStart(className)} get${majStart(className)}ById(${pkColumnType} id) {
       {{tab}}   Optional<${majStart(className)}> ${minStart(className)} = ${minStart(className)}Repository.findById(id);
       {{tab}}   if (${minStart(className)}.isPresent()) {
-      {{tab}}     return ${minStart(className)}.get();
+      {{tab}}      return ${minStart(className)}.get();
       {{tab}}   } else {
-      {{tab}}     throw new RuntimeException("${majStart(className)} not found with id " + id);
+      {{tab}}      throw new RuntimeException("${majStart(className)} not found with id " + id);
       {{tab}}   }
       {{tab}}}
       
@@ -123,12 +123,12 @@
 
       {{tab}}public ${majStart(className)} update${majStart(className)}(${pkColumnType} id, ${majStart(className)} ${lowerCase(className)}) {
       {{tab}}   Optional<${majStart(className)}> existing${majStart(className)} = ${lowerCase(className)}Repository.findById(id);
-      {{tab}}		if (existing${majStart(className)}.isPresent()) {
-      {{tab}}		    ${lowerCase(className)}.setId(id);
-      {{tab}}           return ${lowerCase(className)}Repository.save(${lowerCase(className)});
-      {{tab}}       } else {
+      {{tab}}      if (existing${majStart(className)}.isPresent()) {
+      {{tab}}	      ${lowerCase(className)}.setId(id);
+      {{tab}}            return ${lowerCase(className)}Repository.save(${lowerCase(className)});
+      {{tab}}      } else {
       {{tab}}         throw new RuntimeException("${majStart(className)} not found with id " + id);
-      {{tab}}       }
+      {{tab}}      }
       {{tab}}}
       
       {{tab}}public void delete${majStart(className)}(${pkColumnType} id) {
@@ -155,14 +155,14 @@
       {{tab}}private final ${majStart(className)}Service ${lowerCase(className)}Service;
     controllerConstructors: |
       {{tab}}public ${majStart(className)}Controller(${majStart(className)}Service ${lowerCase(className)}Service) {
-      {{tab}}    this.${lowerCase(className)}Service = ${lowerCase(className)}Service;
+      {{tab}}   this.${lowerCase(className)}Service = ${lowerCase(className)}Service;
       {{tab}}}
     controllerMethodContent: |
       {{tab}}@GetMapping
       {{tab}}public String getAll${majStart(classNameLink)}(Model model) {
-      {{tab}}    List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(className)}();
-      {{tab}}    model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
-      {{tab}}    return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
+      {{tab}}   List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(className)}();
+      {{tab}}   model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
+      {{tab}}   return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
       {{tab}}}
       
       {{tab}}@GetMapping("/{id}")
