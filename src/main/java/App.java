@@ -50,7 +50,8 @@ public class App {
             user = scanner.next();
             System.out.print("Password: ");
             pwd = scanner.next();
-            System.out.print("Database host: ");
+            System.out.print("Database host: ");y
+
             host = scanner.next();
             System.out.print("Use SSL ?(Y/n): ");
             useSSL = scanner.next().equalsIgnoreCase("Y");

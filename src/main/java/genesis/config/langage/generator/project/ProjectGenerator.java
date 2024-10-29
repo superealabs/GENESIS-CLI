@@ -127,13 +127,14 @@ public class ProjectGenerator {
                     languageVersion,
                     framework);
 
-            // Rendu et copie des fichiers du projet
-            renderAndCopyFiles(project, initializeHashMap);
 
             // Rendu et copie des dossiers du projet
             renderAndCopyFolders(project, initializeHashMap);
 
-            // Rendu et copie des dossiers du projet (edits)
+            // Rendu et copie des fichiers du projet
+            renderAndCopyFiles(project, initializeHashMap);
+
+            // Rendu et copie des fichiers editer du projet
             renderProjectFilesEdits(project, projectFilesEditsHashMap);
 
         } catch (Exception e) {

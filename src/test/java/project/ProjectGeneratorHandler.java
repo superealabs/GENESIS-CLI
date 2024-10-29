@@ -49,7 +49,7 @@ public class ProjectGeneratorHandler {
     private void configureCredentials(Scanner scanner) {
         credentials.setHost(askForInput(scanner, "Enter the database host", "localhost"));
         credentials.setDatabaseName(askForInput(scanner, "Enter the database name", "test_db"));
-        credentials.setUser(askForInput(scanner, "Enter the database user", "nomena"));
+        credentials.setUser(askForInput(scanner, "Enter the database user", "postgres"));
         credentials.setPwd(askForInput(scanner, "Enter the database password", "root"));
         credentials.setPort(askForInput(scanner, "Enter the database port", "5432"));
         System.out.println();
