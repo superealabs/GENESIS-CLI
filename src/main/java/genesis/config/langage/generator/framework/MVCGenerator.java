@@ -1,10 +1,9 @@
 package genesis.config.langage.generator.framework;
 
 import genesis.config.Constantes;
+import genesis.config.langage.Editor;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
-import genesis.connexion.Credentials;
-import genesis.connexion.Database;
 import genesis.engine.TemplateEngine;
 import genesis.model.TableMetadata;
 import utils.FileUtils;
@@ -131,11 +130,39 @@ public class MVCGenerator implements GenesisGenerator {
     }
 
     @Override
-    public String generateView(Framework framework, Language language, TableMetadata tableMetadata, Database database, Credentials credentials, String projectName, String groupLink) throws IOException {
+    public String generateView(Framework framework, Language language, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
+        if (language.getId() != framework.getLangageId()) {
+            throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
+        }
         return "";
     }
 
+    @Override
+    public void generateViewMainLayout(Framework framework, Language language, Editor editor,TableMetadata[] tableMetadatas, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
+        if (language.getId() != framework.getLangageId()) {
+            throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
+        }
+
+        String templateContent = loadViewTemplate(editor);
+
+        //render base layout
+        HashMap<String, Object> metadata = getViewMainLayoutHashMap(tableMetadatas, tableMetadata, language, editor);
+
+        String result = engine.simpleRender(templateContent, metadata);
+
+        HashMap<String, Object> metadataFinally = getHashMapIntermediaire(tableMetadata, projectName, groupLink);
+
+        result =  engine.render(result, metadataFinally);
+
+        metadataFinally.putAll(metadata);
+        FileUtils.overwriteFileContentByName(engine.simpleRender(editor.getLayout().getDestinationPath(), metadataFinally), editor.getLayout().getName(), result);
+    }
+
     private String loadTemplate(Framework framework) throws IOException {
-        return FileUtils.getFileContent(Constantes.DATA_PATH + "/" + framework.getTemplate() + "." + Constantes.MODEL_TEMPLATE_EXT);
+        return FileUtils.getFileContent(Constantes.DATA_PATH + "/" + framework.getTemplate() + "." + Constantes.TEMPLATE_EXT);
+    }
+
+    private String loadViewTemplate(Editor editor) throws IOException {
+        return FileUtils.getFileContent(Constantes.LAYOUT_DATA_PATH + "/" + editor.getTemplate() + "." + Constantes.TEMPLATE_EXT);
     }
 }

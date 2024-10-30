@@ -24,10 +24,11 @@ public class ProjectGeneratorCLI {
                 .setUseSSL(true)
                 .setAllowPublicKeyRetrieval(true);
 
+            int editorId = 0;
+            int projectId = 0;
             int databaseId = 1;
             int languageId = 0;
             int frameworkId = 0;
-            int projectId = 0;
             String projectName = "TEST";
             String groupLink = "labs";
             String projectPort = "8000";
@@ -39,7 +40,7 @@ public class ProjectGeneratorCLI {
 
             var projectGenerator = new ProjectGenerator();
 
-            projectGenerator.generateProject(databaseId, languageId, frameworkId, projectId, credentials, projectName, groupLink, projectPort, logLevel, hibernateDdlAuto, frameworkVersion, projectDescription, languageVersion);
+            projectGenerator.generateProject(databaseId, languageId, frameworkId, projectId, editorId, credentials, projectName, groupLink, projectPort, logLevel, hibernateDdlAuto, frameworkVersion, projectDescription, languageVersion);
             System.out.println("\nProject generated successfully! 👨🏽‍💻");
 
 

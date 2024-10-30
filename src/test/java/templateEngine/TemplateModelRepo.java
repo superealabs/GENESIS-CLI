@@ -516,7 +516,7 @@ public class TemplateModelRepo {
     @Test
     void loopTest() throws Exception {
         TemplateEngine engine = new TemplateEngine();
-        String template = "Liste des éléments :\n{{#each items}}\n- ${this}\n{{/each}}";
+        String template = "Liste des éléments :\n{{#each items}}\n- ${lowerCase(this)}\n{{/each}}";
 
         Map<String, Object> variables = new HashMap<>();
         List<String> items = List.of("Pomme", "Banane", "Orange");

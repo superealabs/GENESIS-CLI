@@ -1,38 +1,41 @@
 - id: 1
   langageId: 1
   name: "Thymeleaf"
+  template: "Layout"
   layout:
+    name: "main_layout.html"
+    destinationPath: "${majStart(projectName)}/src/main/resources/templates/layout/"
     header:
       assetsLink: |
         data-assets-path="../assets/"
-        th:href="@{/assets/}"
+              th:href="@{/assets/}"
       viewAttribute: |
         xmlns:th="http://www.thymeleaf.org"
-        xmlns:layout="http://www.w3.org/1999/xhtml"
+              xmlns:layout="http://www.w3.org/1999/xhtml"
       iconsLink: |
         <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css"
-          th:href="@{/assets/vendor/fonts/boxicons.css}"/>
+              th:href="@{/assets/vendor/fonts/boxicons.css}"/>
       coresLink: |
         <link rel="stylesheet" href="/assets/vendor/css/core.css"
-          th:href="@{/assets/vendor/css/core.css}" class="template-customizer-core-css"/>
-        <link rel="stylesheet" href="/assets/vendor/css/theme-default.css"
-          th:href="@{/assets/vendor/css/theme-default.css}" class="template-customizer-theme-css"/>
-        <link rel="stylesheet" href="/assets/css/demo.css"
-          th:href="@{/assets/css/demo.css}"/>
+              th:href="@{/assets/vendor/css/core.css}" class="template-customizer-core-css"/>
+            <link rel="stylesheet" href="/assets/vendor/css/theme-default.css"
+              th:href="@{/assets/vendor/css/theme-default.css}" class="template-customizer-theme-css"/>
+            <link rel="stylesheet" href="/assets/css/demo.css"
+              th:href="@{/assets/css/demo.css}"/>
       vendorsLink: |
         <link rel="stylesheet" href="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css"
-          th:href="@{/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css}"/>
+              th:href="@{/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css}"/>
         
-        <link rel="stylesheet" href="/assets/vendor/libs/apex-charts/apex-charts.css"
-          th:href="@{/assets/vendor/libs/apex-charts/apex-charts.css}"/>
+            <link rel="stylesheet" href="/assets/vendor/libs/apex-charts/apex-charts.css"
+              th:href="@{/assets/vendor/libs/apex-charts/apex-charts.css}"/>
       helpersLink: |
         <script src="/assets/vendor/js/helpers.js"
-          th:src="@{/assets/vendor/js/helpers.js}"></script>
+              th:src="@{/assets/vendor/js/helpers.js}"></script>
   
-        <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
-        <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
-        <script src="/assets/js/config.js"
-          th:src="@{/assets/js/config.js}"></script>
+            <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+            <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+            <script src="/assets/js/config.js"
+              th:src="@{/assets/js/config.js}"></script>
       themeLink: |
         <script src="../../static/assets/static/js/initTheme.js" th:src="@{/assets/static/js/initTheme.js}"></script>
     menu:
@@ -40,20 +43,24 @@
         th:fragment="layout-menu"
       logo: |
         th:src="@{/assets/img/favicon/logo-projet-universel.jpg}"
+      listLink: |
+        th:href="list-@{${lowerCase(classNameLink)}}"
+      createLink: |
+        th:href="create-@{${lowerCase(classNameLink)}}"
     content:
       callMenu: |
         <!-- MENU -->
-        <div th:replace="~{templs/menu :: layout-menu}"></div>
-        <!-- -->
+        {{tab}}{{tab}}    <div th:replace="~{templs/menu :: layout-menu}"></div>
+        {{tab}}    <!-- -->
       callContent: |
         <!-- CONTENT -->
-        <div class="container-xxl flex-grow-1 container-p-y">
-        {{tab}<section class="section">
-        {{tab}    <div layout:fragment="content">
-        {{tab}    </div>
-        {{tab}</section>
-        </div>
-        <!-- -->
+        {{tab}}{{tab}}<div class="container-xxl flex-grow-1 container-p-y">
+        {{tab}}{{tab}}{{tab}}<section class="section">
+        {{tab}}{{tab}}{{tab}}    <div layout:fragment="content">
+        {{tab}}{{tab}}{{tab}}    </div>
+        {{tab}}{{tab}}{{tab}}</section>
+        {{tab}}{{tab}}</div>
+        {{tab}}{{tab}}<!-- -->
     footer:
       coresFooterLink: |
         <script src="/assets/vendor/libs/jquery/jquery.js"
@@ -76,116 +83,116 @@
       pagesFooterLink: |
         <script src="/assets/js/dashboards-analytics.js"
           th:src="@{/assets/js/dashboards-analytics.js}"></script>
-  insert:
-    - input:
-      - title: "create new ${lowerCase(className)}"
-      - inputType: "Date"
-        inputContent: |
-          <div class="mb-3">
-            <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
-            <input type="${lowerCase(inputTime)}" class="form-control" id="${lowerCase(fieldName)}input"
-              aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}">
-          </div>
-      - inputType: "Double"
-        inputContent: |
-          <div class="mb-3">
-            <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
-            <input type="number" step="0.001" class="form-control" id="${lowerCase(fieldName)}input"
-              aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}">
-          </div>
-      - inputType: "Int"
-        inputContent: |
-          <div class="mb-3">
-              <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
-              <input type="number" step="1.0" class="form-control" id="${lowerCase(fieldName)}input"
-                aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}">
-          </div>
-      - inputType: "String"
-        inputContent: |
-          <div class="mb-3">
-              <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
-              <input type="text" class="form-control" id="${lowerCase(fieldName)}input"
-                aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}">
-          </div>
-      - inputType: "Timestamp"
-        inputContent: |
-          <div class="mb-3">
-            <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
-              <input type="datetime-local" class="form-control" id="${lowerCase(fieldName)}input"
-                aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}">
-          </div>
-      - inputType: "Select"
-        inputContent: |
-          <div class="form-floating mb-3"> 
-            <select class="form-select" id="${lowerCase(fieldName)}Select" name="${lowerCase(fieldName)}">
-              <option th:each="m:${${lowerCase(foreignName)}s}" th:value="${m.get${majStart(foreignPrimaryName)}()}">
-                <span th:text="${m.label}"></span>
-              </option>
-            </select> 
-            <label for="${lowerCase(fieldName)}Select">
-              ${majStart(foreignPrimaryName)}
-            </label> 
-          </div>
-  update:
-    - input:
-      - title: "update ${lowerCase(className)}"
-      - inputType: "Date"
-        inputContent: |
-          <div class="mb-3">
-              <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
-              <input type="date" class="form-control" id="${lowerCase(fieldName)}input"
-                aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}"
-                th:value="${e.get${majStart(fieldName)}()}">
-          </div>
-      - inputType: "Double"
-        inputContent: |
-          <div class="mb-3">
-              <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
-              <input type="number" step="0.001" class="form-control" id="${lowerCase(fieldName)}input"
-                aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}"
-                th:value="${e.get${majStart(fieldName)}()}">
-          </div>
-      - inputType: "Int"
-        inputContent: |
-          <div class="mb-3">
-              <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
-              <input type="number" step="1.0" class="form-control" id="${lowerCase(fieldName)}input"
-                aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}"
-                th:value="${e.get${majStart(fieldName)}()}">
-          </div>
-      - inputType: "String"
-        inputContent: |
-          <div class="mb-3">
-              <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
-              <input type="text" class="form-control" id="${lowerCase(fieldName)}input"
-                aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}"
-                th:value="${e.get${majStart(fieldName)}()}">
-          </div>
-      - inputType: "Timestamp"
-        inputContent: |
-          <div class="mb-3">
-              <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
-              <input type="datetime-local" class="form-control" id="${lowerCase(fieldName)}input"
-                aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}"
-                th:value="${e.get${majStart(fieldName)}()}">
-          </div>
-      - inputType: "Select"
-        inputContent: |
-          <div class="form-floating mb-3"> 
-            <select class="form-select" id="${lowerCase(fieldName)}Select" name="${lowerCase(fieldName)}">
-              <span th:each="m:${${lowerCase(foreignName)}s}" th:switch="${m.get${majStart(foreignPrimaryName)}}">
-                <option th:case="${e.get${majStart(fieldName)}().get${lowerCase(foreignPrimaryName)}()}" th:value="${m.get${majStart(foreignPrimaryName)}()}" selected>
-                  <span th:text="${m.label}"></span>
-                </option>
-                <option th:case="*" th:value="${m.get${majStart(foreignPrimaryName)}()}">
-                  <span th:text="${m.label}"></span>
-                </option>
-              </span>
-            </select> 
-            <label for="${lowerCase(fieldName)}Select">
-              ${majStart(foreignPrimaryName)}
-            </label> 
-          </div>
+#  insert:
+#    - title: "create new ${lowerCase(className)}"
+#    - input:
+#      - inputType: "Date"
+#        inputContent: |
+#          <div class="mb-3">
+#            <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
+#            <input type="${lowerCase(inputTime)}" class="form-control" id="${lowerCase(fieldName)}input"
+#              aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}">
+#          </div>
+#      - inputType: "Double"
+#        inputContent: |
+#          <div class="mb-3">
+#            <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
+#            <input type="number" step="0.001" class="form-control" id="${lowerCase(fieldName)}input"
+#              aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}">
+#          </div>
+#      - inputType: "Int"
+#        inputContent: |
+#          <div class="mb-3">
+#              <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
+#              <input type="number" step="1.0" class="form-control" id="${lowerCase(fieldName)}input"
+#                aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}">
+#          </div>
+#      - inputType: "String"
+#        inputContent: |
+#          <div class="mb-3">
+#              <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
+#              <input type="text" class="form-control" id="${lowerCase(fieldName)}input"
+#                aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}">
+#          </div>
+#      - inputType: "Timestamp"
+#        inputContent: |
+#          <div class="mb-3">
+#            <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
+#              <input type="datetime-local" class="form-control" id="${lowerCase(fieldName)}input"
+#                aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}">
+#          </div>
+#      - inputType: "Select"
+#        inputContent: |
+#          <div class="form-floating mb-3">
+#            <select class="form-select" id="${lowerCase(fieldName)}Select" name="${lowerCase(fieldName)}">
+#              <option th:each="m:${${lowerCase(foreignName)}s}" th:value="${m.get${majStart(foreignPrimaryName)}()}">
+#                <span th:text="${m.label}"></span>
+#              </option>
+#            </select>
+#            <label for="${lowerCase(fieldName)}Select">
+#              ${majStart(foreignPrimaryName)}
+#            </label>
+#          </div>
+#  update:
+#    - title: "update ${lowerCase(className)}"
+#    - input:
+#      - inputType: "Date"
+#        inputContent: |
+#          <div class="mb-3">
+#              <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
+#              <input type="date" class="form-control" id="${lowerCase(fieldName)}input"
+#                aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}"
+#                th:value="${e.get${majStart(fieldName)}()}">
+#          </div>
+#      - inputType: "Double"
+#        inputContent: |
+#          <div class="mb-3">
+#              <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
+#              <input type="number" step="0.001" class="form-control" id="${lowerCase(fieldName)}input"
+#                aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}"
+#                th:value="${e.get${majStart(fieldName)}()}">
+#          </div>
+#      - inputType: "Int"
+#        inputContent: |
+#          <div class="mb-3">
+#              <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
+#              <input type="number" step="1.0" class="form-control" id="${lowerCase(fieldName)}input"
+#                aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}"
+#                th:value="${e.get${majStart(fieldName)}()}">
+#          </div>
+#      - inputType: "String"
+#        inputContent: |
+#          <div class="mb-3">
+#              <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
+#              <input type="text" class="form-control" id="${lowerCase(fieldName)}input"
+#                aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}"
+#                th:value="${e.get${majStart(fieldName)}()}">
+#          </div>
+#      - inputType: "Timestamp"
+#        inputContent: |
+#          <div class="mb-3">
+#              <label for="${lowerCase(fieldName)}input" class="form-label">${majStart(fieldName)}</label>
+#              <input type="datetime-local" class="form-control" id="${lowerCase(fieldName)}input"
+#                aria-describedby="${lowerCase(fieldName)}help" name="${lowerCase(fieldName)}"
+#                th:value="${e.get${majStart(fieldName)}()}">
+#          </div>
+#      - inputType: "Select"
+#        inputContent: |
+#          <div class="form-floating mb-3">
+#            <select class="form-select" id="${lowerCase(fieldName)}Select" name="${lowerCase(fieldName)}">
+#              <span th:each="m:${${lowerCase(foreignName)}s}" th:switch="${m.get${majStart(foreignPrimaryName)}}">
+#                <option th:case="${e.get${majStart(fieldName)}().get${lowerCase(foreignPrimaryName)}()}" th:value="${m.get${majStart(foreignPrimaryName)}()}" selected>
+#                  <span th:text="${m.label}"></span>
+#                </option>
+#                <option th:case="*" th:value="${m.get${majStart(foreignPrimaryName)}()}">
+#                  <span th:text="${m.label}"></span>
+#                </option>
+#              </span>
+#            </select>
+#            <label for="${lowerCase(fieldName)}Select">
+#              ${majStart(foreignPrimaryName)}
+#            </label>
+#          </div>
 #- id: 2
 #  langageId: 2
 #  name: "ASP.NET MVC"

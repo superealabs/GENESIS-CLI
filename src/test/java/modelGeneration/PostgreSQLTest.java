@@ -1,6 +1,7 @@
 package modelGeneration;
 
 import genesis.config.Constantes;
+import genesis.config.langage.Editor;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.config.langage.generator.framework.GenesisGenerator;
@@ -25,7 +26,7 @@ public class PostgreSQLTest {
         this.credentials = new Credentials();
         credentials
                 .setHost("localhost")
-                .setDatabaseName("test_db")
+                .setDatabaseName("post_db")
                 .setUser("postgres")
                 .setPwd("nikami")
 //                .setUser("nomena")
@@ -43,13 +44,16 @@ public class PostgreSQLTest {
 
     @Test
     void PostgreSQLxJavaSpringMVC() throws IOException {
+        Editor[] editors = FileUtils.fromYaml(Editor[].class, FileUtils.getFileContent(Constantes.EDITOR_YAML));
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
         Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
         Framework[] frameworks = FileUtils.fromYaml(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_YAML));
 
+
         PostgreSQLDatabase database = (PostgreSQLDatabase) databases[1];    // PostgreSQL
         Language language = languages[0];                                   // Java
         Framework framework = frameworks[0];                                // Spring MVC
+        Editor editor = editors[0];
 
         String projectName = "TestProject", groupLink = "com";
 
@@ -58,12 +62,14 @@ public class PostgreSQLTest {
             GenesisGenerator mvcGenerator = new MVCGenerator();
 
             for (TableMetadata tableMetadata : entities) {
-                mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
-                mvcGenerator.generateDao(framework, language, tableMetadata, projectName, groupLink);
-                mvcGenerator.generateService(framework, language, tableMetadata, projectName, groupLink);
-                mvcGenerator.generateController(framework, language, tableMetadata, projectName, groupLink);
-            }
+//                mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
+//                mvcGenerator.generateDao(framework, language, tableMetadata, projectName, groupLink);
+//                mvcGenerator.generateService(framework, language, tableMetadata, projectName, groupLink);
+//                mvcGenerator.generateController(framework, language, tableMetadata, projectName, groupLink);
 
+                String layout = mvcGenerator.generateView(framework,language,editor, tableMetadata, "Test", "labs");
+                System.out.println("\n====== GENERATED ======\n" + layout);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -77,6 +83,7 @@ public class PostgreSQLTest {
             int languageId = 0;
             int frameworkId = 0;
             int projectId = 0;
+            int editorId = 0;
             String projectName = "Begin";
             String groupLink = "com.labs";
             String projectPort = "8000";
@@ -95,6 +102,7 @@ public class PostgreSQLTest {
                     languageId,
                     frameworkId,
                     projectId,
+                    editorId,
                     credentials,
                     projectName,
                     groupLink,
@@ -109,7 +117,6 @@ public class PostgreSQLTest {
             throw new RuntimeException(e);
         }
     }
-
 
     @Test
     void PostgreSQLxNET() throws IOException {

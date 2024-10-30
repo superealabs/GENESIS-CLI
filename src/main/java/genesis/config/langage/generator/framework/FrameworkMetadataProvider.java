@@ -1,5 +1,6 @@
 package genesis.config.langage.generator.framework;
 
+import genesis.config.langage.Editor;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.connexion.Credentials;
@@ -44,6 +45,15 @@ public class FrameworkMetadataProvider {
         metadata.put("namespaceStart", language.getSyntax().get("namespaceStart"));
 
         return metadata;
+    }
+
+    public static List<String> getClassNameHashMap(TableMetadata[] tableMetadata) throws Exception {
+        List<String> fields = new ArrayList<>();
+        for (TableMetadata tableMetadatum : tableMetadata) {
+            fields.add(tableMetadatum.getClassName());
+        }
+
+        return fields;
     }
 
     public static HashMap<String, Object> getPrimaryModelHashMap(Framework framework, TableMetadata tableMetadata) {
@@ -159,6 +169,22 @@ public class FrameworkMetadataProvider {
         return metadata;
     }
 
+    public static HashMap<String, Object> getViewMainLayoutHashMap(TableMetadata[] tableMetadatas, TableMetadata tableMetadata, Language language, Editor editor) throws Exception {
+        HashMap<String, Object> metadata = new HashMap<>();
+
+        HashMap<String, Object> primaryViewMetadata = getDisplayHashMap(editor);
+        List<String> classNames = getClassNameHashMap(tableMetadatas);
+        HashMap<String, Object> languageMetadata = getRelatedLanguageMetadata(language);
+
+        metadata.putAll(primaryViewMetadata);
+        metadata.putAll(languageMetadata);
+        metadata.put("fields", classNames);
+
+        metadata.put("className", tableMetadata.getClassName());
+        return metadata;
+    }
+
+
     public static HashMap<String, Object> getHashMapIntermediaire(TableMetadata tableMetadata, String projectName, String groupLink) {
         HashMap<String, Object> metadata = new HashMap<>();
 
@@ -226,6 +252,31 @@ public class FrameworkMetadataProvider {
         }
 
         metadata.put("entities", fields);
+
+        return metadata;
+    }
+
+    public static HashMap<String, Object> getDisplayHashMap(Editor editor){
+        HashMap<String, Object> metadata = new HashMap<>();
+
+        /*-- Header --*/
+        metadata.put("iconsLink", editor.getLayout().getHeader().getIconsLink());
+        metadata.put("coresLink", editor.getLayout().getHeader().getCoresLink());
+        metadata.put("themeLink", editor.getLayout().getHeader().getThemeLink());
+        metadata.put("assetsLink", editor.getLayout().getHeader().getAssetsLink());
+        metadata.put("vendorsLink", editor.getLayout().getHeader().getVendorsLink());
+        metadata.put("helpersLink", editor.getLayout().getHeader().getHelpersLink());
+        metadata.put("viewAttribute", editor.getLayout().getHeader().getViewAttribute());
+
+        /*-- Content --*/
+        metadata.put("callMenu", editor.getLayout().getContent().getCallMenu());
+        metadata.put("callContent", editor.getLayout().getContent().getCallContent());
+
+        /*-- Footer --*/
+        metadata.put("coresFooterLink", editor.getLayout().getFooter().getCoresFooterLink());
+        metadata.put("mainsFooterLink", editor.getLayout().getFooter().getMainsFooterLink());
+        metadata.put("pagesFooterLink", editor.getLayout().getFooter().getPagesFooterLink());
+        metadata.put("vendorsFooterLink", editor.getLayout().getFooter().getVendorsFooterLink());
 
         return metadata;
     }

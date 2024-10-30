@@ -1,5 +1,7 @@
 package modelGeneration;
 
+import genesis.config.langage.generator.framework.MVCGenerator;
+import genesis.config.langage.generator.project.ProjectGenerator;
 import utils.FileUtils;
 import genesis.config.Constantes;
 import org.junit.jupiter.api.Test;

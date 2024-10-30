@@ -1,5 +1,6 @@
 package project;
 
+import genesis.config.langage.Editor;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.config.langage.Project;
@@ -24,20 +25,21 @@ public class ProjectGeneratorHandler {
 
         try (Scanner scanner = new Scanner(System.in)) {
             configureCredentials(scanner);
+            int editorId = getEditorId(scanner);
+            int projectId = getProjectId(scanner);
+            String logLevel = getLogLevel(scanner);
             int databaseId = getDatabaseId(scanner);
             int languageId = getLanguageId(scanner);
-            int frameworkId = getFrameworkId(scanner);
-            int projectId = getProjectId(scanner);
-            String projectName = getProjectName(scanner);
             String groupLink = getGroupLink(scanner);
+            int frameworkId = getFrameworkId(scanner);
+            String projectName = getProjectName(scanner);
             String projectPort = getProjectPort(scanner);
-            String logLevel = getLogLevel(scanner);
+            String languageVersion = getLanguageVersion(scanner);
             String hibernateDdlAuto = getHibernateDdlAuto(scanner);
             String frameworkVersion = getFrameworkVersion(scanner);
             String projectDescription = getProjectDescription(scanner);
-            String languageVersion = getLanguageVersion(scanner);
 
-            projectGenerator.generateProject(databaseId, languageId, frameworkId, projectId, credentials, projectName, groupLink, projectPort, logLevel, hibernateDdlAuto, frameworkVersion, projectDescription, languageVersion);
+            projectGenerator.generateProject(databaseId, languageId, frameworkId, projectId, editorId, credentials, projectName, groupLink, projectPort, logLevel, hibernateDdlAuto, frameworkVersion, projectDescription, languageVersion);
             System.out.println("\nProject generated successfully! 👨🏽‍💻");
 
         } catch (Exception e) {
@@ -104,6 +106,18 @@ public class ProjectGeneratorHandler {
         System.out.println("Options:");
         for (int i = 0; i < projects.length; i++) {
             System.out.println(i + " : " + projects[i].getName());
+        }
+        System.out.print("Enter the project ID: ");
+        int id = Integer.parseInt(scanner.nextLine());
+        System.out.println("Using: " + id + "\n");
+        return id;
+    }
+
+    private int getEditorId(Scanner scanner) {
+        Editor[] editors = ProjectGenerator.editors;
+        System.out.println("Options:");
+        for (int i = 0; i < editors.length; i++) {
+            System.out.println(i + " : " + editors[i].getName());
         }
         System.out.print("Enter the project ID: ");
         int id = Integer.parseInt(scanner.nextLine());

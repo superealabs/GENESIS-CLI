@@ -208,11 +208,13 @@
         {{tab}}{{tab}}{{tab}}</a>
 
         {{tab}}{{tab}}{{tab}}<ul class="menu-sub">
+        {{#each fields}}
         {{tab}}{{tab}}{{tab}}{{tab}}<li class="menu-item">
-        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<a th:href="list-@{${lowerCase(classNameLink)}}" class="menu-link">
-        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<div data-i18n="list-${lowerCase(className)}">List ${lowerCase(className)}</div>
+        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<a ${listLink} class="menu-link">
+        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<div data-i18n="list-${lowerCase(this)}">List ${lowerCase(this)}</div>
         {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}</a>
         {{tab}}{{tab}}{{tab}}{{tab}}</li>
+        {{/each}}
         {{tab}}{{tab}}{{tab}}</ul>
         {{tab}}{{tab}}</li>
         {{tab}}{{tab}}<li class="menu-item">
@@ -222,7 +224,7 @@
         {{tab}}{{tab}}{{tab}}</a>
         {{tab}}{{tab}}{{tab}}<ul class="menu-sub">
         {{tab}}{{tab}}{{tab}}{{tab}}<li class="menu-item">
-        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<a th:href="create-@{${lowerCase(classNameLink)}}" class="menu-link">
+        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<a ${createLink} class="menu-link">
         {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<div data-i18n="create-${lowerCase(className)}">Create ${lowerCase(className)}</div>
         {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}</a>
         {{tab}}{{tab}}{{tab}}{{tab}}</li>

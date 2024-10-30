@@ -1,6 +1,7 @@
 package genesis.config.langage.generator.project;
 
 import genesis.config.Constantes;
+import genesis.config.langage.Editor;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.config.langage.Project;
@@ -21,18 +22,20 @@ import static genesis.config.langage.generator.project.ProjectMetadataProvider.g
 import static genesis.config.langage.generator.project.ProjectMetadataProvider.getProjectFilesEditsHashMap;
 
 public class ProjectGenerator {
+    public static final Editor[] editors;
     public static final Project[] projects;
     public static final Database[] databases;
     public static final Language[] languages;
-    public static final Framework[] frameworks;
     public static final TemplateEngine engine;
+    public static final Framework[] frameworks;
 
     static {
         try {
             engine = new TemplateEngine();
+            editors = FileUtils.fromYaml(Editor[].class, FileUtils.getFileContent(Constantes.EDITOR_YAML));
+            projects = FileUtils.fromYaml(Project[].class, FileUtils.getFileContent(Constantes.PROJECT_YAML));
             databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
             languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-            projects = FileUtils.fromYaml(Project[].class, FileUtils.getFileContent(Constantes.PROJECT_YAML));
             frameworks = FileUtils.fromYaml(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_YAML));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -87,6 +90,7 @@ public class ProjectGenerator {
                                 int languageId,
                                 int frameworkId,
                                 int projectId,
+                                int editorId,
                                 Credentials credentials,
                                 String projectName,
                                 String groupLink,
@@ -101,6 +105,7 @@ public class ProjectGenerator {
         Framework framework = frameworks[frameworkId];
         Language language = languages[languageId];
         Project project = projects[projectId];
+        Editor editor = editors[editorId];
 
         try (Connection connection = database.getConnection(credentials)) {
             // Récupération des entités depuis la base de données
@@ -136,6 +141,9 @@ public class ProjectGenerator {
 
             // Rendu et copie des fichiers editer du projet
             renderProjectFilesEdits(project, projectFilesEditsHashMap);
+
+            // Rendu des pages dans le projet
+            genesisGenerator.generateViewMainLayout(framework, language, editor, entities, entities[0], projectName, groupLink);
 
         } catch (Exception e) {
             throw new RuntimeException(e);

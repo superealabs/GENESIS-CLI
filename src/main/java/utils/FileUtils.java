@@ -77,6 +77,15 @@ public class FileUtils {
 
     }
 
+    public static void overwriteFileContentByName(String filePath, String fileContent, String content) throws IOException {
+        File file = new File(filePath, fileContent);
+
+        try (FileWriter writer = new FileWriter(file, false)) {
+            writer.write(content);
+        }
+
+    }
+
     public static String minStart(String string) {
         return string.replaceFirst(String.valueOf(string.charAt(0)), String.valueOf(string.charAt(0)).toLowerCase());
     }
