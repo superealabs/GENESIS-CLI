@@ -120,17 +120,19 @@ public class ProjectGenerator {
             // Initialisation des HashMap pour les templates
             HashMap<String, Object> initializeHashMap = getInitialHashMap(projectName, groupLink);
             HashMap<String, Object> projectFilesEditsHashMap = getProjectFilesEditsHashMap(projectName,
-                    groupLink,
-                    projectPort,
-                    logLevel,
-                    database,
-                    credentials,
-                    language,
-                    hibernateDdlAuto,
-                    springBootVersion,
-                    projectDescription,
-                    languageVersion,
-                    framework);
+                                groupLink,
+                                projectPort,
+                                logLevel,
+                                database,
+                                credentials,
+                                language,
+                                hibernateDdlAuto,
+                                springBootVersion,
+                                projectDescription,
+                                languageVersion,
+                                framework,
+                                editor,
+                                entities);
 
 
             // Rendu et copie des dossiers du projet

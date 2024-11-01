@@ -1,10 +1,13 @@
 package genesis.config.langage.generator.project;
 
+import genesis.config.langage.Editor;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
+import genesis.config.langage.generator.framework.FrameworkMetadataProvider;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.engine.TemplateEngine;
+import genesis.model.TableMetadata;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -93,13 +96,15 @@ public class ProjectMetadataProvider {
                                                                String projectPort,
                                                                String logLevel,
                                                                @NotNull Database database,
-                                                                @NotNull Credentials credentials,
+                                                               @NotNull Credentials credentials,
                                                                @NotNull Language language,
                                                                String hibernateDdlAuto,
                                                                String frameworkVersion,
                                                                String projectDescription,
                                                                String languageVersion,
-                                                               Framework framework) throws Exception {
+                                                               Framework framework,
+                                                               Editor editor,
+                                                               TableMetadata[] entities) throws Exception {
         HashMap<String, Object> combinedMap = new HashMap<>();
 
 
@@ -123,7 +128,10 @@ public class ProjectMetadataProvider {
 
         // Ajoute les métadonnées initiales
         combinedMap.putAll(getInitialHashMap(projectName, groupLink));
-
+        combinedMap.put("fields", FrameworkMetadataProvider.getClassNameHashMap(entities));
+        for (TableMetadata tableMetadata : entities) {
+            combinedMap.putAll(FrameworkMetadataProvider.getMenuLayoutHashMap(editor, tableMetadata, projectName, groupLink));
+        }
 
         return combinedMap;
     }

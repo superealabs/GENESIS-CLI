@@ -3,6 +3,7 @@ package genesis.config.langage.generator.framework;
 import genesis.config.langage.Editor;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
+import genesis.config.langage.Project;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.engine.TemplateEngine;
@@ -277,6 +278,20 @@ public class FrameworkMetadataProvider {
         metadata.put("mainsFooterLink", editor.getLayout().getFooter().getMainsFooterLink());
         metadata.put("pagesFooterLink", editor.getLayout().getFooter().getPagesFooterLink());
         metadata.put("vendorsFooterLink", editor.getLayout().getFooter().getVendorsFooterLink());
+
+        return metadata;
+    }
+
+    public static HashMap<String, Object> getMenuLayoutHashMap(Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
+        HashMap<String, Object> metadata = new HashMap<>();
+
+        String listLink = engine.render(editor.getLayout().getMenu().getListLink(), getHashMapIntermediaire(tableMetadata, projectName, groupLink));
+        String createLink = engine.render(editor.getLayout().getMenu().getCreateLink(), getHashMapIntermediaire(tableMetadata, projectName, groupLink));
+
+        metadata.put("listLink", listLink);
+        metadata.put("createLink", createLink);
+        metadata.put("logo", editor.getLayout().getMenu().getLogo());
+        metadata.put("aside", editor.getLayout().getMenu().getAside());
 
         return metadata;
     }

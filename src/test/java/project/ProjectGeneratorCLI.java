@@ -29,7 +29,7 @@ public class ProjectGeneratorCLI {
             int databaseId = 1;
             int languageId = 0;
             int frameworkId = 0;
-            String projectName = "TEST";
+            String projectName = "layout1";
             String groupLink = "labs";
             String projectPort = "8000";
             String logLevel = "INFO";

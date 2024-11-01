@@ -1,5 +1,5 @@
 - id: 1
-  name: "Maven"
+  name: "Maven Thymeleaf"
   projectFolders:
     - folderType: "MavenFolder"
       folderName: ".mvn"
@@ -10,11 +10,6 @@
       folderName: "resources"
       sourcePath: "data_genesis/maven/src/main/resources"
       destinationPath: "${majStart(projectName)}/src/main/"
-
-    - folderType: "authentificationControllerFolder"
-      folderName: "auth"
-      sourcePath: "data_genesis/layout/auth"
-      destinationPath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/controllers/"
 
     - folderType: "staticAssetsFolder"
       folderName: "assets"
@@ -40,6 +35,13 @@
       folderName: "templs"
       sourcePath: "data_genesis/layout/templs"
       destinationPath: "${majStart(projectName)}/src/main/resources/templates/"
+
+    ##need to change the location to be able to create maven projects but not with thymeleaf
+    ##but for now we're putting it
+    - folderType: "thymeleafConfig"
+      folderName: "config"
+      sourcePath: "data_genesis/layout/config"
+      destinationPath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/"
   projectFilesEdits:
     - fileType: "MainFile"
       fileName: "${majStart(projectName)}Application"
@@ -142,6 +144,7 @@
         {{tab}}{{tab}}<dependency>
         {{tab}}{{tab}}{{tab}}<groupId>${this.groupId}</groupId>
         {{tab}}{{tab}}{{tab}}<artifactId>${this.artifactId}</artifactId>
+        {{tab}}{{tab}}{{tab}}<version>${this.version}</version>
         {{tab}}{{tab}}</dependency>{{#if !@last}}{{newline}}{{tab}}{{tab}}{{/if}}{{/each}}
         {{tab}}{{tab}}{{#if useDB}}<dependency>
         {{tab}}{{tab}}{{tab}}<groupId>${DBgroupId}</groupId>
@@ -179,13 +182,16 @@
       fileName: "menu"
       extension: "html"
       content: |
-        <aside ${aside} id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+        <!-- Menu -->
+        <aside ${aside} id="layout-menu" 
+        {{tab}}class="layout-menu menu-vertical menu bg-menu-theme">
         {{tab}}<div class="app-brand demo">
         {{tab}}{{tab}}<a href="/" class="app-brand-link">
         {{tab}}{{tab}}{{tab}}<span class="app-brand-logo demo">
-        {{tab}}{{tab}}{{tab}}{{tab}}<img ${logo} alt="Logo" style="width: 45px; height: auto;">
+        {{tab}}{{tab}}{{tab}}{{tab}}<img ${logo} 
+        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}alt="Logo" style="width: 45px; height: auto;">
         {{tab}}{{tab}}{{tab}}</span>
-        {{tab}}{{tab}}{{tab}}<span class="app-brand-text menu-text fw-bolder ms-2">${majStart(projectName)}</span>
+        {{tab}}{{tab}}{{tab}}<span class="app-brand-text menu-text fw-bolder ms-2">${majStart(projectName)} </span>
         {{tab}}{{tab}}</a>
 
         {{tab}}{{tab}}<a href="javascript:void(0);"
@@ -197,39 +203,30 @@
         {{tab}}<div class="menu-inner-shadow"></div>
 
         {{tab}}<div class="menu">
-        {{tab}}{{tab}}<!-- List Menu -->
-        {{tab}}{{tab}}<li class="menu-header small text-uppercase">
-        {{tab}}{{tab}}{{tab}}<span class="menu-header-text">CRUD</span>
-        {{tab}}{{tab}}</li>
-        {{tab}}{{tab}}<li class="menu-item">
-        {{tab}}{{tab}}{{tab}}<a href="javascript:void(0);" class="menu-link menu-toggle">
-        {{tab}}{{tab}}{{tab}}{{tab}}<i class="menu-icon tf-icons bx bx-list-plus"></i>
-        {{tab}}{{tab}}{{tab}}{{tab}}<div data-i18n="List">List</div>
-        {{tab}}{{tab}}{{tab}}</a>
+        {{tab}}{{tab}}<ul class="menu-inner py-1">
+        {{tab}}{{tab}}{{tab}}<!-- List Menu -->
+        {{tab}}{{tab}}{{tab}}<li class="menu-header small text-uppercase">
+        {{tab}}{{tab}}{{tab}}{{tab}}<span class="menu-header-text">CRUD</span>
+        {{tab}}{{tab}}{{tab}}</li>
+        
+        {{tab}}{{tab}}{{tab}}<li class="menu-item">
+        {{tab}}{{tab}}{{tab}}{{tab}}<a href="javascript:void(0);" class="menu-link menu-toggle">
+        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<i class="menu-icon tf-icons bx bx-list-plus"></i>
+        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<div data-i18n="List">List</div>
+        {{tab}}{{tab}}{{tab}}{{tab}}</a>
 
-        {{tab}}{{tab}}{{tab}}<ul class="menu-sub">
-        {{#each fields}}
-        {{tab}}{{tab}}{{tab}}{{tab}}<li class="menu-item">
-        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<a ${listLink} class="menu-link">
-        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<div data-i18n="list-${lowerCase(this)}">List ${lowerCase(this)}</div>
-        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}</a>
-        {{tab}}{{tab}}{{tab}}{{tab}}</li>
-        {{/each}}
-        {{tab}}{{tab}}{{tab}}</ul>
-        {{tab}}{{tab}}</li>
-        {{tab}}{{tab}}<li class="menu-item">
-        {{tab}}{{tab}}{{tab}}<a href="javascript:void(0);" class="menu-link menu-toggle">
-        {{tab}}{{tab}}{{tab}}{{tab}}<i class="menu-icon tf-icons bx bx-add-to-queue"></i>
-        {{tab}}{{tab}}{{tab}}{{tab}}<div data-i18n="Insertion">Create</div>
-        {{tab}}{{tab}}{{tab}}</a>
-        {{tab}}{{tab}}{{tab}}<ul class="menu-sub">
-        {{tab}}{{tab}}{{tab}}{{tab}}<li class="menu-item">
-        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<a ${createLink} class="menu-link">
-        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<div data-i18n="create-${lowerCase(className)}">Create ${lowerCase(className)}</div>
-        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}</a>
-        {{tab}}{{tab}}{{tab}}{{tab}}</li>
-        {{tab}}{{tab}}{{tab}}</ul>
-        {{tab}}{{tab}}</li>
+        {{tab}}{{tab}}{{tab}}{{tab}}<ul class="menu-sub">
+        {{tab}}{{tab}}{{tab}}{{tab}}{{#each fields}}
+        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<li class="menu-item">
+        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<a ${listLink} class="menu-link">
+        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<div data-i18n="list-${lowerCase(this)}">List ${lowerCase(this)}</div>
+        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}</a>
+        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}</li>
+        {{tab}}{{tab}}{{tab}}{{tab}}{{/each}}
+        {{tab}}{{removeLine}}
+        {{tab}}{{tab}}{{tab}}{{tab}}</ul>
+        {{tab}}{{tab}}{{tab}}</li>
+        {{tab}}{{tab}}</ul>
         {{tab}}</div>
         
         <!-- 

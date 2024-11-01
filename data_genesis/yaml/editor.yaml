@@ -43,10 +43,9 @@
         th:fragment="layout-menu"
       logo: |
         th:src="@{/assets/img/favicon/logo-projet-universel.jpg}"
-      listLink: |
-        th:href="list-@{${lowerCase(classNameLink)}}"
+      listLink: "th:href=\"@{list-${lowerCase(classNameLink)}}\""
       createLink: |
-        th:href="create-@{${lowerCase(classNameLink)}}"
+        th:href="@{create-${lowerCase(classNameLink)}}"
     content:
       callMenu: |
         <!-- MENU -->

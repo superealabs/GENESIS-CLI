@@ -1,7 +1,7 @@
 -- postgresql.sql
 
-CREATE DATABASE post_db;
-\c post_db;
+-- CREATE DATABASE post_db;
+-- \c post_db;
 
 CREATE TABLE Departement
 (
