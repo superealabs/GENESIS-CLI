@@ -168,13 +168,9 @@
         @Controller
         public class HomeController {
 
-        {{tab}}@Autowired
-        {{tab}}public HomeController() {
-        {{tab}}}
-
         {{tab}}@GetMapping
         {{tab}}public String index() {
-        {{tab}}    return "redirect:/index";
+        {{tab}}    return "index";
         {{tab}}}
         }
       destinationPath: "${majStart(projectName)}/src/main/java/${groupLink}/${lowerCase(projectName)}/controllers/"
@@ -218,8 +214,8 @@
         {{tab}}{{tab}}{{tab}}{{tab}}<ul class="menu-sub">
         {{tab}}{{tab}}{{tab}}{{tab}}{{#each fields}}
         {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<li class="menu-item">
-        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<a ${listLink} class="menu-link">
-        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<div data-i18n="list-${lowerCase(this)}">List ${lowerCase(this)}</div>
+        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<a $[listLink] class="menu-link">
+        {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}<div data-i18n="list-${minStart(this)}">List ${lowerCase(this)}</div>
         {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}{{tab}}</a>
         {{tab}}{{tab}}{{tab}}{{tab}}{{tab}}</li>
         {{tab}}{{tab}}{{tab}}{{tab}}{{/each}}

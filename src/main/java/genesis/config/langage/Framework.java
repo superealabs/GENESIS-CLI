@@ -92,20 +92,9 @@ public class Framework {
     @Getter
     @Setter
     public static class View {
-        private String viewName;
-        private String viewContent;
-        private String viewSavePath;
-        private String viewTableLine;
+        private String listViewName;
         private String viewExtension;
-        private String viewCommentEnd;
-        private String viewForeignList;
-        private String viewTableHeader;
-        private String foreignFieldGet;
-        private String viewCommentStart;
-        private String viewUpdateFormForeignField;
-        private String viewInsertFormForeignField;
-        private Map<String, String> viewInsertFormField;
-        private Map<String, String> viewUpdateFormField;
+        private String listViewSavePath;
     }
 
     @Getter

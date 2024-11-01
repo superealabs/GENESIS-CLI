@@ -129,11 +129,32 @@ public class MVCGenerator implements GenesisGenerator {
         return engine.render(result, metadataFinally);
     }
 
+    public String generateListView(Framework framework, Language language, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
+        if (language.getId() != framework.getLangageId()) {
+            throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
+        }
+
+        String templateContent = loadListViewTemplate(editor);
+
+        // Render le template final
+        HashMap<String, Object> metadataFinally = getHashMapIntermediaire(tableMetadata, projectName, groupLink);
+
+        String fileName = framework.getView().getListViewName();
+        String fileExtension = framework.getView().getViewExtension();
+        String fileSavePath = framework.getView().getListViewSavePath();
+        FileUtils.createFile(engine.simpleRender(fileSavePath, metadataFinally), engine.simpleRender(fileName, metadataFinally), engine.simpleRender(fileExtension, metadataFinally), templateContent);
+
+        return "";
+    }
+
     @Override
     public String generateView(Framework framework, Language language, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
         if (language.getId() != framework.getLangageId()) {
             throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
         }
+
+        generateListView(framework, language, editor, tableMetadata, projectName, groupLink);
+
         return "";
     }
 
@@ -164,5 +185,9 @@ public class MVCGenerator implements GenesisGenerator {
 
     private String loadViewTemplate(Editor editor) throws IOException {
         return FileUtils.getFileContent(Constantes.LAYOUT_DATA_PATH + "/" + editor.getTemplate() + "." + Constantes.TEMPLATE_EXT);
+    }
+
+    private String loadListViewTemplate(Editor editor) throws IOException {
+        return FileUtils.getFileContent(Constantes.LAYOUT_DATA_PATH + "/" + editor.getListTemplate() + "." + Constantes.TEMPLATE_EXT);
     }
 }

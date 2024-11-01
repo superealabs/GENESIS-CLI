@@ -17,6 +17,7 @@ public class Editor {
     private Insert insert;
     private Update update;
     private String template;
+    private String listTemplate;
 
     @Getter
     @Setter

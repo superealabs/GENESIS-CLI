@@ -21,6 +21,8 @@ public class TemplateEngine {
     private static final String IF_END = "{{/if}}";
     private static final String VARIABLE_PLACEHOLDER_PREFIX = "${";
     private static final String VARIABLE_PLACEHOLDER_SUFFIX = "}";
+    private static final String VARIABLE_PLACEHOLDER_PREFIX_ALT = "$[";
+    private static final String VARIABLE_PLACEHOLDER_SUFFIX_ALT = "]";
     private static final String NEWLINE_TAG = "{{newline}}";
     private static final String TAB_TAG = "{{tab}}";
     private static final String REMOVE_LINE_TAG = "{{removeLine}}";
@@ -61,6 +63,27 @@ public class TemplateEngine {
         return result.toString();
     }
 
+    public String altSimpleRender(String template, Map<String, Object> variables) {
+        if (template == null || template.isEmpty()) {
+            throw new IllegalArgumentException("The template must not be empty.");
+        }
+
+        StringBuilder result = new StringBuilder(template);
+
+        int start = 0;
+        while ((start = result.indexOf(VARIABLE_PLACEHOLDER_PREFIX_ALT, start)) != -1) {
+            int end = result.indexOf(VARIABLE_PLACEHOLDER_SUFFIX_ALT, start);
+            if (end == -1) break;
+
+            String placeholder = result.substring(start + VARIABLE_PLACEHOLDER_PREFIX.length(), end).trim();
+            String value = evaluatePlaceholderSimple(placeholder, variables);
+            result.replace(start, end + VARIABLE_PLACEHOLDER_SUFFIX.length(), value);
+
+            start += value.length();
+        }
+
+        return result.toString();
+    }
 
     private String evaluatePlaceholderSimple(String placeholder, Map<String, Object> variables) {
         int funcStart = placeholder.indexOf(FUNCTION_OPEN_PARENTHESIS);

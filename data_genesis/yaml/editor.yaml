@@ -2,6 +2,7 @@
   langageId: 1
   name: "Thymeleaf"
   template: "Layout"
+  listTemplate: "ListView"
   layout:
     name: "main_layout.html"
     destinationPath: "${majStart(projectName)}/src/main/resources/templates/layout/"
@@ -43,7 +44,7 @@
         th:fragment="layout-menu"
       logo: |
         th:src="@{/assets/img/favicon/logo-projet-universel.jpg}"
-      listLink: "th:href=\"@{list-${lowerCase(classNameLink)}}\""
+      listLink: "th:href=\"@{${lowerCase(this)}s}\""
       createLink: |
         th:href="@{create-${lowerCase(classNameLink)}}"
     content:
@@ -59,7 +60,7 @@
         {{tab}}{{tab}}{{tab}}    </div>
         {{tab}}{{tab}}{{tab}}</section>
         {{tab}}{{tab}}</div>
-        {{tab}}{{tab}}<!-- -->
+        <!-- End Content -->
     footer:
       coresFooterLink: |
         <script src="/assets/vendor/libs/jquery/jquery.js"

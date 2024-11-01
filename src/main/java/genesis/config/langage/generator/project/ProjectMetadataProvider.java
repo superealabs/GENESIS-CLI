@@ -129,6 +129,7 @@ public class ProjectMetadataProvider {
         // Ajoute les métadonnées initiales
         combinedMap.putAll(getInitialHashMap(projectName, groupLink));
         combinedMap.put("fields", FrameworkMetadataProvider.getClassNameHashMap(entities));
+
         for (TableMetadata tableMetadata : entities) {
             combinedMap.putAll(FrameworkMetadataProvider.getMenuLayoutHashMap(editor, tableMetadata, projectName, groupLink));
         }
@@ -136,5 +137,12 @@ public class ProjectMetadataProvider {
         return combinedMap;
     }
 
+    public static HashMap<String, Object> getAltHashMap(Editor editor) {
+        HashMap<String, Object> altMap = new HashMap<>();
 
+        altMap.put("listLink", editor.getLayout().getMenu().getListLink());
+        altMap.put("createLink", editor.getLayout().getMenu().getCreateLink());
+
+        return altMap;
+    }
 }

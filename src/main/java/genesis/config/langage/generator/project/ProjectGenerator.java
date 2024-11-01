@@ -46,11 +46,12 @@ public class ProjectGenerator {
     public ProjectGenerator() {
     }
 
-    private void generateMVCComponents(GenesisGenerator genesisGenerator, Framework framework, Language language, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
+    private void generateMVCComponents(GenesisGenerator genesisGenerator, Editor editor, Framework framework, Language language, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
         genesisGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
         genesisGenerator.generateDao(framework, language, tableMetadata, projectName, groupLink);
         genesisGenerator.generateService(framework, language, tableMetadata, projectName, groupLink);
         genesisGenerator.generateController(framework, language, tableMetadata, projectName, groupLink);
+        genesisGenerator.generateView(framework, language, editor, tableMetadata, projectName, groupLink);
     }
 
     private void renderAndCopyFiles(Project project, HashMap<String, Object> initializeHashMap) throws IOException {
@@ -70,13 +71,15 @@ public class ProjectGenerator {
     }
 
 
-    private void renderProjectFilesEdits(Project project, HashMap<String, Object> initializeHashMap) throws Exception {
+    private void renderProjectFilesEdits(Project project, HashMap<String, Object> initializeHashMap, HashMap<String, Object> altHashMap) throws Exception {
         for (Project.ProjectFilesEdit projectFile : project.getProjectFilesEdits()) {
 
             String destinationFilePath = projectFile.getDestinationPath();
             String fileName = projectFile.getFileName();
             String content = projectFile.getContent();
             String extension = projectFile.getExtension();
+
+            content = engine.altSimpleRender(content,altHashMap);
 
             destinationFilePath = engine.simpleRender(destinationFilePath, initializeHashMap);
             content = engine.render(content, initializeHashMap);
@@ -114,11 +117,12 @@ public class ProjectGenerator {
 
             // Génération des composants MVC pour chaque table
             for (TableMetadata tableMetadata : entities) {
-                generateMVCComponents(genesisGenerator, framework, language, tableMetadata, projectName, groupLink);
+                generateMVCComponents(genesisGenerator, editor, framework, language, tableMetadata, projectName, groupLink);
             }
 
             // Initialisation des HashMap pour les templates
             HashMap<String, Object> initializeHashMap = getInitialHashMap(projectName, groupLink);
+            HashMap<String, Object> altHashMap = ProjectMetadataProvider.getAltHashMap(editor);
             HashMap<String, Object> projectFilesEditsHashMap = getProjectFilesEditsHashMap(projectName,
                                 groupLink,
                                 projectPort,
@@ -142,7 +146,7 @@ public class ProjectGenerator {
             renderAndCopyFiles(project, initializeHashMap);
 
             // Rendu et copie des fichiers editer du projet
-            renderProjectFilesEdits(project, projectFilesEditsHashMap);
+            renderProjectFilesEdits(project, projectFilesEditsHashMap, altHashMap);
 
             // Rendu des pages dans le projet
             genesisGenerator.generateViewMainLayout(framework, language, editor, entities, entities[0], projectName, groupLink);
