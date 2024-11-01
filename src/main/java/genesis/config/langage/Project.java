@@ -1,6 +1,9 @@
 package genesis.config.langage;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.util.List;
 
 @Getter
@@ -9,6 +12,7 @@ import java.util.List;
 public class Project {
     private int id;
     private String name;
+    private int frameworkId;
     private List<ProjectFiles> projectFiles;
     private List<ProjectFolders> projectFolders;
     private List<ProjectFilesEdit> projectFilesEdits;
@@ -17,10 +21,10 @@ public class Project {
     @Setter
     @ToString
     public static class ProjectFilesEdit {
-        private String content;
         private String fileType;
         private String fileName;
         private String extension;
+        private String content;
         private String destinationPath;
     }
 

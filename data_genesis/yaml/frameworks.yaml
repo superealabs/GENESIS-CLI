@@ -1,0 +1,468 @@
+- id: 1
+  languageId: 1
+  name: "Spring Boot REST API"
+  template: "Template"
+  useDB: true
+  withGroupId: true
+  configurations:
+    - name: "Logging Level"
+      variableName: "loggingLevel"
+      options:
+        - "TRACE"
+        - "DEBUG"
+        - "INFO"
+        - "WARN"
+        - "ERROR"
+        - "FATAL"
+        - "OFF"
+      defaultOption: "INFO"
+    - name: "Version"
+      variableName: "frameworkVersion"
+      options:
+        - "3.4.0-SNAPSHOT"
+        - "3.4.0-M3"
+        - "3.3.5-SNAPSHOT"
+        - "3.3.4"
+        - "3.2.11-SNAPSHOT"
+        - "3.2.10"
+      defaultOption: "3.3.4"
+    - name: "HibernateDdlAuto"
+      variableName: "hibernateDdlAuto"
+      options:
+        - "create"
+        - "create-drop"
+        - "none"
+        - "update"
+      defaultOption: "none"
+  dependencies:
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-data-jpa"
+      version: "{{removeLine}}"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-web"
+      version: "{{removeLine}}"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-test"
+      version: "{{removeLine}}"
+    - groupId: "org.springdoc"
+      artifactId: "springdoc-openapi-starter-webmvc-ui"
+      version: "2.6.0"
+  model:
+    modelImports: |
+      import jakarta.persistence.*;
+    modelExtends: ""
+    modelAnnotations: |
+      @Entity
+      @Table(name="${tableName}")
+    modelFieldContent: |
+      {{tab}}{{#each fields}}
+      {{tab}}{{#if this.isPrimaryKey}}
+      {{tab}}@Id
+      {{tab}}@GeneratedValue(strategy=GenerationType.IDENTITY)
+      {{tab}}@Column(name="${this.columnName}"){{elseIf this.isForeignKey}}
+      {{tab}}@ManyToOne
+      {{tab}}@JoinColumn(name="${this.columnName}"){{else}}
+      {{tab}}@Column(name="${this.columnName}"){{/if}}
+      {{tab}}private ${this.type} ${this.name};{{#if !@last}}{{newline}}{{/if}}
+      {{tab}}{{/each}}
+    modelGetterSetter: |
+      {{tab}}{{#each fields}}
+      {{tab}}{{#if this.withGetters}}
+      {{tab}}public ${this.type} get${majStart(this.name)}() {
+      {{tab}}   return ${this.name};
+      {{tab}}}{{/if}}
+      {{#if this.withSetters}}
+      {{tab}}public void set${majStart(this.name)}(${this.type} ${this.name}) {
+      {{tab}}   this.${this.name} = ${this.name};
+      {{tab}}}{{#if !@last}}
+      {{tab}}{{/if}}
+      {{tab}}{{/if}}{{/each}}
+    modelConstructors: |
+      {{tab}}public ${majStart(className)}() {
+      {{tab}}}
+      
+      {{tab}}public ${majStart(className)}({{#each fieldsPK}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
+      {{tab}}   {{#each fieldsPK}}
+      {{tab}}   this.${this.name} = ${this.name};{{#if !@last}}
+      {{tab}}   {{/if}}{{/each}}
+      {{tab}}}
+      
+      {{tab}}public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
+      {{tab}}   {{#each fields}}
+      {{tab}}   this.${this.name} = ${this.name};{{#if !@last}}
+      {{tab}}   {{/if}}{{/each}}
+      {{tab}}}
+    modelSavePath: "${destinationFolder}/${majStart(projectName)}/src/main/java/${groupLinkPath}/${lowerCase(projectName)}/models"
+    modelPackage: "${groupLink}.${lowerCase(projectName)}.models;"
+  modelDao:
+    modelDaoImports: |
+      import org.springframework.data.jpa.repository.JpaRepository;
+      import ${groupLink}.${lowerCase(projectName)}.models.${majStart(className)};
+
+    modelDaoAnnotations: "{{newline}}"
+    modelDaoClassKeyword: "public interface"
+    modelDaoExtends: "extends JpaRepository<${majStart(className)}, ${pkColumnType}>"
+    modelDaoName: "${majStart(className)}Repository"
+    modelDaoFieldContent: "{{removeLine}}"
+    modelDaoMethodContent: "{{removeLine}}"
+    modelDaoConstructors: "{{removeLine}}"
+    modelDaoSavePath: "${destinationFolder}/${majStart(projectName)}/src/main/java/${groupLinkPath}/${lowerCase(projectName)}/repositories"
+    modelDaoPackage: "${groupLink}.${lowerCase(projectName)}.repositories;"
+    modelDaoAdditionalFiles: [ ]
+  service:
+    serviceImports: |
+      import org.springframework.data.domain.Sort;
+      import ${groupLink}.${lowerCase(projectName)}.models.${majStart(className)};
+      import org.springframework.stereotype.Service;
+      import ${groupLink}.${lowerCase(projectName)}.repositories.${majStart(className)}Repository;
+      import org.springframework.beans.factory.annotation.Autowired;
+      import java.util.List;
+      import java.util.Optional;
+
+    serviceAnnotations: |
+      @Service
+    serviceClassKeyword: "public class"
+    serviceExtends: ""
+    serviceName: "${majStart(className)}Service"
+    serviceFieldContent: |
+      {{tab}}private final ${majStart(className)}Repository ${minStart(className)}Repository;
+    serviceConstructors: |
+      {{tab}}@Autowired
+      {{tab}}public ${majStart(className)}Service(${majStart(className)}Repository ${minStart(className)}Repository) {
+      {{tab}}   this.${minStart(className)}Repository = ${minStart(className)}Repository;
+      {{tab}}}
+    serviceMethodContent: |
+      {{tab}}public List<${majStart(className)}> getAll${majStart(className)}() {
+      {{tab}}   return ${minStart(className)}Repository.findAll(Sort.by(Sort.Direction.ASC, "${pkColumn}"));
+      {{tab}}}
+      
+      {{tab}}public ${majStart(className)} get${majStart(className)}ById(${pkColumnType} ${pkColumn}) {
+      {{tab}}   Optional<${majStart(className)}> ${minStart(className)} = ${minStart(className)}Repository.findById(${pkColumn});
+      {{tab}}   if (${minStart(className)}.isPresent()) {
+      {{tab}}     return ${minStart(className)}.get();
+      {{tab}}   } else {
+      {{tab}}     throw new RuntimeException("${majStart(className)} not found with ${pkColumn} : " + ${pkColumn});
+      {{tab}}   }
+      {{tab}}}
+      
+      {{tab}}public ${majStart(className)} create${majStart(className)}(${majStart(className)} ${minStart(className)}) {
+      {{tab}}   return ${minStart(className)}Repository.save(${minStart(className)});
+      {{tab}}}
+
+      {{tab}}public ${majStart(className)} update${majStart(className)}(${pkColumnType} ${pkColumn}, ${majStart(className)} ${minStart(className)}) {
+      {{tab}}   Optional<${majStart(className)}> existing${majStart(className)} = ${minStart(className)}Repository.findById(${pkColumn});
+      {{tab}}		if (existing${majStart(className)}.isPresent()) {
+      {{tab}}		    ${minStart(className)}.set${majStart(pkColumn)}(${pkColumn});
+      {{tab}}           return ${minStart(className)}Repository.save(${minStart(className)});
+      {{tab}}       } else {
+      {{tab}}         throw new RuntimeException("${majStart(className)} not found with ${pkColumn} : " + ${pkColumn});
+      {{tab}}       }
+      {{tab}}}
+      
+      {{tab}}public void delete${majStart(className)}(${pkColumnType} ${pkColumn}) {
+      {{tab}}   ${minStart(className)}Repository.deleteById(${pkColumn});
+      {{tab}}}
+    serviceSavePath: "${destinationFolder}/${majStart(projectName)}/src/main/java/${groupLinkPath}/${lowerCase(projectName)}/services"
+    servicePackage: "${groupLink}.${lowerCase(projectName)}.services;"
+    serviceAdditionalFiles: [ ]
+  controller:
+    controllerImports: |
+      import org.springframework.http.HttpStatus;
+      import org.springframework.http.ResponseEntity;
+      import ${groupLink}.${lowerCase(projectName)}.models.${majStart(className)};
+      import org.springframework.web.bind.annotation.*;
+      import ${groupLink}.${lowerCase(projectName)}.services.${majStart(className)}Service;
+      import java.util.List;
+    controllerAnnotations: |
+      @RestController
+      @RequestMapping("/${lowerCase(classNameLink)}")
+    controllerExtends: ""
+    controllerName: "${majStart(className)}Controller"
+    controllerFieldContent: |
+      {{tab}}private final ${majStart(className)}Service ${lowerCase(className)}Service;
+    controllerConstructors: |
+      {{tab}}public ${majStart(className)}Controller(${majStart(className)}Service ${lowerCase(className)}Service) {
+      {{tab}}   this.${lowerCase(className)}Service = ${lowerCase(className)}Service;
+      {{tab}}}
+    controllerMethodContent: |
+      {{tab}}@GetMapping
+      {{tab}}public ResponseEntity<List<${majStart(className)}>> getAll${majStart(classNameLink)}() {
+      {{tab}}   List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(className)}();
+      {{tab}}   return ${lowerCase(classNameLink)}.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(${lowerCase(classNameLink)});
+      {{tab}}}
+      
+      {{tab}}@GetMapping("/{${pkColumn}}")
+      {{tab}}public ResponseEntity<${majStart(className)}> get${majStart(className)}ById(@PathVariable ${pkColumnType} ${pkColumn}) {
+      {{tab}}   ${majStart(className)} ${lowerCase(className)} = ${lowerCase(className)}Service.get${majStart(className)}ById(${pkColumn});
+      {{tab}}   return ResponseEntity.ok(${lowerCase(className)});
+      {{tab}}}
+      
+      {{tab}}@PostMapping
+      {{tab}}public ResponseEntity<${majStart(className)}> create${majStart(className)}(@RequestBody ${majStart(className)} ${lowerCase(className)}) {
+      {{tab}}   ${majStart(className)} new${majStart(className)} = ${lowerCase(className)}Service.create${majStart(className)}(${lowerCase(className)});
+      {{tab}}   return ResponseEntity.status(HttpStatus.CREATED).body(new${majStart(className)});
+      {{tab}}}
+      
+      {{tab}}@PutMapping("/{${pkColumn}}")
+      {{tab}}public ResponseEntity<${majStart(className)}> update${majStart(className)}(@PathVariable ${pkColumnType} ${pkColumn}, @RequestBody ${majStart(className)} ${lowerCase(className)}) {
+      {{tab}}   ${majStart(className)} update${majStart(className)} = ${lowerCase(className)}Service.update${majStart(className)}(${pkColumn}, ${lowerCase(className)});
+      {{tab}}   return ResponseEntity.ok(update${majStart(className)});
+      {{tab}}}
+      
+      {{tab}}@DeleteMapping("/{${pkColumn}}")
+      {{tab}}public ResponseEntity<Void> delete${majStart(className)}ById(@PathVariable ${pkColumnType} ${pkColumn}) {
+      {{tab}}   ${lowerCase(className)}Service.delete${majStart(className)}(${pkColumn});
+      {{tab}}   return ResponseEntity.noContent().build();
+      {{tab}}}
+      
+      {{tab}}@ExceptionHandler(RuntimeException.class)
+      {{tab}}public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+      {{tab}}	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+      {{tab}}}
+    controllerSavePath: "${destinationFolder}/${majStart(projectName)}/src/main/java/${groupLinkPath}/${lowerCase(projectName)}/controllers"
+    controllerPackage: "${groupLink}.${lowerCase(projectName)}.controllers;"
+    controllerAdditionalFiles:
+      - fileType: "WebConfig"
+        fileName: "WebConfig"
+        extension: "java"
+        content: |
+          package ${groupLink}.${lowerCase(projectName)}.config;
+          
+          import org.springframework.context.annotation.Configuration;
+          import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+          import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+          
+          @Configuration
+          public class WebConfig implements WebMvcConfigurer {
+          
+          {{tab}}@Override
+          {{tab}}public void addViewControllers(ViewControllerRegistry registry) {
+          {{tab}}{{tab}}registry.addRedirectViewController("/", "/swagger-ui/index.html");
+          {{tab}}}
+          }
+        destinationPath: "${destinationFolder}/${majStart(projectName)}/src/main/java/${groupLinkPath}/${lowerCase(projectName)}/config"
+
+- id: 2
+  languageId: 2
+  name: ".NET EF REST API"
+  template: "Template"
+  useDB: true
+  withGroupId: false
+  configurations:
+    - name: "Logging Level"
+      variableName: "loggingLevel"
+      options:
+        - "Trace"
+        - "Debug"
+        - "Information"
+        - "Warning"
+        - "Error"
+        - "Critical"
+        - "None"
+      defaultOption: "Information"
+    - name: "Version"
+      variableName: "frameworkVersion"
+      options:
+        - "8.0"
+        - "7.0"
+        - "6.0"
+      defaultOption: "8.0"
+
+  dependencies: [ ]
+
+  model:
+    modelImports: |
+      using System.ComponentModel.DataAnnotations;
+      using System.ComponentModel.DataAnnotations.Schema;
+    modelExtends: ""
+    modelAnnotations: |
+      [Table("${tableName}")]
+    modelFieldContent: |
+      {{tab}}{{#each fields}}{{#if this.isPrimaryKey}}
+      {{tab}}[Key]
+      {{tab}}[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+      {{tab}}[Column("${this.columnName}")]
+      {{tab}}public ${this.type} ${majStart(this.name)} { get; set; }{{elseIf this.isForeignKey}}
+      {{tab}}
+      {{tab}}[ForeignKey("${this.type}")]
+      {{tab}}[Column("${this.columnName}")]
+      {{tab}}public ${this.columnType} ${majStart(this.columnNameField)} { get; set; }
+      {{tab}}public virtual ${this.type}? ${majStart(this.name)} { get; set; }
+      {{tab}}{{else}}
+      {{tab}}[Column("${this.columnName}")]
+      {{tab}}public ${this.type} ${majStart(this.name)} { get; set; }{{/if}}{{#if !@last}}{{newline}}{{/if}}
+      {{tab}}{{/each}}
+    modelGetterSetter: "{{removeLine}}"
+    modelConstructors: "{{removeLine}}"
+    modelSavePath: "${destinationFolder}/${majStart(projectName)}/${majStart(projectName)}/Models/"
+    modelPackage: "${majStart(projectName)}.Models"
+  modelDao:
+    modelDaoImports: |
+      using Models;
+      using Generic;
+
+    modelDaoAnnotations: ""
+    modelDaoClassKeyword: "public interface"
+    modelDaoExtends: ": IRepository<${majStart(className)}, ${pkColumnType}>"
+    modelDaoName: "I${majStart(className)}Repository"
+    modelDaoFieldContent: "{{removeLine}}"
+    modelDaoMethodContent: "{{removeLine}}"
+    modelDaoConstructors: "{{removeLine}}"
+    modelDaoSavePath: "${destinationFolder}/${majStart(projectName)}/${majStart(projectName)}/Repositories/Interface/"
+    modelDaoPackage: "${majStart(projectName)}.Repositories.Interface"
+    modelDaoAdditionalFiles:
+      - fileType: "Repository inherited from Repository"
+        fileName: "${majStart(className)}Repository"
+        extension: "cs"
+        content: |
+          using ${majStart(projectName)}.Data;
+          using ${majStart(projectName)}.Models;
+          using ${majStart(projectName)}.Repositories.Generic;
+          using ${majStart(projectName)}.Repositories.Interface;
+          
+          namespace ${majStart(projectName)}.Repositories.Implementation;
+          
+          public class ${majStart(className)}Repository : Repository<${majStart(className)}, ${pkColumnType}>, I${majStart(className)}Repository
+          {
+          {{tab}}public ${majStart(className)}Repository(${majStart(projectName)}Context context) : base(context)
+          {{tab}}{
+          {{tab}}}
+          }
+        destinationPath: "${destinationFolder}/${majStart(projectName)}/${majStart(projectName)}/Repositories/Implementation/"
+
+  service:
+    serviceImports: |
+      using Models;
+      using Generic;
+
+    serviceAnnotations: ""
+    serviceClassKeyword: "public interface"
+    serviceExtends: ": IService<${majStart(className)}, ${pkColumnType}>"
+    serviceName: "I${majStart(className)}Service"
+    serviceFieldContent: "{{removeLine}}"
+    serviceMethodContent: "{{removeLine}}"
+    serviceConstructors: "{{removeLine}}"
+    serviceSavePath: "${destinationFolder}/${majStart(projectName)}/${majStart(projectName)}/Services/Interface"
+    servicePackage: "${majStart(projectName)}.Services.Interface"
+    serviceAdditionalFiles:
+      - fileType: "Service inherited from Service"
+        fileName: "${majStart(className)}Service"
+        extension: "cs"
+        content: |
+          using System.Linq.Expressions;
+          using ${majStart(projectName)}.Models;
+          using ${majStart(projectName)}.Repositories.Interface;
+          using ${majStart(projectName)}.Services.Interface;
+          
+          namespace ${majStart(projectName)}.Services.Implementation;
+          
+          public class ${majStart(className)}Service : I${majStart(className)}Service
+          {
+          {{tab}}private readonly I${majStart(className)}Repository _repository;
+          
+          {{tab}}public ${majStart(className)}Service(I${majStart(className)}Repository repository)
+          {{tab}}{
+          {{tab}}{{tab}}_repository = repository;
+          {{tab}}}
+          
+          {{tab}}public async Task<IEnumerable<${majStart(className)}>> GetAllAsync(
+          {{tab}}params Expression<Func<${majStart(className)}, object?>>[]? includeProperties)
+          {{tab}}{
+          {{tab}}{{tab}}return await _repository.GetAllWithIncludes(includeProperties);
+          {{tab}}}
+          
+          {{tab}}public async Task<${majStart(className)}?> GetByIdAsync(${pkColumnType} id,
+          {{tab}}params Expression<Func<${majStart(className)}, object?>>[]? includeProperties)
+          {{tab}}{
+          {{tab}}{{tab}}return await _repository.GetByIdAsync(id, includeProperties);
+          {{tab}}}
+          
+          {{tab}}public async Task AddAsync(${majStart(className)} ${minStart(className)})
+          {{tab}}{
+          {{tab}}{{tab}}await _repository.AddAsync(${minStart(className)});
+          {{tab}}}
+          
+          {{tab}}public async Task UpdateAsync(${majStart(className)} ${minStart(className)})
+          {{tab}}{
+          {{tab}}{{tab}}await _repository.UpdateAsync(${minStart(className)});
+          {{tab}}}
+          
+          {{tab}}public async Task DeleteAsync(long id)
+          {{tab}}{
+          {{tab}}{{tab}}await _repository.DeleteAsync(id);
+          {{tab}}}
+          
+          {{tab}}public async Task<bool> ExistsAsync(long id)
+          {{tab}}{
+          {{tab}}{{tab}}return await _repository.ExistsAsync(id);
+          {{tab}}}
+          }
+        destinationPath: "${destinationFolder}/${majStart(projectName)}/${majStart(projectName)}/Services/Implementation/"
+
+  controller:
+    controllerImports: |
+      using Microsoft.AspNetCore.Mvc;
+      using Models;
+      using Services.Interface;
+
+    controllerAnnotations: |
+      [ApiController]
+      [Route("${minStart(className)}s")]
+    controllerExtends: " : ControllerBase"
+    controllerName: "${majStart(className)}Controller"
+    controllerFieldContent: |
+      {{tab}}private readonly I${majStart(className)}Service _service;
+    controllerConstructors: |
+      {{tab}}public ${majStart(className)}Controller(I${majStart(className)}Service service)
+      {{tab}}{
+      {{tab}}{{tab}}_service = service;
+      {{tab}}}
+    controllerMethodContent: |
+      {{tab}}[HttpGet]
+      {{tab}}public async Task<ActionResult<IEnumerable<${majStart(className)}>>> Get${majStart(className)}s()
+      {{tab}}{
+      {{tab}}{{tab}}var ${minStart(className)}s = await _service.GetAllAsync({{#each fieldsFK}}e => e.${majStart(this.name)}{{#if !@last}}, {{/if}}{{/each}});
+      {{tab}}{{tab}}return ${minStart(className)}s.Any() ? Ok(${minStart(className)}s) : NoContent();
+      {{tab}}}
+      
+      {{tab}}[HttpGet("{id}")]
+      {{tab}}public async Task<ActionResult<${majStart(className)}>> Get${majStart(className)}(${pkColumnType} id)
+      {{tab}}{
+      {{tab}}{{tab}}var ${minStart(className)} = await _service.GetByIdAsync(id{{#each fieldsFK}}, e => e.${majStart(this.name)}{{/each}});
+      {{tab}}{{tab}}return ${minStart(className)} == null ? NotFound() : Ok(${minStart(className)});
+      {{tab}}}
+      
+      {{tab}}[HttpPost]
+      {{tab}}public async Task<ActionResult<${majStart(className)}>> Post(${majStart(className)} ${minStart(className)})
+      {{tab}}{
+      {{tab}}{{tab}}await _service.AddAsync(${minStart(className)});
+      {{tab}}{{tab}}return CreatedAtAction(nameof(Get${majStart(className)}), new { id = ${minStart(className)}.${majStart(pkColumn)} }, ${minStart(className)});
+      {{tab}}}
+      
+      {{tab}}[HttpPut("{id}")]
+      {{tab}}public async Task<ActionResult<${majStart(className)}>> Put${majStart(className)}(${pkColumnType} id, ${majStart(className)} ${minStart(className)})
+      {{tab}}{
+      {{tab}}{{tab}}if (id != ${minStart(className)}.${majStart(pkColumn)})
+      {{tab}}{{tab}}{{tab}}return BadRequest();
+      
+      {{tab}}{{tab}}var exists = await _service.ExistsAsync(id);
+      {{tab}}{{tab}}if (!exists) return NotFound();
+      
+      {{tab}}{{tab}}await _service.UpdateAsync(${minStart(className)});
+      {{tab}}{{tab}}return NoContent();
+      {{tab}}}
+      
+      {{tab}}[HttpDelete("{id}")]
+      {{tab}}public async Task<ActionResult> Delete${majStart(className)}(${pkColumnType} id)
+      {{tab}}{
+      
+      {{tab}}{{tab}}var exists = await _service.ExistsAsync(id);
+      {{tab}}{{tab}}if (!exists) return NotFound();
+      
+      {{tab}}{{tab}}await _service.DeleteAsync(id);
+      {{tab}}{{tab}}return NoContent();
+      {{tab}}}
+
+    controllerSavePath: "${destinationFolder}/${majStart(projectName)}/${majStart(projectName)}/Controllers"
+    controllerPackage: "${majStart(projectName)}.Controllers"
+    controllerAdditionalFiles: []

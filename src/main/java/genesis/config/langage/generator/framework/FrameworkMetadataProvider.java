@@ -5,14 +5,12 @@ import genesis.config.langage.Language;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.engine.TemplateEngine;
-import genesis.model.ColumnMetadata;
-import genesis.model.TableMetadata;
+import genesis.connexion.model.ColumnMetadata;
+import genesis.connexion.model.TableMetadata;
 import org.jetbrains.annotations.NotNull;
+import utils.FileUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FrameworkMetadataProvider {
     private static final TemplateEngine engine = new TemplateEngine();
@@ -24,6 +22,7 @@ public class FrameworkMetadataProvider {
                 Map.of("host", credentials.getHost(),
                         "port", database.getPort(),
                         "database", credentials.getDatabaseName(),
+                        "schema", credentials.getSchemaName(),
                         "useSSL", credentials.isUseSSL(),
                         "username", credentials.getUser(),
                         "password", credentials.getPwd(),
@@ -46,7 +45,7 @@ public class FrameworkMetadataProvider {
         return metadata;
     }
 
-    public static HashMap<String, Object> getPrimaryModelHashMap(Framework framework, TableMetadata tableMetadata) {
+    public static HashMap<String, Object> getPrimaryModelHashMap(Framework framework, Language language, TableMetadata tableMetadata) {
         HashMap<String, Object> metadata = new HashMap<>();
 
         metadata.put("className", tableMetadata.getClassName());
@@ -57,6 +56,8 @@ public class FrameworkMetadataProvider {
         metadata.put("methods", framework.getModel().getModelGetterSetter());
         metadata.put("constructors", framework.getModel().getModelConstructors());
         metadata.put("classAnnotations", framework.getModel().getModelAnnotations());
+        metadata.put("namespaceEnd", language.getSyntax().get("namespaceEnd")==null ? "{{removeLine}}" : language.getSyntax().get("namespaceEnd"));
+        metadata.put("bracketEnd", language.getSyntax().get("bracketEnd")==null ? "{{removeLine}}" : language.getSyntax().get("namespaceEnd"));
 
         return metadata;
     }
@@ -82,6 +83,7 @@ public class FrameworkMetadataProvider {
         HashMap<String, Object> metadata = new HashMap<>();
 
         metadata.put("className", tableMetadata.getClassName());
+        metadata.put("pkColumn", tableMetadata.getPrimaryColumn().getName());
         metadata.put("entityName", framework.getService().getServiceName());
         metadata.put("package", framework.getService().getServicePackage());
         metadata.put("imports", framework.getService().getServiceImports());
@@ -113,7 +115,7 @@ public class FrameworkMetadataProvider {
     public static HashMap<String, Object> getModelHashMap(Framework framework, Language language, TableMetadata tableMetadata) {
         HashMap<String, Object> metadata = new HashMap<>();
 
-        HashMap<String, Object> primaryModelMetadata = getPrimaryModelHashMap(framework, tableMetadata);
+        HashMap<String, Object> primaryModelMetadata = getPrimaryModelHashMap(framework, language, tableMetadata);
         HashMap<String, Object> languageMetadata = getRelatedLanguageMetadata(language);
 
         metadata.putAll(primaryModelMetadata);
@@ -127,7 +129,7 @@ public class FrameworkMetadataProvider {
 
         HashMap<String, Object> primaryModelDaoMetadata = getPrimaryModelDaoHashMap(framework, tableMetadata);
         HashMap<String, Object> languageMetadata = getRelatedLanguageMetadata(language);
-        languageMetadata.put("classKeyword", "public interface");
+        languageMetadata.put("classKeyword", framework.getModelDao().getModelDaoClassKeyword());
 
         metadata.putAll(primaryModelDaoMetadata);
         metadata.putAll(languageMetadata);
@@ -140,6 +142,7 @@ public class FrameworkMetadataProvider {
 
         HashMap<String, Object> primaryServiceMetadata = getPrimaryServiceHashMap(framework, tableMetadata);
         HashMap<String, Object> languageMetadata = getRelatedLanguageMetadata(language);
+        languageMetadata.put("classKeyword", framework.getService().getServiceClassKeyword());
 
         metadata.putAll(primaryServiceMetadata);
         metadata.putAll(languageMetadata);
@@ -159,34 +162,59 @@ public class FrameworkMetadataProvider {
         return metadata;
     }
 
-    public static HashMap<String, Object> getHashMapIntermediaire(TableMetadata tableMetadata, String projectName, String groupLink) {
+    public static HashMap<String, Object> getHashMapIntermediaire(TableMetadata tableMetadata, String destinationFolder, String projectName, String groupLink) {
         HashMap<String, Object> metadata = new HashMap<>();
 
+        addGeneralMetadata(metadata, tableMetadata, destinationFolder, projectName, groupLink);
+        metadata.put("fields", getFieldsList(tableMetadata));
+        metadata.put("fieldsPK", getFieldsPKList(tableMetadata));
+        metadata.put("fieldsFK", getFieldsFKList(tableMetadata));
+
+        return metadata;
+    }
+
+    private static void addGeneralMetadata(HashMap<String, Object> metadata, TableMetadata tableMetadata, String destinationFolder, String projectName, String groupLink) {
+        metadata.put("destinationFolder", destinationFolder);
         metadata.put("projectName", projectName);
         metadata.put("groupLink", groupLink);
+        metadata.put("groupLinkPath", groupLink.replace(".", "/"));
+        metadata.put("pkColumn", tableMetadata.getPrimaryColumn().getName());
         metadata.put("pkColumnType", tableMetadata.getPrimaryColumn().getType());
         metadata.put("tableName", tableMetadata.getTableName());
         metadata.put("className", tableMetadata.getClassName());
         metadata.put("entityName", tableMetadata.getClassName());
         metadata.put("classNameLink", tableMetadata.getClassName() + "s");
+    }
 
+    private static List<Map<String, Object>> getFieldsList(TableMetadata tableMetadata) {
         List<Map<String, Object>> fields = new ArrayList<>();
         for (ColumnMetadata field : tableMetadata.getColumns()) {
             Map<String, Object> fieldMap = getFieldHashMap(field);
             fields.add(fieldMap);
         }
-        metadata.put("fields", fields);
+        return fields;
+    }
 
-        var fieldsPK = new ArrayList<>();
+    private static List<Map<String, Object>> getFieldsPKList(TableMetadata tableMetadata) {
+        List<Map<String, Object>> fieldsPK = new ArrayList<>();
         for (ColumnMetadata field : tableMetadata.getColumns()) {
-            if (field.isPrimary())
-                continue;
-            Map<String, Object> fieldMap = getFieldHashMap(field);
-            fieldsPK.add(fieldMap);
+            if (!field.isPrimary()) {
+                Map<String, Object> fieldMap = getFieldHashMap(field);
+                fieldsPK.add(fieldMap);
+            }
         }
-        metadata.put("fieldsPK", fieldsPK);
+        return fieldsPK;
+    }
 
-        return metadata;
+    private static List<Map<String, Object>> getFieldsFKList(TableMetadata tableMetadata) {
+        List<Map<String, Object>> fieldsFK = new ArrayList<>();
+        for (ColumnMetadata field : tableMetadata.getColumns()) {
+            if (field.isForeign()) {
+                Map<String, Object> fieldMap = getFieldHashMap(field);
+                fieldsFK.add(fieldMap);
+            }
+        }
+        return fieldsFK;
     }
 
     public static @NotNull Map<String, Object> getFieldHashMap(ColumnMetadata field) {
@@ -200,23 +228,24 @@ public class FrameworkMetadataProvider {
         fieldMap.put("isForeignKey", field.isForeign());
         fieldMap.put("columnType", field.getColumnType());
         fieldMap.put("columnName", field.getReferencedColumn());
+        fieldMap.put("columnNameField", FileUtils.toCamelCase(field.getReferencedColumn()));
 
         return fieldMap;
     }
 
-    private Map<String, Object> getHashMapDaoUnique(Framework framework, TableMetadata[] tableMetadata, String projectName) throws Exception {
+    public static Map<String, Object> getHashMapDaoGlobal(Framework framework, List<TableMetadata> tableMetadata, String projectName) throws Exception {
         String packageDefault;
         packageDefault = framework.getModelDao().getModelDaoSavePath();
 
-        Database database = tableMetadata[0].getDatabase();
-        String connectionString = database.getConnectionString().get(framework.getLangageId());
+        Database database = tableMetadata.get(0).getDatabase();
+        String connectionString = database.getConnectionString().get(framework.getLanguageId());
         Map<String, Object> connectionStringMetadata = getCredentialsHashMap(database);
         connectionString = engine.render(connectionString, connectionStringMetadata);
 
         Map<String, Object> metadata = new HashMap<>(Map.of(
                 "projectName", projectName,
                 "packageValue", packageDefault,
-                "DBType", tableMetadata[0].getDatabase().getDaoName().get(framework.getLangageId()),
+                "daoName", database.getDaoName().get(framework.getLanguageId()) == null ? "" : database.getDaoName().get(framework.getLanguageId()),
                 "connectionString", connectionString)
         );
 

@@ -1,7 +1,7 @@
 package genesis.config;
 
 import genesis.connexion.Credentials;
-import genesis.model.TableMetadata;
+import genesis.connexion.model.TableMetadata;
 import lombok.Getter;
 import lombok.Setter;
 

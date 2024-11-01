@@ -3,13 +3,12 @@ package modelGeneration;
 import genesis.config.Constantes;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
+import genesis.config.langage.generator.framework.APIGenerator;
 import genesis.config.langage.generator.framework.GenesisGenerator;
-import genesis.config.langage.generator.framework.MVCGenerator;
-import genesis.config.langage.generator.project.ProjectGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.connexion.providers.PostgreSQLDatabase;
-import genesis.model.TableMetadata;
+import genesis.connexion.model.TableMetadata;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 
@@ -22,18 +21,13 @@ public class PostgreSQLTest {
     Credentials credentials;
 
     public PostgreSQLTest() {
-        this.credentials = new Credentials();
-        credentials
+        this.credentials = new Credentials()
                 .setHost("localhost")
-                .setDatabaseName("test_db")
-                //.setUser("postgres")
-                //.setPwd("nikami")
-                .setUser("nomena")
-                .setPwd("root")
                 .setPort("5432")
-                .setTrustCertificate(true)
-                .setUseSSL(true)
-                .setAllowPublicKeyRetrieval(true);
+                .setDatabaseName("test_db")
+                .setSchemaName("public")
+                .setUser("nomena")
+                .setPwd("root");
     }
 
     @Test
@@ -51,17 +45,17 @@ public class PostgreSQLTest {
         Language language = languages[0];                                   // Java
         Framework framework = frameworks[0];                                // Spring MVC
 
-        String projectName = "TestProject", groupLink = "com";
+        String projectName = "TestProject", groupLink = "com", destinationFolder = "/Users/nomena/STAGE/GENESIS";
 
         try (Connection connection = database.getConnection(credentials)) {
             TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
-            GenesisGenerator mvcGenerator = new MVCGenerator();
+            GenesisGenerator mvcGenerator = new APIGenerator();
 
             for (TableMetadata tableMetadata : entities) {
-                mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
-                mvcGenerator.generateDao(framework, language, tableMetadata, projectName, groupLink);
-                mvcGenerator.generateService(framework, language, tableMetadata, projectName, groupLink);
-                mvcGenerator.generateController(framework, language, tableMetadata, projectName, groupLink);
+                mvcGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+                mvcGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+                mvcGenerator.generateService(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+                mvcGenerator.generateController(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
             }
 
         } catch (Exception e) {
@@ -80,22 +74,25 @@ public class PostgreSQLTest {
         Language language = languages[1];                                   // C#
         Framework framework = frameworks[1];                                // .NET
 
+        String projectName = "TestProject", groupLink = "com", destinationFolder = "/Users/nomena/STAGE/GENESIS";
+
         try (Connection connection = database.getConnection(credentials)) {
             TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
-            TableMetadata tableMetadata = entities[1]; //Employe
+            GenesisGenerator mvcGenerator = new APIGenerator();
 
-            GenesisGenerator mvcGenerator = new MVCGenerator();
-            String projectName = "TestProject", groupLink = "com";
-
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
-            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, projectName, groupLink);
+            String model = "";
+            for (TableMetadata tableMetadata : entities) {
+                model = mvcGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+                mvcGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+                mvcGenerator.generateService(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+                mvcGenerator.generateController(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+            }
 
             System.out.println(database);
             System.out.println(language);
             System.out.println(framework);
 
             System.out.println("\n====== GENERATED ======\n" + model);
-            System.out.println("\n====== GENERATED ======\n" + dao);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -7,10 +7,10 @@
         "groupId": "com.mysql",
         "artifactId": "mysql-connector-j"
       },
-        "2": {
-            "groupId": "",
-            "artifactId": "MySql.EntityFrameworkCore"
-        }
+      "2": {
+        "groupId": "",
+        "artifactId": "MySql.EntityFrameworkCore"
+      }
     },
     "driverType": "",
     "serviceName": "",
@@ -73,7 +73,9 @@
       "int8": "long",
       "bigint": "long",
       "serial": "long",
+      "bigserial": "long",
       "character varying": "string",
+      "text": "string",
       "varchar": "string",
       "real": "double",
       "double": "double",
@@ -81,7 +83,9 @@
       "decimal": "double",
       "numeric": "double",
       "date": "date",
-      "timestamp without time zone": "timestamp"
+      "timestamp without time zone": "timestamp",
+      "timestamp": "timestamp",
+      "bool": "boolean"
     },
     "excludeSchemas": [
       "information_schema",

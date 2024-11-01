@@ -8,13 +8,13 @@ import genesis.connexion.providers.MySQLDatabase;
 import genesis.connexion.providers.OracleDatabase;
 import genesis.connexion.providers.PostgreSQLDatabase;
 import genesis.connexion.providers.SQLServerDatabase;
-import genesis.model.TableMetadata;
+import genesis.connexion.model.TableMetadata;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +34,6 @@ import java.util.Map;
 })
 public abstract class Database {
     private int id;
-    private String groupId;
-    private String artifactId;
     private String driverName;
     private String driverVersion;
     private String name;
@@ -51,14 +49,29 @@ public abstract class Database {
     private Map<String, Object> databaseMetadata;
     private Map<String, Framework.Dependency> dependencies;
 
-    public abstract Connection getConnection(Credentials credentials) throws ClassNotFoundException, SQLException;
+    public Connection getConnection(Credentials credentials) throws ClassNotFoundException, SQLException {
+        setCredentials(credentials);
+        Class.forName(getDriver());
+        String url = getJdbcUrl(credentials);
+        Connection connection = DriverManager.getConnection(url);
+        connection.setAutoCommit(false);
+        return connection;
+    }
+
+    public Connection getConnection(Credentials credentials, String url) throws ClassNotFoundException, SQLException {
+        setCredentials(credentials);
+        Class.forName(getDriver());
+        Connection connection = DriverManager.getConnection(url);
+        connection.setAutoCommit(false);
+        return connection;
+    }
 
     protected abstract String getJdbcUrl(Credentials credentials);
 
     public TableMetadata getEntity(Connection connection, Credentials credentials, String entityName, Language language) throws SQLException, ClassNotFoundException {
         TableMetadata tableMetadata = new TableMetadata();
         tableMetadata.setTableName(entityName);
-        tableMetadata.initialize(connection, credentials,  this, language);
+        tableMetadata.initialize(connection, credentials, this, language);
         return tableMetadata;
     }
 
@@ -67,7 +80,21 @@ public abstract class Database {
         return tableMetadata.initializeTables(null, connection, credentials, this, language);
     }
 
-    public abstract List<String> getAllTableNames(Connection connection) throws SQLException;
+    public List<String> getAllTableNames(Connection connection) throws SQLException {
+        List<String> tableNames = new ArrayList<>();
+        DatabaseMetaData metaData = connection.getMetaData();
+
+        try (ResultSet tables = metaData.getTables(null, credentials.getSchemaName(), "%", new String[]{"TABLE"})) {
+            while (tables.next()) {
+                String tableName = tables.getString("TABLE_NAME");
+                String tableSchema = tables.getString("TABLE_SCHEM");
+
+                tableNames.add(tableName);
+            }
+        }
+
+        return tableNames;
+    }
 
 
     public Map<String, Object> getDatabaseMetadataHashMap(Credentials credentials) {
@@ -75,7 +102,7 @@ public abstract class Database {
 
         databaseMetadata.put("host", credentials.getHost());
         databaseMetadata.put("port", credentials.getPort());
-        databaseMetadata.put("database", credentials.getDatabaseName());
+        databaseMetadata.put("database", credentials.getSchemaName());
         databaseMetadata.put("username", credentials.getUser());
         databaseMetadata.put("password", credentials.getPwd());
         databaseMetadata.put("useSSL", String.valueOf(credentials.isUseSSL()));
@@ -103,7 +130,7 @@ public abstract class Database {
     }
 
     private String buildQuery(Credentials credentials, String entityName) {
-        String query = getTablesQuery.replace("[databaseName]", credentials.getDatabaseName());
+        String query = getTablesQuery.replace("[databaseName]", credentials.getSchemaName());
         if (!entityName.equals("*")) {
             query += String.format(addEntitiesQuery, entityName);
         }

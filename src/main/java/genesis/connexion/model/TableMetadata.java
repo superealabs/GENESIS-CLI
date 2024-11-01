@@ -1,4 +1,4 @@
-package genesis.model;
+package genesis.connexion.model;
 
 import genesis.config.langage.Language;
 import genesis.connexion.Credentials;
@@ -12,7 +12,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static utils.FileUtils.*;
+import static utils.FileUtils.majStart;
+import static utils.FileUtils.toCamelCase;
 
 
 @Setter
@@ -82,7 +83,7 @@ public class TableMetadata {
 
             for (String tableName : tableNames) {
                 TableMetadata tableMetadata = new TableMetadata();
-                tableMetadata.setTableName(tableName.toLowerCase());
+                tableMetadata.setTableName(tableName);
                 tableMetadata.initialize(connect, credentials, database, language);
                 tableMetadataList.add(tableMetadata);
             }
@@ -97,71 +98,67 @@ public class TableMetadata {
 
 
     private List<ColumnMetadata> fetchColumns(DatabaseMetaData metaData, String tableName, Language language, Database database) throws SQLException {
-        ResultSet columns = metaData.getColumns(null, null, tableName, null);
         List<ColumnMetadata> listeCols = new ArrayList<>();
+        try (ResultSet columns = metaData.getColumns(null, database.getCredentials().getSchemaName(), tableName, null)) {
+            while (columns.next()) {
+                ColumnMetadata column = new ColumnMetadata();
+                String columnName = columns.getString("COLUMN_NAME");
+                String columnType = columns.getString("TYPE_NAME");
 
-        while (columns.next()) {
-            ColumnMetadata column = new ColumnMetadata();
-            String columnName = columns.getString("COLUMN_NAME");
-            String columnType = columns.getString("TYPE_NAME");
+                column.setName(toCamelCase(columnName.toLowerCase()));
+                column.setReferencedColumn(columnName);
 
-            column.setName(toCamelCase(columnName.toLowerCase()));
-            column.setReferencedColumn(columnName);
-            column.setType(language.getTypes().get(database.getTypes().get(columnType)));
-            column.setColumnType(columnType);
-            listeCols.add(column);
+                if (language.getTypes().get(database.getTypes().get(columnType)) == null)
+                    throw new RuntimeException("Database type not supported yet : " + columnType);
+                else
+                    column.setType(language.getTypes().get(database.getTypes().get(columnType)));
+
+                column.setColumnType(columnType);
+                listeCols.add(column);
+            }
         }
-
         return listeCols;
     }
 
     private void fetchPrimaryKeys(DatabaseMetaData metaData, String tableName, List<ColumnMetadata> columns) throws SQLException {
-        ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, tableName);
+        try (ResultSet primaryKeys = metaData.getPrimaryKeys(null, database.getCredentials().getSchemaName(), tableName)) {
+            while (primaryKeys.next()) {
+                String pkColumnName = primaryKeys.getString("COLUMN_NAME");
 
-        while (primaryKeys.next()) {
-            String pkColumnName = primaryKeys.getString("COLUMN_NAME");
-
-            for (ColumnMetadata column : columns) {
-                if (column.getReferencedColumn().equalsIgnoreCase(pkColumnName)) {
-                    column.setPrimary(true);
-                    ColumnMetadata pkfield = new ColumnMetadata();
-
-                    pkfield.setName(toCamelCase(column.getName()));
-                    pkfield.setType(column.getType());
-                    pkfield.setColumnType(column.getColumnType());
-                    pkfield.setPrimary(true);
-                    pkfield.setReferencedColumn(column.getReferencedColumn());
-                    setPrimaryColumn(pkfield);
-                    break;
+                for (ColumnMetadata column : columns) {
+                    if (column.getReferencedColumn().equalsIgnoreCase(pkColumnName)) {
+                        column.setPrimary(true);
+                        setPrimaryColumn(column);
+                        break;
+                    }
                 }
             }
         }
-
     }
 
     private void fetchForeignKeys(DatabaseMetaData metaData, String tableName, List<ColumnMetadata> listeCols) throws SQLException {
-        ResultSet foreignKeys = metaData.getImportedKeys(null, null, tableName);
+        try (ResultSet foreignKeys = metaData.getImportedKeys(null, database.getCredentials().getSchemaName(), tableName)) {
 
-        while (foreignKeys.next()) {
-            String fkColumnName = foreignKeys.getString("FKCOLUMN_NAME");
-            String pkTableName = foreignKeys.getString("PKTABLE_NAME");
-            //String pkColumnName = foreignKeys.getString("PKCOLUMN_NAME");
-
-            for (ColumnMetadata field : listeCols) {
-                if (field.getReferencedColumn().equalsIgnoreCase(fkColumnName)) {
-                    field.setName(toCamelCase(pkTableName.toLowerCase()));
-                    field.setForeign(true);
-                    field.setReferencedTable(toCamelCase(pkTableName));
-                    field.setReferencedColumn(field.getReferencedColumn());
-                    field.setColumnType(toCamelCase(field.getType()));
-                    field.setType(FileUtils.majStart(toCamelCase(pkTableName)));
+            while (foreignKeys.next()) {
+                String fkColumnName = foreignKeys.getString("FKCOLUMN_NAME");
+                String pkTableName = foreignKeys.getString("PKTABLE_NAME");
+                //String pkColumnName = foreignKeys.getString("PKCOLUMN_NAME");
+                for (ColumnMetadata field : listeCols) {
+                    if (field.getReferencedColumn().equalsIgnoreCase(fkColumnName)) {
+                        field.setName(toCamelCase(field.getName())+majStart(toCamelCase(pkTableName.toLowerCase())));
+                        field.setForeign(true);
+                        field.setReferencedTable(toCamelCase(pkTableName));
+                        field.setReferencedColumn(field.getReferencedColumn());
+                        field.setColumnType(toCamelCase(field.getType()));
+                        field.setType(FileUtils.majStart(toCamelCase(pkTableName)));
+                    }
                 }
             }
         }
     }
 
     private void printColumnsInfo(DatabaseMetaData metaData, String tableName) throws SQLException {
-        ResultSet columns = metaData.getColumns(null, null, tableName, null);
+        ResultSet columns = metaData.getColumns(null, database.getCredentials().getSchemaName(), tableName, null);
         System.out.println("columns:");
 
         while (columns.next()) {
@@ -177,7 +174,7 @@ public class TableMetadata {
     }
 
     private void printPrimaryKeys(DatabaseMetaData metaData, String tableName) throws SQLException {
-        ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, tableName);
+        ResultSet primaryKeys = metaData.getPrimaryKeys(null, database.getCredentials().getSchemaName(), tableName);
         System.out.println("Primary Keys:");
         while (primaryKeys.next()) {
             String pkColumnName = primaryKeys.getString("COLUMN_NAME");
@@ -186,7 +183,7 @@ public class TableMetadata {
     }
 
     private void printForeignKeys(DatabaseMetaData metaData, String tableName) throws SQLException {
-        ResultSet foreignKeys = metaData.getImportedKeys(null, null, tableName);
+        ResultSet foreignKeys = metaData.getImportedKeys(null, database.getCredentials().getSchemaName(), tableName);
         System.out.println("Foreign Keys:");
         while (foreignKeys.next()) {
             String fkColumnName = foreignKeys.getString("FKCOLUMN_NAME");
@@ -201,7 +198,7 @@ public class TableMetadata {
         try (Connection connection = database.getConnection(credentials)) {
             DatabaseMetaData metaData = connection.getMetaData();
 
-            ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"});
+            ResultSet tables = metaData.getTables(null, database.getCredentials().getSchemaName(), "%", new String[]{"TABLE"});
 
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");

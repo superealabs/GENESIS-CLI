@@ -1,5 +1,6 @@
 package project;
 
+import genesis.config.langage.ConfigurationMetadata;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.config.langage.Project;
@@ -7,12 +8,13 @@ import genesis.config.langage.generator.project.ProjectGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 
-import java.util.Scanner;
+import java.sql.Connection;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ProjectGeneratorHandler {
-
-    Credentials credentials;
-    ProjectGenerator projectGenerator;
+    private final Credentials credentials;
+    private final ProjectGenerator projectGenerator;
 
     public ProjectGeneratorHandler() {
         this.credentials = new Credentials();
@@ -23,22 +25,52 @@ public class ProjectGeneratorHandler {
         System.out.println("\n** Welcome to the GENESIS-CLI ** \n\n Let's get started 🚀\n");
 
         try (Scanner scanner = new Scanner(System.in)) {
-            configureCredentials(scanner);
-            int databaseId = getDatabaseId(scanner);
-            int languageId = getLanguageId(scanner);
-            int frameworkId = getFrameworkId(scanner);
-            int projectId = getProjectId(scanner);
-            String projectName = getProjectName(scanner);
-            String groupLink = getGroupLink(scanner);
-            String projectPort = getProjectPort(scanner);
-            String logLevel = getLogLevel(scanner);
-            String hibernateDdlAuto = getHibernateDdlAuto(scanner);
-            String frameworkVersion = getFrameworkVersion(scanner);
-            String projectDescription = getProjectDescription(scanner);
-            String languageVersion = getLanguageVersion(scanner);
+            int languageId = getLanguageSelection(scanner);
+            Language language = ProjectGenerator.languages.get(languageId);
 
-            projectGenerator.generateProject(databaseId, languageId, frameworkId, projectId, credentials, projectName, groupLink, projectPort, logLevel, hibernateDdlAuto, frameworkVersion, projectDescription, languageVersion);
-            System.out.println("\nProject generated successfully! 👨🏽‍💻");
+            int frameworkId = getFrameworkSelection(scanner, language);
+            Framework framework = ProjectGenerator.frameworks.get(frameworkId);
+
+            int databaseId = -1;
+            Database database;
+            Connection connection = null;
+            if (framework.getUseDB()) {
+                databaseId = getDatabaseId(scanner);
+                database = ProjectGenerator.databases.get(databaseId);
+                connection = configureCredentials(scanner, database);
+            }
+
+            int projectId = getProjectId(scanner, framework);
+            String destinationFolder = FolderSelectorCombo.selectDestinationFolder(scanner);
+
+            String projectName = getNonEmptyInput(scanner, "Enter the project name");
+
+            String groupLink = "";
+            if (framework.getWithGroupId())
+                groupLink = getNonEmptyInput(scanner, "Enter the group link");
+
+            String projectPort = getValidPort(scanner);
+            String projectDescription = getNonEmptyInput(scanner, "Enter the project description");
+
+            HashMap<String, String> frameworkConfiguration = configureFramework(scanner, framework);
+            HashMap<String, String> languageConfiguration = configureLangage(scanner, language);
+
+            projectGenerator.generateProject(
+                    databaseId,
+                    languageId,
+                    frameworkId,
+                    projectId,
+                    credentials,
+                    destinationFolder,
+                    projectName,
+                    groupLink,
+                    projectPort,
+                    projectDescription,
+                    languageConfiguration,
+                    frameworkConfiguration,
+                    connection
+            );
+            System.out.println("Project generated successfully! 👨🏽‍💻\nSee you on the next project ... 👋🏼\n");
 
         } catch (Exception e) {
             System.out.println("\nAn error occurred during project generation:");
@@ -46,148 +78,302 @@ public class ProjectGeneratorHandler {
         }
     }
 
-    private void configureCredentials(Scanner scanner) {
-        credentials.setHost(askForInput(scanner, "Enter the database host", "localhost"));
-        credentials.setDatabaseName(askForInput(scanner, "Enter the database name", "test_db"));
-        credentials.setUser(askForInput(scanner, "Enter the database user", "nomena"));
-        credentials.setPwd(askForInput(scanner, "Enter the database password", "root"));
-        credentials.setPort(askForInput(scanner, "Enter the database port", "5432"));
-        System.out.println();
+    private Connection configureCredentials(Scanner scanner, Database database) {
+        configureCommonCredentials(scanner, database);
+        configureDatabaseSpecificCredentials(scanner, database);
+
+        System.out.println("\nTesting database connection...");
+        Connection connection = testDatabaseConnection(database);
+
+        if (connection != null) {
+            System.out.println("Connection successful 🎉\n");
+        } else {
+            connection = handleConnectionFailure(scanner, database);
+        }
+        return connection;
     }
 
-    private String askForInput(Scanner scanner, String prompt, String defaultValue) {
+    private void configureCommonCredentials(Scanner scanner, Database database) {
+        credentials.setHost(getDefaultInput(scanner, "Enter the database host", "localhost"));
+        credentials.setDatabaseName(getDefaultInput(scanner, "Enter the database name", "test_db"));
+        credentials.setSchemaName(getDefaultInput(scanner, "Enter the schema name", "public"));
+        credentials.setUser(getDefaultInput(scanner, "Enter the database user", "nomena"));
+        credentials.setPwd(getDefaultInput(scanner, "Enter the database password", "root"));
+        credentials.setPort(getDefaultInput(scanner, "Enter the database port", database.getPort()));
+    }
+
+    private void configureDatabaseSpecificCredentials(Scanner scanner, Database database) {
+        switch (database.getName()) {
+            case "MySQL":
+                configureMySQLCredentials(scanner);
+                break;
+            case "Oracle":
+                configureOracleCredentials(scanner, database);
+                break;
+            case "PostgreSQL":
+                // No specific configuration needed
+                break;
+            case "SQL Server":
+                configureSQLServerCredentials(scanner);
+                break;
+            default:
+                System.out.println("Database type not recognized. Please check the configuration.");
+                break;
+        }
+    }
+
+    private void configureMySQLCredentials(Scanner scanner) {
+        credentials.setTrustCertificate(Boolean.parseBoolean(
+                getDefaultInput(scanner, "Enable trust certificate for MySQL (true/false)", "true")
+        ));
+        credentials.setUseSSL(Boolean.parseBoolean(
+                getDefaultInput(scanner, "Enable SSL for MySQL (true/false)", "true")
+        ));
+        credentials.setAllowPublicKeyRetrieval(Boolean.parseBoolean(
+                getDefaultInput(scanner, "Allow public key retrieval for MySQL (true/false)", "true")
+        ));
+    }
+
+    private void configureOracleCredentials(Scanner scanner, Database database) {
+        credentials.setServiceName(getDefaultInput(scanner, "Enter the service name for Oracle",
+                database.getServiceName() != null ? database.getServiceName() : "ORCLCDB"));
+        credentials.setTrustCertificate(Boolean.parseBoolean(
+                getDefaultInput(scanner, "Enable trust certificate for Oracle (true/false)", "true")
+        ));
+        credentials.setUseSSL(Boolean.parseBoolean(
+                getDefaultInput(scanner, "Enable SSL for Oracle (true/false)", "true")
+        ));
+        credentials.setDriverType(getDefaultInput(scanner, "Enter the driver type for Oracle",
+                database.getDriverType() != null ? database.getDriverType() : "thin"));
+    }
+
+    private void configureSQLServerCredentials(Scanner scanner) {
+        credentials.setTrustCertificate(Boolean.parseBoolean(
+                getDefaultInput(scanner, "Enable trust certificate for SQL Server (true/false)", "true")
+        ));
+        credentials.setUseSSL(Boolean.parseBoolean(
+                getDefaultInput(scanner, "Enable SSL for SQL Server (true/false)", "true")
+        ));
+    }
+
+    private Connection handleConnectionFailure(Scanner scanner, Database database) {
+        System.out.println("Connection failed. Would you like to modify the JDBC URL? (yes/no)");
+        String choice = scanner.next().trim().toLowerCase();
+        if ("yes".equals(choice)) {
+            String customUrl = getNonEmptyInput(scanner, "Enter the custom JDBC URL:");
+            Connection connection = testDatabaseConnection(database, customUrl);
+            if (connection != null) {
+                System.out.println("Connection successful with custom URL.");
+            } else {
+                System.out.println("Connection failed with custom URL.");
+            }
+            return connection;
+        }
+        return null; // If the user does not want to modify the URL
+    }
+
+    private Connection testDatabaseConnection(Database database) {
+        try {
+            Connection connection = database.getConnection(credentials);
+            return connection.isValid(2) ? connection : null;
+        } catch (Exception e) {
+            System.out.println("Error testing connection: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private Connection testDatabaseConnection(Database database, String customUrl) {
+        try {
+            Connection connection = database.getConnection(credentials, customUrl);
+            return connection.isValid(2) ? connection : null;
+        } catch (Exception e) {
+            System.out.println("Error testing connection with custom URL: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private String getDefaultInput(Scanner scanner, String prompt, String defaultValue) {
         System.out.print(prompt + " (default: " + defaultValue + "): ");
-        String input = scanner.nextLine();
-        String value = input.isEmpty() ? defaultValue : input;
-        System.out.println("Using: " + value + "\n");
-        return value;
+        String input = scanner.nextLine().trim();
+        if (input.isEmpty()) {
+            System.out.println("Using default: " + defaultValue + "\n");
+            return defaultValue;
+        } else {
+            System.out.println("Using: " + input + "\n");
+            return input;
+        }
+    }
+
+    private String getNonEmptyInput(Scanner scanner, String prompt) {
+        String input;
+        do {
+            System.out.print(prompt + ": ");
+            input = scanner.nextLine().trim();
+            if (input.isEmpty()) {
+                System.out.println("Please enter a non-empty value.");
+            }
+        } while (input.isEmpty());
+
+        System.out.println("Using: " + input + "\n");
+        return input;
+    }
+
+    private String getValidPort(Scanner scanner) {
+        while (true) {
+            System.out.print("Enter the project port: ");
+            String input = scanner.nextLine().trim();
+            try {
+                int port = Integer.parseInt(input);
+                if (port > 0 && port <= 65535) {
+                    System.out.println("Using: " + port + "\n");
+                    return input;
+                } else {
+                    System.out.println("Error: Please enter a valid port number between 1 and 65535.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Invalid input. Please enter a valid number.\n");
+            }
+        }
     }
 
     private int getDatabaseId(Scanner scanner) {
-        Database[] databases = ProjectGenerator.databases;
-        System.out.println("Options:");
-        for (int i = 0; i < databases.length; i++) {
-            System.out.println(i + " : " + databases[i].getName());
+        Map<Integer, String> databaseNames = ProjectGenerator.databases.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> entry.getValue().getName()
+                ));
+
+        return getSelectionId(scanner, databaseNames, "database");
+    }
+
+    private int getLanguageSelection(Scanner scanner) {
+        Map<Integer, String> languageNames = ProjectGenerator.languages.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> entry.getValue().getName()
+                ));
+
+        if (languageNames.isEmpty()) {
+            System.out.println("No valid languages found.");
+            return -1;
         }
-        System.out.print("Enter the database ID: ");
-        int id = Integer.parseInt(scanner.nextLine());
-        System.out.println("Using: " + id + "\n");
-        return id;
+
+        return getSelectionId(scanner, languageNames, "language");
     }
 
-    private int getLanguageId(Scanner scanner) {
-        Language[] languages = ProjectGenerator.languages;
-        System.out.println("Options:");
-        for (int i = 0; i < languages.length; i++) {
-            System.out.println(i + " : " + languages[i].getName());
+    private int getFrameworkSelection(Scanner scanner, Language language) {
+        Map<Integer, Framework> frameworks = ProjectGenerator.frameworks;
+
+        Map<Integer, String> validFrameworkNames = frameworks.entrySet().stream()
+                .filter(entry -> entry.getValue().getLanguageId() == language.getId())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> entry.getValue().getName()
+                ));
+
+
+        if (validFrameworkNames.isEmpty()) {
+            System.out.println("No valid frameworks found for the selected language.");
+            return -1;
         }
-        System.out.print("Enter the language ID: ");
-        int id = Integer.parseInt(scanner.nextLine());
-        System.out.println("Using: " + id + "\n");
-        return id;
+        return getSelectionId(scanner, validFrameworkNames, "framework");
     }
 
-    private int getFrameworkId(Scanner scanner) {
-        Framework[] frameworks = ProjectGenerator.frameworks;
-        System.out.println("Options:");
-        for (int i = 0; i < frameworks.length; i++) {
-            System.out.println(i + " : " + frameworks[i].getName());
+    private int getProjectId(Scanner scanner, Framework framework) {
+        Map<Integer, Project> projects = ProjectGenerator.projects;
+        Map<Integer, String> languageNames = projects.entrySet().stream()
+                .filter(entry -> entry.getValue().getFrameworkId() == framework.getId())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> entry.getValue().getName()
+                ));
+
+        if (languageNames.isEmpty()) {
+            System.out.println("No valid projects found for the selected framework.\n");
+            return -1;
         }
-        System.out.print("Enter the framework ID: ");
-        int id = Integer.parseInt(scanner.nextLine());
-        System.out.println("Using: " + id + "\n");
-        return id;
+
+        return getSelectionId(scanner, languageNames, "project");
     }
 
-    private int getProjectId(Scanner scanner) {
-        Project[] projects = ProjectGenerator.projects;
-        System.out.println("Options:");
-        for (int i = 0; i < projects.length; i++) {
-            System.out.println(i + " : " + projects[i].getName());
+    private int getSelectionId(Scanner scanner, Map<Integer, String> options, String optionType) {
+        List<Integer> keys = new ArrayList<>(options.keySet());
+        Collections.sort(keys);
+
+        while (true) {
+            System.out.println("Options :");
+            for (int i = 0; i < keys.size(); i++) {
+                System.out.println((i + 1) + ") " + options.get(keys.get(i)));
+            }
+
+            System.out.print("Enter the " + optionType + " index: ");
+            try {
+                int index = Integer.parseInt(scanner.nextLine()) - 1;
+                if (index >= 0 && index < keys.size()) {
+                    int selectedId = keys.get(index);
+                    System.out.println("Using: " + (index+1) + "- " + options.get(selectedId) + "\n");
+                    return selectedId;
+                } else {
+                    System.out.println("Error: Invalid index ("+options+").Please select a valid option." + "\n");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Invalid input. Please enter a valid number.\n");
+            }
         }
-        System.out.print("Enter the project ID: ");
-        int id = Integer.parseInt(scanner.nextLine());
-        System.out.println("Using: " + id + "\n");
-        return id;
     }
 
-    private String getProjectName(Scanner scanner) {
-        System.out.print("Enter the project name: ");
-        String name = scanner.nextLine();
-        System.out.println("Using: " + name + "\n");
-        return name;
+    private HashMap<String, String> configureFramework(Scanner scanner, Framework framework) {
+        return configureOptions(scanner, framework.getConfigurations());
     }
 
-    private String getGroupLink(Scanner scanner) {
-        System.out.print("Enter the group link: ");
-        String link = scanner.nextLine();
-        System.out.println("Using: " + link + "\n");
-        return link;
+    private HashMap<String, String> configureLangage(Scanner scanner, Language language) {
+        return configureOptions(scanner, language.getConfigurations());
     }
 
-    private String getProjectPort(Scanner scanner) {
-        System.out.print("Enter the project port: ");
-        String port = scanner.nextLine();
-        System.out.println("Using: " + port + "\n");
-        return port;
-    }
-
-    private String getLogLevel(Scanner scanner) {
-        String[] logLevels = {"INFO", "DEBUG", "ERROR", "WARN", "TRACE", "OFF"};
-        System.out.println("Options:");
-        for (int i = 0; i < logLevels.length; i++) {
-            System.out.println(i + " : " + logLevels[i]);
+    private HashMap<String, String> configureOptions(Scanner scanner, List<ConfigurationMetadata> configurations) {
+        HashMap<String, String> configMap = new HashMap<>();
+        for (ConfigurationMetadata config : configurations) {
+            String option = getUserInput(scanner, config);
+            configMap.put(config.getVariableName(), option);
         }
-        System.out.print("Enter the log level ID: ");
-        int id = Integer.parseInt(scanner.nextLine());
-        String logLevel = logLevels[id];
-        System.out.println("Using: " + logLevel + "\n");
-        return logLevel;
+        return configMap;
     }
 
-    private String getHibernateDdlAuto(Scanner scanner) {
-        String[] ddlOptions = {"create", "create-drop", "none", "validate"};
-        System.out.println("Options:");
-        for (int i = 0; i < ddlOptions.length; i++) {
-            System.out.println(i + " : " + ddlOptions[i]);
+    public String getUserInput(Scanner scanner, ConfigurationMetadata config) {
+        System.out.println("Configuration: " + config.getName());
+
+        List<String> options = config.getOptions();
+        if (options == null || options.isEmpty()) {
+            System.out.println("No options available for this configuration.");
+            return config.getDefaultOption();
         }
-        System.out.print("Enter Hibernate DDL auto configuration ID: ");
-        int id = Integer.parseInt(scanner.nextLine());
-        String ddlAuto = ddlOptions[id];
-        System.out.println("Using: " + ddlAuto + "\n");
-        return ddlAuto;
-    }
 
-    private String getFrameworkVersion(Scanner scanner) {
-        String[] frameworkVersions = {"3.3.4", "3.2.10"};
-        System.out.println("Options:");
-        for (int i = 0; i < frameworkVersions.length; i++) {
-            System.out.println(i + " : " + frameworkVersions[i]);
+        for (int i = 0; i < options.size(); i++) {
+            System.out.println(i+1 + ") " + options.get(i));
         }
-        System.out.print("Enter the framework version ID: ");
-        int id = Integer.parseInt(scanner.nextLine());
-        String version = frameworkVersions[id];
-        System.out.println("Using: " + version + "\n");
-        return version;
-    }
 
-    private String getProjectDescription(Scanner scanner) {
-        System.out.print("Enter the project description: ");
-        String description = scanner.nextLine();
-        System.out.println("Using: " + description + "\n");
-        return description;
-    }
+        while (true) {
+            try {
+                System.out.print("Select an option ID (default: " + config.getDefaultOption() + "): ");
+                String input = scanner.nextLine();
 
-    private String getLanguageVersion(Scanner scanner) {
-        String[] languageVersions = {"17", "21", "23"};
-        System.out.println("Options:");
-        for (int i = 0; i < languageVersions.length; i++) {
-            System.out.println(i + " : " + languageVersions[i]);
+                if (input.isEmpty()) {
+                    System.out.println("Using default option: "+config.getDefaultOption() + "\n");
+                    return config.getDefaultOption();
+                }
+
+                int optionId = Integer.parseInt(input)-1;
+
+
+                if (optionId >= 0 && optionId < options.size()) {
+                    System.out.println("Using option: " + optionId+"- "+options.get(optionId)+"\n");
+                    return options.get(optionId);
+                } else {
+                    System.out.println("Error: Invalid option ("+options+").Please select a valid option." + "\n");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Invalid input. Please enter a valid number.\n");
+            }
         }
-        System.out.print("Enter the language version ID: ");
-        int id = Integer.parseInt(scanner.nextLine());
-        String version = languageVersions[id];
-        System.out.println("Using: " + version + "\n");
-        return version;
     }
 }

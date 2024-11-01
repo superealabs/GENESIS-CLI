@@ -3,12 +3,12 @@ package modelGeneration;
 import genesis.config.Constantes;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
+import genesis.config.langage.generator.framework.APIGenerator;
 import genesis.config.langage.generator.framework.GenesisGenerator;
-import genesis.config.langage.generator.framework.MVCGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.connexion.providers.MySQLDatabase;
-import genesis.model.TableMetadata;
+import genesis.connexion.model.TableMetadata;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 
@@ -22,7 +22,9 @@ public class MySQLTest {
     public MySQLTest() {
         this.credentials = new Credentials()
                 .setHost("localhost")
+                .setPort("3306")
                 .setDatabaseName("test_db")
+                .setSchemaName("test_db")
                 .setUser("root")
                 .setPwd("Nomena321@")
                 .setTrustCertificate(true)
@@ -50,11 +52,13 @@ public class MySQLTest {
             TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
             TableMetadata tableMetadata = entities[1]; //Employe
 
-            GenesisGenerator mvcGenerator = new MVCGenerator();
+            GenesisGenerator mvcGenerator = new APIGenerator();
             String projectName = "TestProject", groupLink = "com";
+            String destinationFolder = "/Users/nomena/STAGE/GENESIS";
 
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
-            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, projectName, groupLink);
+
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
 
             System.out.println(database);
             System.out.println(language);
@@ -83,11 +87,13 @@ public class MySQLTest {
             TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
             TableMetadata tableMetadata = entities[1]; //Employe
 
-            GenesisGenerator mvcGenerator = new MVCGenerator();
+            GenesisGenerator mvcGenerator = new APIGenerator();
             String projectName = "TestProject", groupLink = "com";
+            String destinationFolder = "/Users/nomena/STAGE/GENESIS";
 
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
-            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, projectName, groupLink);
+
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
 
             System.out.println(database);
             System.out.println(language);

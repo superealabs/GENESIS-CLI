@@ -10,18 +10,28 @@
         <option value="$PROJECT_DIR$/ProjectDEMO/pom.xml" />
         <option value="$PROJECT_DIR$/TestDADA/pom.xml" />
         <option value="$PROJECT_DIR$/TestREST/pom.xml" />
+        <option value="$PROJECT_DIR$/TestCLI/pom.xml" />
+        <option value="$PROJECT_DIR$/generated/Test2Cli/pom.xml" />
+        <option value="$PROJECT_DIR$/generated/TestREST/pom.xml" />
+        <option value="$PROJECT_DIR$/generated/Fana/ProjetIrai/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/Begin/pom.xml" />
+        <option value="$PROJECT_DIR$/TestCLI/pom.xml" />
         <option value="$PROJECT_DIR$/TestDADA/pom.xml" />
         <option value="$PROJECT_DIR$/TestProject/pom.xml" />
         <option value="$PROJECT_DIR$/TestREST/pom.xml" />
+        <option value="$PROJECT_DIR$/generated/Test2CLI/pom.xml" />
+        <option value="$PROJECT_DIR$/generated/Test2Cli/pom.xml" />
       </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="corretto-17" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="jpab" />
   </component>
 </project>

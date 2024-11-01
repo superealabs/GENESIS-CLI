@@ -1,4 +1,4 @@
-package genesis.model;
+package genesis.connexion.model;
 
 import lombok.Getter;
 import lombok.Setter;

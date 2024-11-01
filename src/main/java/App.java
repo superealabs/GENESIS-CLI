@@ -1,11 +1,14 @@
-import java.util.Scanner;
-
-import handler.*;
-import genesis.config.*;
-import genesis.connexion.Database;
-import genesis.connexion.Credentials;
-import genesis.config.langage.Language;
+import genesis.config.Application;
 import genesis.config.langage.Framework;
+import genesis.config.langage.Language;
+import genesis.connexion.Credentials;
+import genesis.connexion.Database;
+import handler.ApplicationHandler;
+import handler.DatabaseHandler;
+import handler.FrameworkHandler;
+import handler.LanguageHandler;
+
+import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) throws Throwable {
@@ -196,7 +199,7 @@ public class App {
             FrameworkHandler frameworkHandler = new FrameworkHandler();
             LanguageHandler languageHandler = new LanguageHandler();
             DatabaseHandler databaseHandler = new DatabaseHandler();
-            ProjectSetup projectSetup = new ProjectSetup();
+            //ProjectSetup projectSetup = new ProjectSetup();
 
             /*---Generate codes for existing or new projects---*/
             Application application = applicationHandler.chooseApplication(scanner);
@@ -209,10 +212,10 @@ public class App {
             Language language = languageHandler.chooseLanguage(scanner);
 
             /*---Choosing the framework---*/
-            Framework framework = frameworkHandler.chooseFramework(scanner,language);
+            Framework framework = frameworkHandler.chooseFramework(scanner, language);
 
             /*---Project configuration---*/
-            String projectName = projectSetup.setupProject(scanner, framework);
+            //String projectName = projectSetup.setupProject(scanner, framework);
 
             // TO DO :
             /*

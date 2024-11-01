@@ -3,9 +3,9 @@ package genesis.connexion.providers;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class OracleDatabase extends Database {
     @Override
@@ -19,39 +19,24 @@ public class OracleDatabase extends Database {
     }
 
     @Override
-    protected String getJdbcUrl(Credentials credentials) {
-        return String.format("jdbc:oracle:%s:@//%s:%d/%s",
-                getDriverType(),
-                credentials.getHost(),
-                Integer.parseInt(getPort()),
-                credentials.getDatabaseName());
+    public Connection getConnection(Credentials credentials, String url) throws ClassNotFoundException, SQLException {
+        setCredentials(credentials);
+        Class.forName(getDriver());
+        Connection connection = DriverManager.getConnection(url, credentials.getUser(), credentials.getPwd());
+        connection.setAutoCommit(false);
+        return connection;
     }
 
     @Override
-    public List<String> getAllTableNames(Connection connection) throws SQLException {
-        List<String> tableNames = new ArrayList<>();
-        DatabaseMetaData metaData = connection.getMetaData();
-
-        try (ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"})) {
-            while (tables.next()) {
-                String tableName = tables.getString("TABLE_NAME");
-                String tableSchema = tables.getString("TABLE_SCHEM");
-
-                boolean isSystemTable = false;
-                for (String schema : super.getExcludeSchemas()) {
-                    if (schema.equalsIgnoreCase(tableSchema)) {
-                        isSystemTable = true;
-                        break;
-                    }
-                }
-
-                if (!isSystemTable) {
-                    tableNames.add(tableName);
-                }
-            }
-        }
-
-        return tableNames;
+    protected String getJdbcUrl(Credentials credentials) {
+        String port;
+        if (credentials.getPort() != null)
+            port = credentials.getPort();
+        else port = getPort();
+        return String.format("jdbc:oracle:%s:@//%s:%s/%s",
+                getDriverType(),
+                credentials.getHost(),
+                port,
+                credentials.getServiceName());
     }
-
 }

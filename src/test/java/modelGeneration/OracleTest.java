@@ -1,19 +1,13 @@
 package modelGeneration;
 
 import genesis.config.Constantes;
-import genesis.config.langage.Framework;
-import genesis.config.langage.Language;
-import genesis.config.langage.generator.framework.GenesisGenerator;
-import genesis.config.langage.generator.framework.MVCGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.connexion.providers.OracleDatabase;
-import genesis.model.TableMetadata;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.*;
 
 public class OracleTest {
@@ -22,79 +16,83 @@ public class OracleTest {
     public OracleTest() {
         this.credentials = new Credentials()
                 .setHost("localhost")
-                .setDatabaseName("ORCLCDB")
-                .setUser("c##test_db")
+                .setPort("1521")
+                .setServiceName("ORCLCDB")
+                .setUser("C##TEST_DB")
+                .setDatabaseName("C##TEST_DB")
+                .setSchemaName("C##TEST_DB")
                 .setPwd("test_db")
                 .setTrustCertificate(true)
                 .setUseSSL(true);
     }
-/*
-    @Test
-    void test() {
-        System.out.println("Hey !");
-    }
 
-    @Test
-    void OraclexJavaSpringMVC() throws IOException {
-        Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
-        Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-        Framework[] frameworks = FileUtils.fromYaml(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_YAML));
-
-        OracleDatabase database = (OracleDatabase) databases[3];            // Oracle
-        Language language = languages[0];                                   // Java
-        Framework framework = frameworks[0];                                // Spring MVC
-
-        try (Connection connection = database.getConnection(credentials)) {
-            TableMetadata tableMetadata = new TableMetadata();
-            tableMetadata.setTableName("EMPLOYEE_T");
-            tableMetadata.initialize(connection, credentials, database, language);
-
-            GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
-            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
-
-            System.out.println(database);
-            System.out.println(language);
-            System.out.println(framework);
-
-            System.out.println("\n====== GENERATED ======\n" + model);
-            System.out.println("\n====== GENERATED ======\n" + dao);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    /*
+        @Test
+        void test() {
+            System.out.println("Hey !");
         }
-    }
 
+        @Test
+        void OraclexJavaSpringMVC() throws IOException {
+            Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
+            Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
+            Framework[] frameworks = FileUtils.fromYaml(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_YAML));
 
-    @Test
-    void OraclexNET() throws IOException {
-        Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
-        Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-        Framework[] frameworks = FileUtils.fromYaml(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_YAML));
+            OracleDatabase database = (OracleDatabase) databases[3];            // Oracle
+            Language language = languages[0];                                   // Java
+            Framework framework = frameworks[0];                                // Spring MVC
 
-        OracleDatabase database = (OracleDatabase) databases[3];    // Oracle
-        Language language = languages[1];                                   // C#
-        Framework framework = frameworks[1];                                // .NET
+            try (Connection connection = database.getConnection(credentials)) {
+                TableMetadata tableMetadata = new TableMetadata();
+                tableMetadata.setTableName("EMPLOYEE_T");
+                tableMetadata.initialize(connection, credentials, database, language);
 
-        try (Connection connection = database.getConnection(credentials)) {
-            TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
-            TableMetadata tableMetadata = entities[1]; //Employe
+                GenesisGenerator mvcGenerator = new MVCGenerator();
+                String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
+                String dao = mvcGenerator.generateDao(framework, language, tableMetadata, "TestProject");
 
-            GenesisGenerator mvcGenerator = new MVCGenerator();
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
-            String dao = mvcGenerator.generateDao(framework, language, entities, "TestProject");
+                System.out.println(database);
+                System.out.println(language);
+                System.out.println(framework);
 
-            System.out.println(database);
-            System.out.println(language);
-            System.out.println(framework);
-
-            System.out.println("\n====== GENERATED ======\n" + model);
-            System.out.println("\n====== GENERATED ======\n" + dao);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+                System.out.println("\n====== GENERATED ======\n" + model);
+                System.out.println("\n====== GENERATED ======\n" + dao);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
-    }
 
 
+        @Test
+        void OraclexNET() throws IOException {
+            Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
+            Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
+            Framework[] frameworks = FileUtils.fromYaml(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_YAML));
+
+            OracleDatabase database = (OracleDatabase) databases[3];    // Oracle
+            Language language = languages[1];                                   // C#
+            Framework framework = frameworks[1];                                // .NET
+
+            try (Connection connection = database.getConnection(credentials)) {
+                TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
+                TableMetadata tableMetadata = entities[1]; //Employe
+
+                GenesisGenerator mvcGenerator = new MVCGenerator();
+                String model = mvcGenerator.generateModel(framework, language, tableMetadata, "TestProject");
+                String dao = mvcGenerator.generateDao(framework, language, entities, "TestProject");
+
+                System.out.println(database);
+                System.out.println(language);
+                System.out.println(framework);
+
+                System.out.println("\n====== GENERATED ======\n" + model);
+                System.out.println("\n====== GENERATED ======\n" + dao);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    */
     @Test
     void metaDataTEST() throws FileNotFoundException {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
@@ -153,5 +151,5 @@ public class OracleTest {
             throw new RuntimeException(e);
         }
     }
-*/
+
 }

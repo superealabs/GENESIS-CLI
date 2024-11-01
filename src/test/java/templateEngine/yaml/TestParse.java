@@ -1,9 +1,6 @@
 package templateEngine.yaml;
 
-import genesis.config.ApplicationType;
-import genesis.config.Constantes;
 import genesis.config.langage.Framework;
-import genesis.connexion.Database;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 
@@ -22,7 +19,7 @@ public class TestParse {
 
     @Test
     void frameworkYAML() throws IOException {
-        Framework[] object = FileUtils.fromYamlFile(Framework[].class, "/Users/nomena/STAGE/GENESIS/data_genesis/yaml/framework.yaml");
+        Framework[] object = FileUtils.fromYamlFile(Framework[].class, "/Users/nomena/STAGE/GENESIS/data_genesis/yaml/frameworks.yaml");
 
         System.out.println(Arrays.toString(object));
     }

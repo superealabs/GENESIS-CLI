@@ -3,26 +3,18 @@ package genesis.connexion.providers;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PostgreSQLDatabase extends Database {
-
-    @Override
-    public Connection getConnection(Credentials credentials) throws ClassNotFoundException, SQLException {
-        setCredentials(credentials);
-        Class.forName(getDriver());
-        String url = getJdbcUrl(credentials);
-        Connection connection = DriverManager.getConnection(url);
-        connection.setAutoCommit(false);
-        return connection;
-    }
-
     @Override
     protected String getJdbcUrl(Credentials credentials) {
         String port;
-        if (credentials.getPort()!=null)
+        if (credentials.getPort() != null)
             port = credentials.getPort();
         else port = getPort();
         return String.format("jdbc:postgresql://%s:%s/%s?user=%s&password=%s",

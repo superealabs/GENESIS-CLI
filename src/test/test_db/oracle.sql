@@ -1,7 +1,11 @@
 -- oracle.sql
 
-SELECT username FROM dba_users order by USERNAME;
-SELECT role FROM dba_roles order by role;
+SELECT username
+FROM dba_users
+order by USERNAME;
+SELECT role
+FROM dba_roles
+order by role;
 
 /*
 CREATE USER C##TEST_DB IDENTIFIED BY TEST_DB;

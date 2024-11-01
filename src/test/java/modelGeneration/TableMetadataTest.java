@@ -4,8 +4,8 @@ import genesis.config.Constantes;
 import genesis.config.langage.Language;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
-import genesis.model.ColumnMetadata;
-import genesis.model.TableMetadata;
+import genesis.connexion.model.ColumnMetadata;
+import genesis.connexion.model.TableMetadata;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
@@ -18,11 +18,11 @@ import java.util.List;
 
 public class TableMetadataTest {
     private final Connection connection;
+    Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
+    Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
     private Credentials credentials;
     private Database database;
     private Language language;
-    Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
-    Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
 
     public TableMetadataTest(Connection connection) throws FileNotFoundException {
         this.connection = connection;
