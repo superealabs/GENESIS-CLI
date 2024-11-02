@@ -4,13 +4,16 @@ import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
-import genesis.engine.TemplateEngine;
 import genesis.connexion.model.ColumnMetadata;
 import genesis.connexion.model.TableMetadata;
+import genesis.engine.TemplateEngine;
 import org.jetbrains.annotations.NotNull;
 import utils.FileUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FrameworkMetadataProvider {
     private static final TemplateEngine engine = new TemplateEngine();
@@ -56,8 +59,8 @@ public class FrameworkMetadataProvider {
         metadata.put("methods", framework.getModel().getModelGetterSetter());
         metadata.put("constructors", framework.getModel().getModelConstructors());
         metadata.put("classAnnotations", framework.getModel().getModelAnnotations());
-        metadata.put("namespaceEnd", language.getSyntax().get("namespaceEnd")==null ? "{{removeLine}}" : language.getSyntax().get("namespaceEnd"));
-        metadata.put("bracketEnd", language.getSyntax().get("bracketEnd")==null ? "{{removeLine}}" : language.getSyntax().get("namespaceEnd"));
+        metadata.put("namespaceEnd", language.getSyntax().get("namespaceEnd") == null ? "{{removeLine}}" : language.getSyntax().get("namespaceEnd"));
+        metadata.put("bracketEnd", language.getSyntax().get("bracketEnd") == null ? "{{removeLine}}" : language.getSyntax().get("namespaceEnd"));
 
         return metadata;
     }

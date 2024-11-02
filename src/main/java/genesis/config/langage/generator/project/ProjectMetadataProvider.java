@@ -49,12 +49,13 @@ public class ProjectMetadataProvider {
         dependencyFileMap.putAll(frameworkConfiguration);
         dependencyFileMap.put("projectDescription", projectDescription);
         dependencyFileMap.put("useCloud", framework.getUseCloud());
+        dependencyFileMap.put("useEurekaServer", framework.getUseEurekaServer());
 
         List<HashMap<String, String>> dependencies = getDependenciesHashMaps(framework);
         dependencyFileMap.put("dependencies", dependencies);
 
-        if (database != null) {
-            dependencyFileMap.put("useDB", framework.getUseDB());
+        if (database != null && framework.getUseDB()) {
+            dependencyFileMap.put("useDB", true);
 
             Framework.Dependency databaseDependency = database.getDependencies().get(String.valueOf(language.getId()));
 

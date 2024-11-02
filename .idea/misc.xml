@@ -15,6 +15,9 @@
         <option value="$PROJECT_DIR$/generated/TestREST/pom.xml" />
         <option value="$PROJECT_DIR$/generated/Fana/ProjetIrai/pom.xml" />
         <option value="$PROJECT_DIR$/generated/discovery/TestEurekaServer/pom.xml" />
+        <option value="$PROJECT_DIR$/generated/service/TestRest/pom.xml" />
+        <option value="$PROJECT_DIR$/generated/TestEureka/pom.xml" />
+        <option value="$PROJECT_DIR$/generated/TestRestApi/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
@@ -29,7 +32,7 @@
       </set>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="corretto-17" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="openjdk-21" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="ProjectType">

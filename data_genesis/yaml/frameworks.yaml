@@ -5,6 +5,7 @@
   useDB: true
   withGroupId: true
   useCloud: false
+  useEurekaServer: false
   additionalFiles:
     - fileType: "MainFile"
       fileName: "${majStart(projectName)}Application"
@@ -42,25 +43,43 @@
         }
       destinationPath: "${destinationFolder}/${majStart(projectName)}/src/test/java/${groupLinkPath}/${lowerCase(projectName)}/"
 
-    - fileType: "ApplicationProperties"
+    - fileType: "ApplicationYaml"
       fileName: "application"
-      extension: "properties"
+      extension: "yaml"
       content: |
-        spring.application.name=${toKebabCase(projectName)}
-        server.port=${projectPort}
-
+        spring:
+          application:
+            name: ${toKebabCase(projectName)}
+        {{#if useDB}}
+          datasource:
+            url: ${connectionString}
+            username: ${databaseUsername}
+            password: ${databasePassword}
+          jpa:
+            hibernate:
+              ddl-auto: ${hibernateDdlAuto}
+            properties:
+              hibernate.format_sql: true
+        {{/if}}
+        
+        server:
+          port: ${projectPort}
+        
         # Logs Configuration
-        logging.level.root=${loggingLevel}{{#if useDB}}
-        logging.level.org.hibernate.SQL=${loggingLevel}
-
-        # Datasource Configuration 
-        spring.datasource.url=${connectionString}
-        spring.datasource.username=${databaseUsername}
-        spring.datasource.password=${databasePassword}
-
-        # Hibernate Configuration 
-        spring.jpa.hibernate.ddl-auto=${hibernateDdlAuto}
-        spring.jpa.properties.hibernate.format_sql=true
+        logging:
+          level:
+            root: ${loggingLevel}
+            {{#if useDB}}org.hibernate.SQL: ${loggingLevel}{{/if}}
+        
+        {{#if useEurekaServer}}
+        eureka:
+          client:
+            service-url:
+              defaultZone: ${eurekaServerHttpProtocol}://${eurekaServerHost}:${eurekaServerPort}/eureka/
+          instance:
+            prefer-ip-address: true
+            ip-address: $[spring.cloud.client.ip-address]  # Dynamically resolve IP
+            non-secure-port: ${projectNonSecurePort}  # Specify the non-secure port explicitly
         {{/if}}
 
       destinationPath: "${destinationFolder}/${majStart(projectName)}/src/main/resources/"
@@ -91,6 +110,31 @@
         - "none"
         - "update"
       defaultOption: "none"
+
+  eurekaClientConfigurations:
+    - name: "Eureka Server Http Protocol"
+      variableName: "eurekaServerHttpProtocol"
+      options:
+        - "http"
+        - "https"
+      defaultOption: "http"
+    - name: "Eureka Server Host"
+      variableName: "eurekaServerHost"
+      options:
+        - "localhost"
+      defaultOption: "localhost"
+    - name: "Eureka Server Port"
+      variableName: "eurekaServerPort"
+      options:
+        - "8761"
+      defaultOption: "8761"
+    - name: "Project Non Secure Port For Eureka Server"
+      variableName: "projectNonSecurePort"
+      options:
+        - "8080"
+      defaultOption: "8080"
+
+
   dependencies:
     - groupId: "org.springframework.boot"
       artifactId: "spring-boot-starter-data-jpa"
@@ -318,7 +362,8 @@
   useDB: true
   withGroupId: false
   useCloud: false
-  additionalFiles: []
+  useEurekaServer: false
+  additionalFiles: [ ]
   configurations:
     - name: "Logging Level"
       variableName: "loggingLevel"
@@ -540,7 +585,7 @@
 
     controllerSavePath: "${destinationFolder}/${majStart(projectName)}/${majStart(projectName)}/Controllers"
     controllerPackage: "${majStart(projectName)}.Controllers"
-    controllerAdditionalFiles: []
+    controllerAdditionalFiles: [ ]
 
 
 - id: 3
@@ -549,6 +594,7 @@
   template: "Template"
   useDB: false
   useCloud: true
+  useEurekaServer: false
   withGroupId: true
   additionalFiles:
     - fileType: "MainFile"
@@ -596,7 +642,7 @@
         spring:
           application:
             name: ${toKebabCase(projectName)}
-          
+        
         eureka:
           client:
             register-with-eureka: false
@@ -663,7 +709,7 @@
     modelDaoConstructors: ""
     modelDaoSavePath: ""
     modelDaoPackage: ""
-    modelDaoAdditionalFiles: []
+    modelDaoAdditionalFiles: [ ]
 
   service:
     toGenerate: false
@@ -677,7 +723,7 @@
     serviceMethodContent: ""
     serviceSavePath: ""
     servicePackage: ""
-    serviceAdditionalFiles: []
+    serviceAdditionalFiles: [ ]
 
   controller:
     toGenerate: false
@@ -690,4 +736,4 @@
     controllerMethodContent: ""
     controllerSavePath: ""
     controllerPackage: ""
-    controllerAdditionalFiles: []
+    controllerAdditionalFiles: [ ]

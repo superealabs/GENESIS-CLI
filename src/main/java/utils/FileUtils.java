@@ -147,16 +147,19 @@ public class FileUtils {
     }
 
 
-    public static void copyFile(String sourceFilePath, String destinationFilePath) throws IOException {
-        Path destinationPath = Paths.get(destinationFilePath);
+    public static void copyFile(String sourceFilePath, String destinationFilePath, String fileName) throws IOException {
+        Path destinationPath = Paths.get(destinationFilePath + fileName);
 
         try (InputStream inputStream = new FileInputStream(sourceFilePath)) {
             Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
-        }
-        catch (NoSuchFileException e) {
+        } catch (NoSuchFileException e) {
+            System.out.println("Warning : " + e.getMessage() + "\n" + "Generated the missing file ...\n");
             createFileStructure(destinationPath.toString());
-        }
-        catch (IOException e) {
+            try (InputStream inputStream = new FileInputStream(sourceFilePath)) {
+                Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+            System.out.println("Generated : " + destinationPath + "\n");
+        } catch (IOException e) {
             throw new IOException("Error when copying file: " + e.getMessage(), e);
         }
     }
@@ -176,7 +179,7 @@ public class FileUtils {
                     if (Files.isDirectory(path)) {
                         Files.createDirectories(destination);
                     } else {
-                        copyFile(path.toString(), destination.toString());
+                        copyFile(path.toString(), destination.toString(), "");
                     }
                 } catch (IOException e) {
                     e.getMessage();

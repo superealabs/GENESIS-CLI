@@ -16,9 +16,11 @@ public class Framework {
     private String template;
     private Boolean useDB;
     private Boolean useCloud;
+    private Boolean useEurekaServer;
     private Boolean withGroupId;
     private List<FilesEdit> additionalFiles;
     private List<ConfigurationMetadata> configurations;
+    private List<ConfigurationMetadata> eurekaClientConfigurations;
     private List<Dependency> dependencies;
     private Model model;
     private ModelDao modelDao;

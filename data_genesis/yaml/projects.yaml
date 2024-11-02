@@ -52,6 +52,11 @@
         {{tab}}{{tab}}{{tab}}<artifactId>${DBartifactId}</artifactId>
         {{tab}}{{tab}}{{tab}}<version>${DBversion}</version>
         {{tab}}{{tab}}</dependency>{{/if}}
+        {{tab}}{{tab}}{{#if useEurekaServer}}        
+        {{tab}}{{tab}}<dependency>
+        {{tab}}{{tab}}{{tab}}<groupId>org.springframework.cloud</groupId>
+        {{tab}}{{tab}}{{tab}}<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        {{tab}}{{tab}}</dependency>{{/if}}
         {{tab}}</dependencies>
         {{#if useCloud}}
         {{tab}}<dependencyManagement>
@@ -65,7 +70,7 @@
         {{tab}}{{tab}}{{tab}}</dependency>
         {{tab}}{{tab}}</dependencies>
         {{tab}}</dependencyManagement>{{/if}}        
-              
+        
         {{tab}}<build>
         {{tab}}{{tab}}<plugins>
         {{tab}}{{tab}}{{tab}}<plugin>

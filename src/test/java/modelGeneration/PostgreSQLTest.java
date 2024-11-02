@@ -7,8 +7,8 @@ import genesis.config.langage.generator.framework.APIGenerator;
 import genesis.config.langage.generator.framework.GenesisGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
-import genesis.connexion.providers.PostgreSQLDatabase;
 import genesis.connexion.model.TableMetadata;
+import genesis.connexion.providers.PostgreSQLDatabase;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 

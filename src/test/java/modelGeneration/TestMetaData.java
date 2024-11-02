@@ -3,8 +3,8 @@ package modelGeneration;
 import genesis.config.Constantes;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
-import genesis.connexion.providers.PostgreSQLDatabase;
 import genesis.connexion.model.TableMetadata;
+import genesis.connexion.providers.PostgreSQLDatabase;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 

@@ -32,7 +32,7 @@ public class ProjectGeneratorHandler {
             Framework framework = ProjectGenerator.frameworks.get(frameworkId);
 
             int databaseId = -1;
-            Database database;
+            Database database = null;
             Connection connection = null;
             if (framework.getUseDB()) {
                 databaseId = getDatabaseId(scanner);
@@ -41,6 +41,8 @@ public class ProjectGeneratorHandler {
             }
 
             int projectId = getProjectId(scanner, framework);
+            var project = ProjectGenerator.projects.get(projectId);
+
             String destinationFolder = FolderSelectorCombo.selectDestinationFolder(scanner);
 
             String projectName = getNonEmptyInput(scanner, "Enter the project name");
@@ -55,11 +57,17 @@ public class ProjectGeneratorHandler {
             HashMap<String, String> frameworkConfiguration = configureFramework(scanner, framework);
             HashMap<String, String> languageConfiguration = configureLangage(scanner, language);
 
+            String input = getNonEmptyInput(scanner, "Use a Eureka Server? (y/n)");
+            boolean useEurekaServer = input.equalsIgnoreCase("y");
+
+            if (useEurekaServer)
+                frameworkConfiguration.putAll(configureFrameworkWithEureka(scanner, framework));
+
             projectGenerator.generateProject(
-                    databaseId,
-                    languageId,
-                    frameworkId,
-                    projectId,
+                    database,
+                    language,
+                    framework,
+                    project,
                     credentials,
                     destinationFolder,
                     projectName,
@@ -70,7 +78,7 @@ public class ProjectGeneratorHandler {
                     frameworkConfiguration,
                     connection
             );
-            System.out.println("Project generated successfully! 👨🏽‍💻\nSee you on the next project ... 👋🏼\n");
+            System.out.println("\nProject generated successfully! 👨🏽‍💻\n\nSee you on the next project 👋🏼\n");
 
         } catch (Exception e) {
             System.out.println("\nAn error occurred during project generation:");
@@ -311,10 +319,10 @@ public class ProjectGeneratorHandler {
                 int index = Integer.parseInt(scanner.nextLine()) - 1;
                 if (index >= 0 && index < keys.size()) {
                     int selectedId = keys.get(index);
-                    System.out.println("Using: " + (index+1) + "- " + options.get(selectedId) + "\n");
+                    System.out.println("Using: " + (index + 1) + "- " + options.get(selectedId) + "\n");
                     return selectedId;
                 } else {
-                    System.out.println("Error: Invalid index ("+options+").Please select a valid option." + "\n");
+                    System.out.println("Error: Invalid index (" + options + ").Please select a valid option." + "\n");
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Error: Invalid input. Please enter a valid number.\n");
@@ -324,6 +332,13 @@ public class ProjectGeneratorHandler {
 
     private HashMap<String, String> configureFramework(Scanner scanner, Framework framework) {
         return configureOptions(scanner, framework.getConfigurations());
+    }
+
+    private HashMap<String, String> configureFrameworkWithEureka(Scanner scanner, Framework framework) {
+        HashMap<String, String> config = configureOptions(scanner, framework.getEurekaClientConfigurations());
+        framework.setUseCloud(true);
+        framework.setUseEurekaServer(true);
+        return config;
     }
 
     private HashMap<String, String> configureLangage(Scanner scanner, Language language) {
@@ -349,8 +364,9 @@ public class ProjectGeneratorHandler {
         }
 
         for (int i = 0; i < options.size(); i++) {
-            System.out.println(i+1 + ") " + options.get(i));
+            System.out.println((i + 1) + ") " + options.get(i));
         }
+        System.out.println((options.size() + 1) + ") Other");
 
         while (true) {
             try {
@@ -358,18 +374,22 @@ public class ProjectGeneratorHandler {
                 String input = scanner.nextLine();
 
                 if (input.isEmpty()) {
-                    System.out.println("Using default option: "+config.getDefaultOption() + "\n");
+                    System.out.println("Using default option: " + config.getDefaultOption() + "\n");
                     return config.getDefaultOption();
                 }
 
-                int optionId = Integer.parseInt(input)-1;
-
+                int optionId = Integer.parseInt(input) - 1;
 
                 if (optionId >= 0 && optionId < options.size()) {
-                    System.out.println("Using option: " + optionId+"- "+options.get(optionId)+"\n");
+                    System.out.println("Using option: " + optionId + " - " + options.get(optionId) + "\n");
                     return options.get(optionId);
+                } else if (optionId == options.size()) {
+                    System.out.print("Enter your custom option: ");
+                    String customOption = scanner.nextLine();
+                    System.out.println("Using custom option: " + customOption + "\n");
+                    return customOption;
                 } else {
-                    System.out.println("Error: Invalid option ("+options+").Please select a valid option." + "\n");
+                    System.out.println("Error: Invalid option. Please select a valid option.\n");
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Error: Invalid input. Please enter a valid number.\n");

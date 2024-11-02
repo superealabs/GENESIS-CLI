@@ -136,6 +136,76 @@ public class TemplateModelRepo {
         return metadata;
     }
 
+    /*
+    private static HashMap<String, Object> getHashMapIntermediaireEachEach() {
+        HashMap<String, Object> metadata = new HashMap<>();
+        metadata.put("tableName", "person");
+        metadata.put("className", "Person");
+        metadata.put("projectName", "TestProject");
+
+
+        List<HashMap<String, List<Map<String, Object>>>> fields =
+                List.of(new HashMap<>() {{
+                    put("Person",
+                            List.of(
+                                    new HashMap<>() {{
+                                        put("type", "Long");
+                                        put("name", "id");
+                                        put("isPrimaryKey", true);
+                                        put("withGetters", true);
+                                        put("withSetters", true);
+                                        put("columnName", "id");
+                                    }},
+                                    new HashMap<>() {{
+                                        put("type", "String");
+                                        put("name", "firstName");
+                                        put("withGetters", true);
+                                        put("withSetters", true);
+                                        put("columnName", "first_name");
+                                    }},
+                                    new HashMap<>() {{
+                                        put("type", "String");
+                                        put("name", "lastName");
+                                        put("withGetters", true);
+                                        put("withSetters", true);
+                                        put("columnName", "last_name");
+                                    }},
+                                    new HashMap<>() {{
+                                        put("type", "Integer");
+                                        put("name", "age");
+                                        put("withGetters", true);
+                                        put("withSetters", true);
+                                        put("columnName", "age");
+                                    }},
+                                    new HashMap<>() {{
+                                        put("type", "java.time.LocalDate");
+                                        put("name", "dateNaissance");
+                                        put("withGetters", true);
+                                        put("withSetters", true);
+                                        put("columnName", "date_naissance");
+                                    }},
+                                    new HashMap<>() {{
+                                        put("type", "com.example.Adresse");
+                                        put("name", "adresse");
+                                        put("isForeignKey", true);
+                                        put("withGetters", true);
+                                        put("withSetters", true);
+                                        put("columnName", "adresse_id");
+                                    }}
+                            )
+                    );
+                }});
+
+        metadata.put("fields", fields);
+
+        // Toggle to add or remove the additional method
+        metadata.put("hasAdditionalMethod", true);
+        metadata.put("mess", "This is an additional method");
+
+        return metadata;
+    }
+     */
+
     /*---CONTROLLER---*/
     private static HashMap<String, Object> getHashMapController() {
         HashMap<String, Object> metadata = new HashMap<>();

@@ -51,7 +51,7 @@ public class ProjectGeneratorCLI {
                 .setHost("localhost")
                 .setPort("5432")
                 .setSchemaName("public")
-                .setDatabaseName("flm_dev")
+                .setDatabaseName("test_db")
                 .setUser("nomena")
                 .setPwd("root")
                 .setTrustCertificate(true)
@@ -65,6 +65,12 @@ public class ProjectGeneratorCLI {
             int frameworkId = Constantes.Spring_REST_API_ID;
             int projectId = Constantes.Maven_ID;
 
+            var database = ProjectGenerator.databases.get(databaseId);
+            var language = ProjectGenerator.languages.get(languageId);
+            var framework = ProjectGenerator.frameworks.get(frameworkId);
+            var project = ProjectGenerator.projects.get(projectId);
+
+/*
             String projectName = "ProjetIrai";
             String groupLink = "com.flm.irai";
             String projectPort = "8080";
@@ -72,9 +78,18 @@ public class ProjectGeneratorCLI {
             String hibernateDdlAuto = "none";
             String projectDescription = "Projet irai - Backend - Spring boot";
             String frameworkVersion = "3.3.5";
-            String languageVersion = "17";
-
+            String languageVersion = "21";
             String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated/Fana";
+*/
+            String projectName = "TestRest";
+            String groupLink = "com.labs";
+            String projectPort = "8000";
+            String logLevel = "INFO";
+            String hibernateDdlAuto = "none";
+            String projectDescription = "Test Project";
+            String frameworkVersion = "3.3.5";
+            String languageVersion = "21";
+            String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated/service";
 
             ProjectGenerator projectGenerator = new ProjectGenerator();
 
@@ -83,14 +98,23 @@ public class ProjectGeneratorCLI {
             frameworkConfiguration.put("loggingLevel", logLevel);
             frameworkConfiguration.put("frameworkVersion", frameworkVersion);
 
+            //===== USE EUREKA SERVER =======//
+            framework.setUseCloud(true);
+            framework.setUseEurekaServer(true);
+            frameworkConfiguration.put("eurekaServerHttpProtocol", "http");
+            frameworkConfiguration.put("eurekaServerHost", "localhost");
+            frameworkConfiguration.put("eurekaServerPort", "8761");
+            frameworkConfiguration.put("projectNonSecurePort", projectPort);
+            //==============================//
+
             HashMap<String, String> languageConfiguration = new HashMap<>();
             languageConfiguration.put("languageVersion", languageVersion);
 
             projectGenerator.generateProject(
-                    databaseId,
-                    languageId,
-                    frameworkId,
-                    projectId,
+                    database,
+                    language,
+                    framework,
+                    project,
                     credentials,
                     destinationFolder,
                     projectName,
@@ -122,6 +146,12 @@ public class ProjectGeneratorCLI {
             int languageId = Constantes.CSharp_ID;
             int frameworkId = Constantes.NET_ID;
             int projectId = Constantes.ASP_ID;
+
+            var database = ProjectGenerator.databases.get(databaseId);
+            var language = ProjectGenerator.languages.get(languageId);
+            var framework = ProjectGenerator.frameworks.get(frameworkId);
+            var project = ProjectGenerator.projects.get(projectId);
+
             String projectName = "TestRestNetFlm";
             String groupLink = "";
             String projectPort = "9001";
@@ -141,10 +171,10 @@ public class ProjectGeneratorCLI {
             frameworkConfiguration.put("languageVersion", languageVersion);
 
             projectGenerator.generateProject(
-                    databaseId,
-                    languageId,
-                    frameworkId,
-                    projectId,
+                    database,
+                    language,
+                    framework,
+                    project,
                     credentials,
                     destinationFolder,
                     projectName,
@@ -169,13 +199,17 @@ public class ProjectGeneratorCLI {
             int frameworkId = Constantes.Spring_Eureka_Server_ID;
             int projectId = Constantes.Maven_ID;
 
+            var language = ProjectGenerator.languages.get(languageId);
+            var framework = ProjectGenerator.frameworks.get(frameworkId);
+            var project = ProjectGenerator.projects.get(projectId);
+
             String projectName = "TestEurekaServer";
             String groupLink = "labs.test";
             String projectPort = "8761";
             String logLevel = "INFO";
             String projectDescription = "Eureka Server Project For Testing Genesis API Generator";
             String frameworkVersion = "3.3.5";
-            String languageVersion = "17";
+            String languageVersion = "21";
 
             String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated/discovery";
 
@@ -190,9 +224,9 @@ public class ProjectGeneratorCLI {
 
             projectGenerator.generateProject(
                     null,
-                    languageId,
-                    frameworkId,
-                    projectId,
+                    language,
+                    framework,
+                    project,
                     null,
                     destinationFolder,
                     projectName,
@@ -206,4 +240,5 @@ public class ProjectGeneratorCLI {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }}
+    }
+}
