@@ -24,17 +24,20 @@ public class ProjectMetadataProvider {
         return metadata;
     }
 
-    static HashMap<String, Object> getConfigFileHashMap(String projectPort, Database database, Credentials credentials, Language language, HashMap<String, String> frameworkOptions) throws Exception {
+    static HashMap<String, Object> getConfigFileHashMap(String projectPort, Database database, Credentials credentials, Language language, Framework framework, HashMap<String, String> frameworkOptions) throws Exception {
         HashMap<String, Object> configFile = new HashMap<>();
-        String databaseUrl = database.getConnectionString().get(language.getId());
-
-        Map<String, Object> databaseMetadata = database.getDatabaseMetadataHashMap(credentials);
-        databaseUrl = engine.render(databaseUrl, databaseMetadata);
-
         configFile.put("projectPort", projectPort);
-        configFile.put("databaseUrl", databaseUrl);
-        configFile.put("databaseUsername", database.getCredentials().getUser());
-        configFile.put("databasePassword", database.getCredentials().getPwd());
+
+        if (framework.getUseDB()) {
+            String databaseUrl = database.getConnectionString().get(language.getId());
+
+            Map<String, Object> databaseMetadata = database.getDatabaseMetadataHashMap(credentials);
+            databaseUrl = engine.render(databaseUrl, databaseMetadata);
+
+            configFile.put("databaseUrl", databaseUrl);
+            configFile.put("databaseUsername", database.getCredentials().getUser());
+            configFile.put("databasePassword", database.getCredentials().getPwd());
+        }
         configFile.putAll(frameworkOptions);
 
         return configFile;
@@ -45,6 +48,7 @@ public class ProjectMetadataProvider {
         dependencyFileMap.putAll(langageConfiguration);
         dependencyFileMap.putAll(frameworkConfiguration);
         dependencyFileMap.put("projectDescription", projectDescription);
+        dependencyFileMap.put("useCloud", framework.getUseCloud());
 
         List<HashMap<String, String>> dependencies = getDependenciesHashMaps(framework);
         dependencyFileMap.put("dependencies", dependencies);
@@ -76,16 +80,17 @@ public class ProjectMetadataProvider {
             dependencyMap.put("groupId", dependency.getGroupId());
             dependencyMap.put("artifactId", dependency.getArtifactId());
             dependencyMap.put("version", dependency.getVersion());
+            dependencyMap.put("scope", dependency.getScope());
             dependencies.add(dependencyMap);
         }
 
         return dependencies;
     }
 
-    static HashMap<String, Object> getProjectFilesEditsHashMap(String destinationFolder, String projectName, String groupLink, String projectPort, @NotNull Database database, @NotNull Credentials credentials, @NotNull Language language, String projectDescription, HashMap<String, String> langageConfiguration, Framework framework, HashMap<String, String> frameworkOptions) throws Exception {
+    static HashMap<String, Object> getProjectFilesEditsHashMap(String destinationFolder, String projectName, String groupLink, String projectPort, Database database, Credentials credentials, @NotNull Language language, String projectDescription, HashMap<String, String> langageConfiguration, Framework framework, HashMap<String, String> frameworkOptions) throws Exception {
         HashMap<String, Object> combinedMap = new HashMap<>();
 
-        combinedMap.putAll(getConfigFileHashMap(projectPort, database, credentials, language, frameworkOptions));
+        combinedMap.putAll(getConfigFileHashMap(projectPort, database, credentials, language, framework, frameworkOptions));
         combinedMap.putAll(getDependencyFileHashMap(projectDescription, database, language, framework, langageConfiguration, frameworkOptions));
         combinedMap.putAll(getInitialHashMap(destinationFolder, projectName, groupLink));
 

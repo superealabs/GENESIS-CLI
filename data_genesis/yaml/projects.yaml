@@ -1,67 +1,9 @@
 - id: 1
   name: "Maven"
-  frameworkId: 1
+  frameworkIds:
+    - 1
+    - 3
   projectFilesEdits:
-    - fileType: "MainFile"
-      fileName: "${majStart(projectName)}Application"
-      extension: "java"
-      content: |
-        package ${groupLink}.${lowerCase(projectName)};
-        
-        import org.springframework.boot.SpringApplication;
-        import org.springframework.boot.autoconfigure.SpringBootApplication;
-        
-        ${classSpecificAnnotations}
-        @SpringBootApplication
-        public class ${majStart(projectName)}Application {
-        {{tab}}public static void main(String[] args) {
-        {{tab}}{{tab}}SpringApplication.run(${majStart(projectName)}Application.class, args);
-        {{tab}}}
-        }
-      destinationPath: "${destinationFolder}/${majStart(projectName)}/src/main/java/${groupLinkPath}/${lowerCase(projectName)}"
-
-    - fileType: "TestFile"
-      fileName: "${majStart(projectName)}ApplicationTests"
-      extension: "java"
-      content: |
-        package ${groupLink}.${lowerCase(projectName)};
-        
-        import org.junit.jupiter.api.Test;
-        import org.springframework.boot.test.context.SpringBootTest;
-        
-        @SpringBootTest
-        class ${majStart(projectName)}ApplicationTests {
-        
-        {{tab}}@Test
-        {{tab}}void contextLoads() {
-        {{tab}}}
-        
-        }
-      destinationPath: "${destinationFolder}/${majStart(projectName)}/src/test/java/${groupLinkPath}/${lowerCase(projectName)}/"
-
-    - fileType: "ApplicationProperties"
-      fileName: "application"
-      extension: "properties"
-      content: |
-        spring.application.name=${lowerCase(projectName)}
-        server.port=${projectPort}
-        
-        # Logs Configuration
-        logging.level.root=${loggingLevel}{{#if useDB}}
-        logging.level.org.hibernate.SQL=${loggingLevel}
-        
-        # Datasource Configuration 
-        spring.datasource.url=${connectionString}
-        spring.datasource.username=${databaseUsername}
-        spring.datasource.password=${databasePassword}
-        
-        # Hibernate Configuration 
-        spring.jpa.hibernate.ddl-auto=${hibernateDdlAuto}
-        spring.jpa.properties.hibernate.format_sql=true
-        {{/if}}
-
-      destinationPath: "${destinationFolder}/${majStart(projectName)}/src/main/resources/"
-
     - fileType: "Xml"
       fileName: "pom"
       extension: "xml"
@@ -96,12 +38,14 @@
         {{tab}}</scm>
         {{tab}}<properties>
         {{tab}}{{tab}}<java.version>${languageVersion}</java.version>
+        {{tab}}{{tab}}{{#if useCloud}}<spring-cloud.version>2023.0.3</spring-cloud.version>{{/if}}
         {{tab}}</properties>
         {{tab}}<dependencies>
         {{tab}}{{tab}}{{#each dependencies}}<dependency>
         {{tab}}{{tab}}{{tab}}<groupId>${this.groupId}</groupId>
         {{tab}}{{tab}}{{tab}}<artifactId>${this.artifactId}</artifactId>
         {{tab}}{{tab}}{{tab}}<version>${this.version}</version>
+        {{tab}}{{tab}}{{tab}}<scope>${this.scope}</scope>
         {{tab}}{{tab}}</dependency>{{#if !@last}}{{newline}}{{tab}}{{tab}}{{/if}}{{/each}}
         {{tab}}{{tab}}{{#if useDB}}<dependency>
         {{tab}}{{tab}}{{tab}}<groupId>${DBgroupId}</groupId>
@@ -109,20 +53,31 @@
         {{tab}}{{tab}}{{tab}}<version>${DBversion}</version>
         {{tab}}{{tab}}</dependency>{{/if}}
         {{tab}}</dependencies>
+        {{#if useCloud}}
+        {{tab}}<dependencyManagement>
+        {{tab}}{{tab}}<dependencies>
+        {{tab}}{{tab}}{{tab}}<dependency>
+        {{tab}}{{tab}}{{tab}}{{tab}}<groupId>org.springframework.cloud</groupId>
+        {{tab}}{{tab}}{{tab}}{{tab}}<artifactId>spring-cloud-dependencies</artifactId>
+        {{tab}}{{tab}}{{tab}}{{tab}}<version>$[spring-cloud.version]</version>
+        {{tab}}{{tab}}{{tab}}{{tab}}<type>pom</type>
+        {{tab}}{{tab}}{{tab}}{{tab}}<scope>import</scope>
+        {{tab}}{{tab}}{{tab}}</dependency>
+        {{tab}}{{tab}}</dependencies>
+        {{tab}}</dependencyManagement>{{/if}}        
+              
+        {{tab}}<build>
+        {{tab}}{{tab}}<plugins>
+        {{tab}}{{tab}}{{tab}}<plugin>
+        {{tab}}{{tab}}{{tab}}{{tab}}<groupId>org.springframework.boot</groupId>
+        {{tab}}{{tab}}{{tab}}{{tab}}<artifactId>spring-boot-maven-plugin</artifactId>
+        {{tab}}{{tab}}{{tab}}</plugin>
+        {{tab}}{{tab}}</plugins>
+        {{tab}}</build>
         </project>
 
       destinationPath: "${destinationFolder}/${majStart(projectName)}/"
   projectFiles:
-    - fileType: "GitIgnore"
-      fileName: ".gitignore"
-      sourcePath: "data_genesis/maven/"
-      destinationPath: "${destinationFolder}/${majStart(projectName)}/"
-
-    - fileType: "Helper"
-      fileName: "HELP.md"
-      sourcePath: "data_genesis/maven/"
-      destinationPath: "${destinationFolder}/${majStart(projectName)}/"
-
     - fileType: "Script"
       fileName: "mvnw"
       sourcePath: "data_genesis/maven/"
@@ -140,7 +95,8 @@
 
 - id: 2
   name: "ASP.NET Core Project"
-  frameworkId: 2
+  frameworkIds:
+    - 2
   projectFilesEdits:
     - fileType: "ProgramFile"
       fileName: "Program"

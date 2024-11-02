@@ -1,9 +1,70 @@
 - id: 1
   languageId: 1
-  name: "Spring Boot REST API"
+  name: "Spring Boot - REST API"
   template: "Template"
   useDB: true
   withGroupId: true
+  useCloud: false
+  additionalFiles:
+    - fileType: "MainFile"
+      fileName: "${majStart(projectName)}Application"
+      extension: "java"
+      content: |
+        package ${groupLink}.${lowerCase(projectName)};
+
+        import org.springframework.boot.SpringApplication;
+        import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+        @SpringBootApplication
+        public class ${majStart(projectName)}Application {
+        {{tab}}public static void main(String[] args) {
+        {{tab}}{{tab}}SpringApplication.run(${majStart(projectName)}Application.class, args);
+        {{tab}}}
+        }
+      destinationPath: "${destinationFolder}/${majStart(projectName)}/src/main/java/${groupLinkPath}/${lowerCase(projectName)}"
+
+    - fileType: "TestFile"
+      fileName: "${majStart(projectName)}ApplicationTests"
+      extension: "java"
+      content: |
+        package ${groupLink}.${lowerCase(projectName)};
+
+        import org.junit.jupiter.api.Test;
+        import org.springframework.boot.test.context.SpringBootTest;
+
+        @SpringBootTest
+        class ${majStart(projectName)}ApplicationTests {
+
+        {{tab}}@Test
+        {{tab}}void contextLoads() {
+        {{tab}}}
+
+        }
+      destinationPath: "${destinationFolder}/${majStart(projectName)}/src/test/java/${groupLinkPath}/${lowerCase(projectName)}/"
+
+    - fileType: "ApplicationProperties"
+      fileName: "application"
+      extension: "properties"
+      content: |
+        spring.application.name=${toKebabCase(projectName)}
+        server.port=${projectPort}
+
+        # Logs Configuration
+        logging.level.root=${loggingLevel}{{#if useDB}}
+        logging.level.org.hibernate.SQL=${loggingLevel}
+
+        # Datasource Configuration 
+        spring.datasource.url=${connectionString}
+        spring.datasource.username=${databaseUsername}
+        spring.datasource.password=${databasePassword}
+
+        # Hibernate Configuration 
+        spring.jpa.hibernate.ddl-auto=${hibernateDdlAuto}
+        spring.jpa.properties.hibernate.format_sql=true
+        {{/if}}
+
+      destinationPath: "${destinationFolder}/${majStart(projectName)}/src/main/resources/"
+
   configurations:
     - name: "Logging Level"
       variableName: "loggingLevel"
@@ -19,13 +80,9 @@
     - name: "Version"
       variableName: "frameworkVersion"
       options:
-        - "3.4.0-SNAPSHOT"
-        - "3.4.0-M3"
-        - "3.3.5-SNAPSHOT"
-        - "3.3.4"
-        - "3.2.11-SNAPSHOT"
-        - "3.2.10"
-      defaultOption: "3.3.4"
+        - "3.3.5"
+        - "3.2.11"
+      defaultOption: "3.3.5"
     - name: "HibernateDdlAuto"
       variableName: "hibernateDdlAuto"
       options:
@@ -38,16 +95,25 @@
     - groupId: "org.springframework.boot"
       artifactId: "spring-boot-starter-data-jpa"
       version: "{{removeLine}}"
+      scope: "{{removeLine}}"
+
     - groupId: "org.springframework.boot"
       artifactId: "spring-boot-starter-web"
       version: "{{removeLine}}"
+      scope: "{{removeLine}}"
+
     - groupId: "org.springframework.boot"
       artifactId: "spring-boot-starter-test"
       version: "{{removeLine}}"
+      scope: "{{removeLine}}"
+
     - groupId: "org.springdoc"
       artifactId: "springdoc-openapi-starter-webmvc-ui"
       version: "2.6.0"
+      scope: "{{removeLine}}"
+
   model:
+    toGenerate: true
     modelImports: |
       import jakarta.persistence.*;
     modelExtends: ""
@@ -95,6 +161,7 @@
     modelSavePath: "${destinationFolder}/${majStart(projectName)}/src/main/java/${groupLinkPath}/${lowerCase(projectName)}/models"
     modelPackage: "${groupLink}.${lowerCase(projectName)}.models;"
   modelDao:
+    toGenerate: true
     modelDaoImports: |
       import org.springframework.data.jpa.repository.JpaRepository;
       import ${groupLink}.${lowerCase(projectName)}.models.${majStart(className)};
@@ -110,6 +177,7 @@
     modelDaoPackage: "${groupLink}.${lowerCase(projectName)}.repositories;"
     modelDaoAdditionalFiles: [ ]
   service:
+    toGenerate: true
     serviceImports: |
       import org.springframework.data.domain.Sort;
       import ${groupLink}.${lowerCase(projectName)}.models.${majStart(className)};
@@ -166,6 +234,7 @@
     servicePackage: "${groupLink}.${lowerCase(projectName)}.services;"
     serviceAdditionalFiles: [ ]
   controller:
+    toGenerate: true
     controllerImports: |
       import org.springframework.http.HttpStatus;
       import org.springframework.http.ResponseEntity;
@@ -248,6 +317,8 @@
   template: "Template"
   useDB: true
   withGroupId: false
+  useCloud: false
+  additionalFiles: []
   configurations:
     - name: "Logging Level"
       variableName: "loggingLevel"
@@ -271,6 +342,7 @@
   dependencies: [ ]
 
   model:
+    toGenerate: true
     modelImports: |
       using System.ComponentModel.DataAnnotations;
       using System.ComponentModel.DataAnnotations.Schema;
@@ -297,6 +369,7 @@
     modelSavePath: "${destinationFolder}/${majStart(projectName)}/${majStart(projectName)}/Models/"
     modelPackage: "${majStart(projectName)}.Models"
   modelDao:
+    toGenerate: true
     modelDaoImports: |
       using Models;
       using Generic;
@@ -331,6 +404,7 @@
         destinationPath: "${destinationFolder}/${majStart(projectName)}/${majStart(projectName)}/Repositories/Implementation/"
 
   service:
+    toGenerate: true
     serviceImports: |
       using Models;
       using Generic;
@@ -400,6 +474,7 @@
         destinationPath: "${destinationFolder}/${majStart(projectName)}/${majStart(projectName)}/Services/Implementation/"
 
   controller:
+    toGenerate: true
     controllerImports: |
       using Microsoft.AspNetCore.Mvc;
       using Models;
@@ -465,4 +540,154 @@
 
     controllerSavePath: "${destinationFolder}/${majStart(projectName)}/${majStart(projectName)}/Controllers"
     controllerPackage: "${majStart(projectName)}.Controllers"
+    controllerAdditionalFiles: []
+
+
+- id: 3
+  languageId: 1
+  name: "Spring Boot - Eureka Server"
+  template: "Template"
+  useDB: false
+  useCloud: true
+  withGroupId: true
+  additionalFiles:
+    - fileType: "MainFile"
+      fileName: "${majStart(projectName)}Application"
+      extension: "java"
+      content: |
+        package ${groupLink}.${lowerCase(projectName)};
+
+        import org.springframework.boot.SpringApplication;
+        import org.springframework.boot.autoconfigure.SpringBootApplication;
+        import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
+
+        @EnableEurekaServer
+        @SpringBootApplication
+        public class ${majStart(projectName)}Application {
+        {{tab}}public static void main(String[] args) {
+        {{tab}}{{tab}}SpringApplication.run(${majStart(projectName)}Application.class, args);
+        {{tab}}}
+        }
+      destinationPath: "${destinationFolder}/${majStart(projectName)}/src/main/java/${groupLinkPath}/${lowerCase(projectName)}"
+
+    - fileType: "TestFile"
+      fileName: "${majStart(projectName)}ApplicationTests"
+      extension: "java"
+      content: |
+        package ${groupLink}.${lowerCase(projectName)};
+
+        import org.junit.jupiter.api.Test;
+        import org.springframework.boot.test.context.SpringBootTest;
+
+        @SpringBootTest
+        class ${majStart(projectName)}ApplicationTests {
+
+        {{tab}}@Test
+        {{tab}}void contextLoads() {
+        {{tab}}}
+
+        }
+      destinationPath: "${destinationFolder}/${majStart(projectName)}/src/test/java/${groupLinkPath}/${lowerCase(projectName)}/"
+
+    - fileType: "ApplicationYaml"
+      fileName: "application"
+      extension: "yaml"
+      content: |
+        spring:
+          application:
+            name: ${toKebabCase(projectName)}
+          
+        eureka:
+          client:
+            register-with-eureka: false
+            fetch-registry: false
+        
+        server:
+          port: ${projectPort}
+        
+        logging:
+          level:
+            eureka: ${loggingLevel}
+            root: ${loggingLevel}
+      destinationPath: "${destinationFolder}/${majStart(projectName)}/src/main/resources/"
+
+  configurations:
+    - name: "Logging Level"
+      variableName: "loggingLevel"
+      options:
+        - "TRACE"
+        - "DEBUG"
+        - "INFO"
+        - "WARN"
+        - "ERROR"
+        - "FATAL"
+        - "OFF"
+      defaultOption: "INFO"
+    - name: "Version"
+      variableName: "frameworkVersion"
+      options:
+        - "3.3.5"
+        - "3.2.11"
+      defaultOption: "3.3.5"
+
+  dependencies:
+    - groupId: "org.springframework.cloud"
+      artifactId: "spring-cloud-starter-netflix-eureka-server"
+      version: "{{removeLine}}"
+      scope: "{{removeLine}}"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-test"
+      version: "{{removeLine}}"
+      scope: "test"
+
+  model:
+    toGenerate: false
+    modelImports: ""
+    modelExtends: ""
+    modelAnnotations: ""
+    modelFieldContent: ""
+    modelGetterSetter: ""
+    modelConstructors: ""
+    modelSavePath: ""
+    modelPackage: ""
+
+  modelDao:
+    toGenerate: false
+    modelDaoImports: ""
+    modelDaoAnnotations: ""
+    modelDaoClassKeyword: ""
+    modelDaoExtends: ""
+    modelDaoName: ""
+    modelDaoFieldContent: ""
+    modelDaoMethodContent: ""
+    modelDaoConstructors: ""
+    modelDaoSavePath: ""
+    modelDaoPackage: ""
+    modelDaoAdditionalFiles: []
+
+  service:
+    toGenerate: false
+    serviceImports: ""
+    serviceAnnotations: ""
+    serviceClassKeyword: ""
+    serviceExtends: ""
+    serviceName: ""
+    serviceFieldContent: ""
+    serviceConstructors: ""
+    serviceMethodContent: ""
+    serviceSavePath: ""
+    servicePackage: ""
+    serviceAdditionalFiles: []
+
+  controller:
+    toGenerate: false
+    controllerImports: ""
+    controllerAnnotations: ""
+    controllerExtends: ""
+    controllerName: ""
+    controllerFieldContent: ""
+    controllerConstructors: ""
+    controllerMethodContent: ""
+    controllerSavePath: ""
+    controllerPackage: ""
     controllerAdditionalFiles: []

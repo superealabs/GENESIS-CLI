@@ -12,21 +12,10 @@ import java.util.List;
 public class Project {
     private int id;
     private String name;
-    private int frameworkId;
+    private List<Integer> frameworkIds;
     private List<ProjectFiles> projectFiles;
     private List<ProjectFolders> projectFolders;
-    private List<ProjectFilesEdit> projectFilesEdits;
-
-    @Getter
-    @Setter
-    @ToString
-    public static class ProjectFilesEdit {
-        private String fileType;
-        private String fileName;
-        private String extension;
-        private String content;
-        private String destinationPath;
-    }
+    private List<FilesEdit> projectFilesEdits;
 
     @Getter
     @Setter

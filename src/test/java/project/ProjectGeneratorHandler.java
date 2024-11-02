@@ -282,7 +282,7 @@ public class ProjectGeneratorHandler {
     private int getProjectId(Scanner scanner, Framework framework) {
         Map<Integer, Project> projects = ProjectGenerator.projects;
         Map<Integer, String> languageNames = projects.entrySet().stream()
-                .filter(entry -> entry.getValue().getFrameworkId() == framework.getId())
+                .filter(entry -> entry.getValue().getFrameworkIds().contains(framework.getId()))
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         entry -> entry.getValue().getName()

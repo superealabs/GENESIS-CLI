@@ -1,6 +1,7 @@
 package genesis.config.langage.generator.project;
 
 import genesis.config.Constantes;
+import genesis.config.langage.FilesEdit;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.config.langage.Project;
@@ -9,8 +10,8 @@ import genesis.config.langage.generator.framework.FrameworkMetadataProvider;
 import genesis.config.langage.generator.framework.GenesisGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
-import genesis.engine.TemplateEngine;
 import genesis.connexion.model.TableMetadata;
+import genesis.engine.TemplateEngine;
 import utils.FileUtils;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static genesis.config.langage.generator.framework.FrameworkMetadataProvider.getHashMapDaoGlobal;
 import static genesis.config.langage.generator.project.ProjectMetadataProvider.getInitialHashMap;
 import static genesis.config.langage.generator.project.ProjectMetadataProvider.getProjectFilesEditsHashMap;
 
@@ -58,6 +60,7 @@ public class ProjectGenerator {
         for (Project.ProjectFiles projectFile : projectFiles) {
             String sourceFilePath = projectFile.getSourcePath() + projectFile.getFileName();
             String destinationFilePath = projectFile.getDestinationPath() + projectFile.getFileName();
+
             FileUtils.copyFile(sourceFilePath, engine.simpleRender(destinationFilePath, initializeHashMap));
         }
     }
@@ -70,8 +73,8 @@ public class ProjectGenerator {
         }
     }
 
-    public static void renderProjectFilesEdits(List<Project.ProjectFilesEdit> projectFilesEdits, HashMap<String, Object> initializeHashMap) throws Exception {
-        for (Project.ProjectFilesEdit projectFile : projectFilesEdits) {
+    public static void renderFilesEdits(List<FilesEdit> filesEdits, HashMap<String, Object> initializeHashMap) throws Exception {
+        for (FilesEdit projectFile : filesEdits) {
 
             String destinationFilePath = projectFile.getDestinationPath();
             String fileName = projectFile.getFileName();
@@ -82,18 +85,28 @@ public class ProjectGenerator {
             content = engine.render(content, initializeHashMap);
             fileName = engine.render(fileName, initializeHashMap);
 
+            // ALT
+            content = engine.simpleRenderAlt(content, Map.of("spring-cloud.version", "${spring-cloud.version}"));
+
             FileUtils.createFile(destinationFilePath, fileName, extension, content);
         }
     }
 
     public void generateBackendComponents(GenesisGenerator genesisGenerator, Framework framework, Language language, TableMetadata tableMetadata, String destinationFolder, String projectName, String groupLink) throws Exception {
-        genesisGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
-        genesisGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
-        genesisGenerator.generateService(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
-        genesisGenerator.generateController(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+        if (framework.getModel().getToGenerate())
+            genesisGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+
+        if (framework.getModelDao().getToGenerate())
+            genesisGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+
+        if (framework.getService().getToGenerate())
+            genesisGenerator.generateService(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+
+        if (framework.getController().getToGenerate())
+            genesisGenerator.generateController(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
     }
 
-    public void generateProject(int databaseId,
+    public void generateProject(Integer databaseId,
                                 int languageId,
                                 int frameworkId,
                                 int projectId,
@@ -105,46 +118,54 @@ public class ProjectGenerator {
                                 String projectDescription,
                                 HashMap<String, String> langageConfiguration,
                                 HashMap<String, String> frameworkConfiguration,
-                                Connection connection) {
+                                Connection connection) throws Exception {
 
         Framework framework = frameworks.get(frameworkId);
-        Database database = databases.get(databaseId);
         Language language = languages.get(languageId);
         Project project = projects.get(projectId);
 
-        try (Connection connex = (connection != null) ? connection : database.getConnection(credentials)) {
-            List<TableMetadata> entities = database.getEntities(connex, credentials, language);
-            GenesisGenerator genesisGenerator = new APIGenerator(ProjectGenerator.engine);
+        Database database = null;
+        if (framework.getUseDB()) {
+            database = databases.get(databaseId);
+            try (Connection connex = (connection != null) ? connection : database.getConnection(credentials)) {
+                List<TableMetadata> entities = database.getEntities(connex, credentials, language);
+                GenesisGenerator genesisGenerator = new APIGenerator(ProjectGenerator.engine);
 
-            for (TableMetadata tableMetadata : entities) {
-                generateBackendComponents(genesisGenerator, framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+                for (TableMetadata tableMetadata : entities) {
+                    generateBackendComponents(genesisGenerator, framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+                }
+                generateProjectFiles(entities, credentials, destinationFolder, projectName, groupLink, projectPort, projectDescription, langageConfiguration, frameworkConfiguration, database, language, framework, project);
+
+            } catch (Exception e) {
+                throw new RuntimeException(e.getLocalizedMessage());
             }
-
-            HashMap<String, Object> initializeHashMap = getInitialHashMap(destinationFolder, projectName, groupLink);
-            HashMap<String, Object> projectFilesEditsHashMap = getProjectFilesEditsHashMap(
-                    destinationFolder,
-                    projectName,
-                    groupLink,
-                    projectPort,
-                    database,
-                    credentials,
-                    language,
-                    projectDescription,
-                    langageConfiguration,
-                    framework,
-                    frameworkConfiguration);
-
-            var hashMapDaoGlobal = FrameworkMetadataProvider.getHashMapDaoGlobal(framework, entities, projectName);
-            projectFilesEditsHashMap.putAll(hashMapDaoGlobal);
-
-            renderAndCopyFiles(project.getProjectFiles(), initializeHashMap);
-            renderAndCopyFolders(project.getProjectFolders(), initializeHashMap);
-            renderProjectFilesEdits(project.getProjectFilesEdits(), projectFilesEditsHashMap);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e.getLocalizedMessage());
+        }
+        else {
+            generateProjectFiles(null, credentials, destinationFolder, projectName, groupLink, projectPort, projectDescription, langageConfiguration, frameworkConfiguration, database, language, framework, project);
         }
     }
 
+    private static void generateProjectFiles(List<TableMetadata> entities, Credentials credentials, String destinationFolder, String projectName, String groupLink, String projectPort, String projectDescription, HashMap<String, String> langageConfiguration, HashMap<String, String> frameworkConfiguration, Database database, Language language, Framework framework, Project project) throws Exception {
+        HashMap<String, Object> initializeHashMap = getInitialHashMap(destinationFolder, projectName, groupLink);
+        HashMap<String, Object> projectFilesEditsHashMap = getProjectFilesEditsHashMap(
+                destinationFolder,
+                projectName,
+                groupLink,
+                projectPort,
+                database,
+                credentials,
+                language,
+                projectDescription,
+                langageConfiguration,
+                framework,
+                frameworkConfiguration);
 
+        if (framework.getUseDB())
+            projectFilesEditsHashMap.putAll(getHashMapDaoGlobal(framework, entities, projectName));
+
+        renderAndCopyFiles(project.getProjectFiles(), initializeHashMap);
+        renderAndCopyFolders(project.getProjectFolders(), initializeHashMap);
+        renderFilesEdits(project.getProjectFilesEdits(), projectFilesEditsHashMap);
+        renderFilesEdits(framework.getAdditionalFiles(), projectFilesEditsHashMap);
+    }
 }

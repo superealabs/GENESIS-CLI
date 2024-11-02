@@ -39,6 +39,7 @@ public class TemplateEngine {
         FUNCTIONS_MAP.put("majStart", FileUtils::majStart);
         FUNCTIONS_MAP.put("minStart", FileUtils::minStart);
         FUNCTIONS_MAP.put("toCamelCase", FileUtils::toCamelCase);
+        FUNCTIONS_MAP.put("toKebabCase", FileUtils::toKebabCase);
     }
 
     public String simpleRender(String template, Map<String, Object> variables) {

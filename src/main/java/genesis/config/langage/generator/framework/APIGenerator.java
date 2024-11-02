@@ -76,7 +76,7 @@ public class APIGenerator implements GenesisGenerator {
         FileUtils.createFile(fileSavePath, fileName, language.getExtension(), result);
 
         // renderAndCopyAdditionalFiles
-        ProjectGenerator.renderProjectFilesEdits(framework.getModelDao().getModelDaoAdditionalFiles(), metadataFinally);
+        ProjectGenerator.renderFilesEdits(framework.getModelDao().getModelDaoAdditionalFiles(), metadataFinally);
 
         return result;
     }
@@ -115,7 +115,7 @@ public class APIGenerator implements GenesisGenerator {
         FileUtils.createFile(engine.simpleRender(fileSavePath, metadataFinally), engine.simpleRender(fileName, metadataFinally), language.getExtension(), result);
 
         // renderAndCopyAdditionalFiles
-        ProjectGenerator.renderProjectFilesEdits(framework.getService().getServiceAdditionalFiles(), metadataFinally);
+        ProjectGenerator.renderFilesEdits(framework.getService().getServiceAdditionalFiles(), metadataFinally);
 
         return engine.render(result, metadataFinally);
     }
@@ -142,7 +142,7 @@ public class APIGenerator implements GenesisGenerator {
         FileUtils.createFile(engine.simpleRender(fileSavePath, metadataFinally), engine.simpleRender(fileName, metadataFinally), language.getExtension(), result);
 
         // renderAndCopyAdditionalFiles
-        ProjectGenerator.renderProjectFilesEdits(framework.getController().getControllerAdditionalFiles(), metadataFinally);
+        ProjectGenerator.renderFilesEdits(framework.getController().getControllerAdditionalFiles(), metadataFinally);
 
         return engine.render(result, metadataFinally);
     }

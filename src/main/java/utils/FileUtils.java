@@ -7,10 +7,7 @@ import genesis.connexion.Database;
 import genesis.connexion.adapter.DatabaseTypeAdapter;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -96,6 +93,27 @@ public class FileUtils {
         return camelCase.toString();
     }
 
+    public static String toKebabCase(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+
+        StringBuilder result = new StringBuilder();
+        input = input.replace("_", "");
+
+        for (char c : input.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                if (!result.isEmpty()) {
+                    result.append("-");
+                }
+                result.append(Character.toLowerCase(c));
+            } else {
+                result.append(c);
+            }
+        }
+
+        return result.toString();
+    }
 
     public static void createFileStructure(String filePath) {
         filePath = filePath.replace("\\", "/");
@@ -134,8 +152,12 @@ public class FileUtils {
 
         try (InputStream inputStream = new FileInputStream(sourceFilePath)) {
             Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new IOException("Erreur lors de la copie du fichier: " + e.getMessage(), e);
+        }
+        catch (NoSuchFileException e) {
+            createFileStructure(destinationPath.toString());
+        }
+        catch (IOException e) {
+            throw new IOException("Error when copying file: " + e.getMessage(), e);
         }
     }
 

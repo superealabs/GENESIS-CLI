@@ -15,7 +15,9 @@ public class Framework {
     private String name;
     private String template;
     private Boolean useDB;
+    private Boolean useCloud;
     private Boolean withGroupId;
+    private List<FilesEdit> additionalFiles;
     private List<ConfigurationMetadata> configurations;
     private List<Dependency> dependencies;
     private Model model;
@@ -30,12 +32,14 @@ public class Framework {
         private String groupId;
         private String artifactId;
         private String version;
+        private String scope;
     }
 
     @Getter
     @Setter
     @ToString
     public static class Model {
+        private Boolean toGenerate;
         private String modelImports;
         private String modelExtends;
         private String modelAnnotations;
@@ -51,6 +55,7 @@ public class Framework {
     @Setter
     @ToString
     public static class ModelDao {
+        private Boolean toGenerate;
         private String modelDaoImports;
         private String modelDaoAnnotations;
         private String modelDaoClassKeyword;
@@ -61,13 +66,14 @@ public class Framework {
         private String modelDaoConstructors;
         private String modelDaoSavePath;
         private String modelDaoPackage;
-        private List<Project.ProjectFilesEdit> modelDaoAdditionalFiles;
+        private List<FilesEdit> modelDaoAdditionalFiles;
     }
 
     @Getter
     @Setter
     @ToString
     public static class Service {
+        private Boolean toGenerate;
         private String serviceImports;
         private String serviceClassKeyword;
         private String serviceAnnotations;
@@ -78,13 +84,14 @@ public class Framework {
         private String serviceMethodContent;
         private String serviceSavePath;
         private String servicePackage;
-        private List<Project.ProjectFilesEdit> serviceAdditionalFiles;
+        private List<FilesEdit> serviceAdditionalFiles;
     }
 
     @Getter
     @Setter
     @ToString
     public static class Controller {
+        private Boolean toGenerate;
         private String controllerImports;
         private String controllerAnnotations;
         private String controllerExtends;
@@ -94,6 +101,6 @@ public class Framework {
         private String controllerMethodContent;
         private String controllerSavePath;
         private String controllerPackage;
-        private List<Project.ProjectFilesEdit> controllerAdditionalFiles;
+        private List<FilesEdit> controllerAdditionalFiles;
     }
 }

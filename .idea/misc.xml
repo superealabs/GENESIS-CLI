@@ -14,6 +14,7 @@
         <option value="$PROJECT_DIR$/generated/Test2Cli/pom.xml" />
         <option value="$PROJECT_DIR$/generated/TestREST/pom.xml" />
         <option value="$PROJECT_DIR$/generated/Fana/ProjetIrai/pom.xml" />
+        <option value="$PROJECT_DIR$/generated/discovery/TestEurekaServer/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

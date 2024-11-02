@@ -5,7 +5,6 @@ import genesis.config.langage.generator.project.ProjectGenerator;
 import genesis.connexion.Credentials;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
 import java.util.HashMap;
 
 public class ProjectGeneratorCLI {
@@ -63,7 +62,7 @@ public class ProjectGeneratorCLI {
 
             int databaseId = Constantes.PostgreSQL_ID;
             int languageId = Constantes.Java_ID;
-            int frameworkId = Constantes.Spring_ID;
+            int frameworkId = Constantes.Spring_REST_API_ID;
             int projectId = Constantes.Maven_ID;
 
             String projectName = "ProjetIrai";
@@ -160,4 +159,51 @@ public class ProjectGeneratorCLI {
             throw new RuntimeException(e);
         }
     }
-}
+
+
+    @Test
+    void generateProjectSpringEurekaServer() {
+        try {
+
+            int languageId = Constantes.Java_ID;
+            int frameworkId = Constantes.Spring_Eureka_Server_ID;
+            int projectId = Constantes.Maven_ID;
+
+            String projectName = "TestEurekaServer";
+            String groupLink = "labs.test";
+            String projectPort = "8761";
+            String logLevel = "INFO";
+            String projectDescription = "Eureka Server Project For Testing Genesis API Generator";
+            String frameworkVersion = "3.3.5";
+            String languageVersion = "17";
+
+            String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated/discovery";
+
+            ProjectGenerator projectGenerator = new ProjectGenerator();
+
+            HashMap<String, String> frameworkConfiguration = new HashMap<>();
+            frameworkConfiguration.put("loggingLevel", logLevel);
+            frameworkConfiguration.put("frameworkVersion", frameworkVersion);
+
+            HashMap<String, String> languageConfiguration = new HashMap<>();
+            languageConfiguration.put("languageVersion", languageVersion);
+
+            projectGenerator.generateProject(
+                    null,
+                    languageId,
+                    frameworkId,
+                    projectId,
+                    null,
+                    destinationFolder,
+                    projectName,
+                    groupLink,
+                    projectPort,
+                    projectDescription,
+                    languageConfiguration,
+                    frameworkConfiguration,
+                    null
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }}
