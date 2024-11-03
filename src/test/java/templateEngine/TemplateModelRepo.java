@@ -136,7 +136,7 @@ public class TemplateModelRepo {
         return metadata;
     }
 
-    /*
+
     private static HashMap<String, Object> getHashMapIntermediaireEachEach() {
         HashMap<String, Object> metadata = new HashMap<>();
         metadata.put("tableName", "person");
@@ -196,7 +196,7 @@ public class TemplateModelRepo {
                     );
                 }});
 
-        metadata.put("fields", fields);
+        metadata.put("entities", fields);
 
         // Toggle to add or remove the additional method
         metadata.put("hasAdditionalMethod", true);
@@ -204,7 +204,7 @@ public class TemplateModelRepo {
 
         return metadata;
     }
-     */
+
 
     /*---CONTROLLER---*/
     private static HashMap<String, Object> getHashMapController() {
@@ -219,7 +219,7 @@ public class TemplateModelRepo {
         metadata.put("namespaceStart", "");
         metadata.put("controllerAnnotations", """
                 @Controller
-                {{tab}} @RequestMapping("/${classNameLink}")""");
+                     @RequestMapping("/${classNameLink}")""");
         metadata.put("classKeyword", "public class");
         metadata.put("pathVariableKeyword", "@PathVariable");
         metadata.put("modelAttributeKeyword", "@RequestBody");
@@ -551,7 +551,7 @@ public class TemplateModelRepo {
                             {{else if this.isForeignKey}}
                             entity.HasOne(e => e.${majStart(this.name)})
                                 .WithMany()
-                                .HasForeignKey(e => e.${majStart(this.columnNameField)})
+                                .HasForeignKey(e => e.${majStart(this.columnName)})
                                 .OnDelete(DeleteBehavior.NoAction);
                             {{else}}
                             entity.Property(e => e.${majStart(this.name)});
@@ -563,7 +563,7 @@ public class TemplateModelRepo {
                 }
                 """;
 
-        HashMap<String, Object> metadata = getHashMapIntermediaire();
+        HashMap<String, Object> metadata = getHashMapIntermediaireEachEach();
 
         String result = engine.render(template, metadata);
         System.out.println(result);
@@ -728,18 +728,18 @@ public class TemplateModelRepo {
                       ${controllerAnnotations}
                       ${classKeyword} ${controllerName} ${extends}${bracketStart}
                                \s
-                      {{tab}}@Autowired
-                      {{tab}}private ${majStart(className)}Service ${lowerCase(className)}Service;
+                          @Autowired
+                          private ${majStart(className)}Service ${lowerCase(className)}Service;
                                \s
-                      {{tab}}@GetMapping
-                      {{tab}}public String getAll${majStart(classNameLink)}(Model model) ${bracketStart}
-                      {{tab}}    List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(className)}();
-                      {{tab}}    model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
-                      {{tab}}    return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
-                      {{tab}}${bracketEnd}
+                          @GetMapping
+                          public String getAll${majStart(classNameLink)}(Model model) ${bracketStart}
+                              List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(className)}();
+                              model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
+                              return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
+                          ${bracketEnd}
                                \s
-                      {{tab}}@GetMapping("/{id}")
-                      {{tab}}public String get${majStart(className)}ById(${pathVariableKeyword} Long id, Model model) ${bracketStart}
+                          @GetMapping("/{id}")
+                          public String get${majStart(className)}ById(${pathVariableKeyword} Long id, Model model) ${bracketStart}
                       {{tab}}     ${majStart(className)} ${lowerCase(className)} = ${lowerCase(className)}Service.get${majStart(className)}ById(id);
                       {{tab}}     model.addAttribute("${lowerCase(className)}", ${lowerCase(className)});
                       {{tab}}     return "${lowerCase(classNameLink)}/view-list-${lowerCase(className)}";
