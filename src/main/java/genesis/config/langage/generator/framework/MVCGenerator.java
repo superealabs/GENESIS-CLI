@@ -4,6 +4,7 @@ import genesis.config.Constantes;
 import genesis.config.langage.Editor;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
+import genesis.config.langage.generator.project.ProjectMetadataProvider;
 import genesis.engine.TemplateEngine;
 import genesis.model.TableMetadata;
 import utils.FileUtils;
@@ -129,22 +130,49 @@ public class MVCGenerator implements GenesisGenerator {
         return engine.render(result, metadataFinally);
     }
 
-    public String generateListView(Framework framework, Language language, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
+    public void generateListView(Framework framework, Language language, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
         if (language.getId() != framework.getLangageId()) {
             throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
         }
 
         String templateContent = loadListViewTemplate(editor);
 
-        // Render le template final
-        HashMap<String, Object> metadataFinally = getHashMapIntermediaire(tableMetadata, projectName, groupLink);
+        // Render les attributs specifiques
+        HashMap<String, Object> altMap =ProjectMetadataProvider.getAltHashMap(editor);
+        String firstResult = engine.altSimpleRender(templateContent, altMap);
+
+        // Render les attributs intermediaires
+        HashMap<String, Object> intermed = getHashMapIntermediaire(tableMetadata, projectName, groupLink);
+        String secondResult = engine.simpleRender(firstResult, intermed);
+
+        // Rendue final
+        HashMap<String, Object> metadataFinally = getAllListViewHashMap(framework, editor, tableMetadata, projectName, groupLink);
+        String result = engine.render(secondResult, metadataFinally);
+        engine.simpleRender(result, metadataFinally);
 
         String fileName = framework.getView().getListViewName();
+        String fileSavePath = framework.getView().getViewSavePath();
         String fileExtension = framework.getView().getViewExtension();
-        String fileSavePath = framework.getView().getListViewSavePath();
+        FileUtils.createFile(engine.simpleRender(fileSavePath, metadataFinally), engine.simpleRender(fileName, metadataFinally), engine.simpleRender(fileExtension, metadataFinally), result);
+    }
+
+    public void generateCreateView(Framework framework, Language language, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
+        if (language.getId() != framework.getLangageId()) {
+            throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
+        }
+
+        String templateContent = loadCreateViewTemplate(editor);
+
+        // Render le template final
+        HashMap<String, Object> metadataFinally = getAllListViewHashMap(framework, editor, tableMetadata, projectName, groupLink);
+
+        templateContent = engine.render(templateContent, metadataFinally);
+
+        String fileName = framework.getView().getCreateViewName();
+        String fileSavePath = framework.getView().getViewSavePath();
+        String fileExtension = framework.getView().getViewExtension();
         FileUtils.createFile(engine.simpleRender(fileSavePath, metadataFinally), engine.simpleRender(fileName, metadataFinally), engine.simpleRender(fileExtension, metadataFinally), templateContent);
 
-        return "";
     }
 
     @Override
@@ -154,6 +182,7 @@ public class MVCGenerator implements GenesisGenerator {
         }
 
         generateListView(framework, language, editor, tableMetadata, projectName, groupLink);
+        generateCreateView(framework, language, editor, tableMetadata, projectName,groupLink);
 
         return "";
     }
@@ -189,5 +218,9 @@ public class MVCGenerator implements GenesisGenerator {
 
     private String loadListViewTemplate(Editor editor) throws IOException {
         return FileUtils.getFileContent(Constantes.LAYOUT_DATA_PATH + "/" + editor.getListTemplate() + "." + Constantes.TEMPLATE_EXT);
+    }
+
+    private String loadCreateViewTemplate(Editor editor) throws IOException {
+        return FileUtils.getFileContent(Constantes.LAYOUT_DATA_PATH + "/" + editor.getCreateTemplate() + "." + Constantes.TEMPLATE_EXT);
     }
 }

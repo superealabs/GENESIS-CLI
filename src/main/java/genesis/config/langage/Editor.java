@@ -18,6 +18,7 @@ public class Editor {
     private Update update;
     private String template;
     private String listTemplate;
+    private String createTemplate;
 
     @Getter
     @Setter
@@ -28,6 +29,7 @@ public class Editor {
         private Header header;
         private Footer footer;
         private Content content;
+        private TableLoop tableLoop;
         private String destinationPath;
     }
 
@@ -60,6 +62,13 @@ public class Editor {
     public static class Content {
         private String callMenu;
         private String callContent;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    public static class TableLoop {
+        private String dataLoop;
     }
 
     @Getter

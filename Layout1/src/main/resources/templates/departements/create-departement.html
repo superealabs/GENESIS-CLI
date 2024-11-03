@@ -1,0 +1,100 @@
+<div class="container-fluid pt-4 px-4" th:fragment="content">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-6 offset-3">
+            <div class="bg-secondary rounded h-100 p-4">
+                <h6 class="mb-4">List de departement</h6>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            [viewTableHeader] //mivadika inona
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each=" e: ">
+                                [viewTableLine] //mivadika inona
+                                <td>
+                                    <button type="button" th:class="'btn btn-primary '+" data-bs-toggle="modal"
+                                        th:data-bs-target="'#modifiermodal'+()}">
+                                        <p><i class="bi bi-pencil"></i>Modifier</p>
+                                    </button>
+                                    <div class="modal fade" th:id="'updateModal'+" tabindex="-1"
+                                        aria-labelledby="updateModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <form th:action="'/updatedepartement.do?indice_actu='+" method="post"> //atao inona indice actu, dia aiza izy no initialiser
+                                                    <div class="modal-header">
+                                                        <h1 class="modal-title fs-5" id="updateModalLabel">Update departement</h1>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="" th:value="()}">
+                                                        [viewUpdateFormField] //mivadika inona
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="submit" class="btn btn-primary">Validate</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <form th:action="'/deletedepartement.do?indice_actu='+" method="post"> //dia mbola le indice sy actu ihany le blem
+                                        <input type="hidden" name="" th:value="()}">
+                                        <button type="submit" th:class="'btn btn-danger '+">
+                                            <p><i class="bi bi-trash"></i>Delete</p>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                    </tbody>
+                </table>
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item">
+                            <a class="page-link" th:href="'/tocruddepartement.do?indice_actu='+" aria-label="Precedent">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item disabled"><a class="page-link">...</a></li>
+                        <li th:class="'page-item '+"><a class="page-link" th:href="'/tocruddepartement.do?indice_actu='+"><span th:text=""></span></a></li>
+                        <li class="page-item disabled page-active"><a class="page-link"><span th:text=""></span></a></li>
+                        <li th:class="'page-item '+"><a class="page-link" th:href="'/tocruddepartement.do?indice_actu='+"><span th:text=""></span></a></li>
+                        <li class="page-item disabled"><a class="page-link">...</a></li>
+                        <li class="page-item">
+                            <a class="page-link" th:href="'/tocruddepartement.do?indice_actu='+" aria-label="Suivant">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <button type="button" th:class="'btn btn-primary '+" data-bs-toggle="modal" data-bs-target="#ajoutmodal">
+                    <p><i class="bi bi-plus"></i>Add</p>
+                </button>
+                <p style="color: red;" th:text=""></p>
+            </div>
+        </div>
+        <!-- Button modal ajout -->
+
+        <!-- Modal Ajout -->
+        <div class="modal fade" id="ajoutmodal" tabindex="-1" aria-labelledby="ajoutmodalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form th:action="'/insertdepartement.do?indice_actu='+" method="post">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="ajoutmodalLabel">Add a departement</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            [viewInsertFormField] //mivadika inona
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Validate</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

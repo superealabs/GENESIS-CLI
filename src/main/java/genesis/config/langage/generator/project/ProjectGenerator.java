@@ -102,7 +102,7 @@ public class ProjectGenerator {
                                 String hibernateDdlAuto,
                                 String springBootVersion,
                                 String projectDescription,
-                                String languageVersion) {
+                                String languageVersion)  {
 
         PostgreSQLDatabase database = (PostgreSQLDatabase) databases[databaseId];
         Framework framework = frameworks[frameworkId];

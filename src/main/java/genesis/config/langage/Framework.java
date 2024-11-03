@@ -92,9 +92,10 @@ public class Framework {
     @Getter
     @Setter
     public static class View {
+        private String viewSavePath;
         private String listViewName;
         private String viewExtension;
-        private String listViewSavePath;
+        private String createViewName;
     }
 
     @Getter

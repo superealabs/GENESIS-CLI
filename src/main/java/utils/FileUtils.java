@@ -91,7 +91,12 @@ public class FileUtils {
     }
 
     public static String majStart(String string) {
-        return string.replaceFirst(String.valueOf(string.charAt(0)), String.valueOf(string.charAt(0)).toUpperCase());
+        try {
+            return string.replaceFirst(String.valueOf(string.charAt(0)), String.valueOf(string.charAt(0)).toUpperCase());
+        } catch (Exception e) {
+            System.out.println(e.getMessage() + "    " + string + "   " + string.charAt(0));
+            throw new RuntimeException(e);
+        }
     }
 
     public static String toCamelCase(String string) {

@@ -295,4 +295,28 @@ public class FrameworkMetadataProvider {
 
         return metadata;
     }
+
+    public static HashMap<String, Object> getListViewHashMap(Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
+        HashMap<String, Object> metadata = new HashMap<>();
+
+        String createLink = engine.render(editor.getLayout().getMenu().getCreateLink(), getHashMapIntermediaire(tableMetadata, projectName, groupLink));
+
+        metadata.put("createLink", createLink);
+
+        return metadata;
+    }
+
+    public static HashMap<String, Object> getAllListViewHashMap(Framework framework, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
+        HashMap<String, Object> metadata = new HashMap<>();
+
+        HashMap<String, Object> fieldsMap = getPrimaryModelDaoHashMap(framework, tableMetadata);
+        HashMap<String, Object> languageMetadata = getHashMapIntermediaire(tableMetadata, projectName, groupLink);
+        HashMap<String, Object> primaryListViewHashMap = getListViewHashMap(editor, tableMetadata, projectName, groupLink);
+
+        metadata.putAll(fieldsMap);
+        metadata.putAll(languageMetadata);
+        metadata.putAll(primaryListViewHashMap);
+
+        return metadata;
+    }
 }

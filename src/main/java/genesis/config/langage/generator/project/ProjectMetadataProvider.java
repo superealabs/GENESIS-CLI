@@ -142,6 +142,7 @@ public class ProjectMetadataProvider {
 
         altMap.put("listLink", editor.getLayout().getMenu().getListLink());
         altMap.put("createLink", editor.getLayout().getMenu().getCreateLink());
+        altMap.put("dataLoop", editor.getLayout().getTableLoop().getDataLoop());
 
         return altMap;
     }

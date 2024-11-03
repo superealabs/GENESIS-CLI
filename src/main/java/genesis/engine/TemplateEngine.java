@@ -23,9 +23,13 @@ public class TemplateEngine {
     private static final String VARIABLE_PLACEHOLDER_SUFFIX = "}";
     private static final String VARIABLE_PLACEHOLDER_PREFIX_ALT = "$[";
     private static final String VARIABLE_PLACEHOLDER_SUFFIX_ALT = "]";
-    private static final String NEWLINE_TAG = "{{newline}}";
+
     private static final String TAB_TAG = "{{tab}}";
+    private static final String NEWLINE_TAG = "{{newline}}";
     private static final String REMOVE_LINE_TAG = "{{removeLine}}";
+    private static final String END_COMMENTARY_TAG = "<$--";
+    private static final String START_COMMENTARY_TAG = "--/$>";
+
     private static final String BLOCK_END = "}}";
     private static final String FUNCTION_OPEN_PARENTHESIS = "(";
     private static final String FUNCTION_CLOSED_PARENTHESIS = ")";
@@ -423,7 +427,7 @@ public class TemplateEngine {
     private void processSpecialTags(StringBuilder template) {
         replaceAllOccurrences(template, NEWLINE_TAG, "\n");
         replaceAllOccurrences(template, TAB_TAG, "\t");
-
+        
         // Supprimer les lignes contenant le tag {{removeLine}}
         int start;
         while ((start = template.indexOf(REMOVE_LINE_TAG)) != -1) {
@@ -442,6 +446,11 @@ public class TemplateEngine {
 
             template.delete(lineStart, lineEnd + 1);
         }
+    }
+
+    public void dropCommentary(StringBuilder template) {
+        replaceAllOccurrences(template, START_COMMENTARY_TAG, "");
+        replaceAllOccurrences(template, END_COMMENTARY_TAG, "");
     }
 
     private record LoopInfo(String loopVarName, String loopContent, int start) {
