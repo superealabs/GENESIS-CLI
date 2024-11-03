@@ -37,6 +37,7 @@ public class ProjectMetadataProvider {
             configFile.put("databaseUrl", databaseUrl);
             configFile.put("databaseUsername", database.getCredentials().getUser());
             configFile.put("databasePassword", database.getCredentials().getPwd());
+            configFile.put("databaseType", database.getName());
         }
         configFile.putAll(frameworkOptions);
 

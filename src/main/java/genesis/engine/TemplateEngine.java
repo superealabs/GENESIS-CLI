@@ -29,8 +29,10 @@ public class TemplateEngine {
     private static final String BLOCK_END = "}}";
     private static final String FUNCTION_OPEN_PARENTHESIS = "(";
     private static final String FUNCTION_CLOSED_PARENTHESIS = ")";
+    private static final String START_COMMENTARY_TAG = "<#";
+    private static final String END_COMMENTARY_TAG = "/#>";
 
-
+    private final Map<String, String> commentMap = new HashMap<>();
     private static final Map<String, Function<String, String>> FUNCTIONS_MAP = new HashMap<>();
 
     static {
@@ -122,13 +124,50 @@ public class TemplateEngine {
 
         StringBuilder result = new StringBuilder(template);
 
+        protectComments(result);
+
         evaluateLoops(result, variables);
         evaluateConditionals(result, variables);
         replaceVariables(result, variables);
         processSpecialTags(result);
-        checkUndefinedVariables(result);
+
+        restoreComments(result);
 
         return result.toString();
+    }
+
+    private void protectComments(StringBuilder template) {
+        int startIndex = 0;
+        while ((startIndex = template.indexOf(START_COMMENTARY_TAG, startIndex)) != -1) {
+            int endIndex = template.indexOf(END_COMMENTARY_TAG, startIndex);
+            if (endIndex == -1) break;
+
+            endIndex += END_COMMENTARY_TAG.length();
+
+            String comment = template.substring(startIndex, endIndex);
+            String marker = generateUniqueMarker(startIndex);
+            commentMap.put(marker, comment);
+
+            template.replace(startIndex, endIndex, marker);
+            startIndex += marker.length();
+        }
+    }
+
+    private void restoreComments(StringBuilder template) {
+        for (Map.Entry<String, String> entry : commentMap.entrySet()) {
+            String marker = entry.getKey();
+            String comment = entry.getValue();
+
+            int index = template.indexOf(marker);
+            if (index != -1) {
+                template.replace(index, index + marker.length(), comment);
+            }
+        }
+        commentMap.clear();
+    }
+
+    private String generateUniqueMarker(int position) {
+        return String.format("__COMMENT_%d__", position);
     }
 
     private void evaluateLoops(StringBuilder template, Map<String, Object> variables) throws Exception {

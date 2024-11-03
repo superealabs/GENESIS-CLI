@@ -71,6 +71,7 @@ public class TemplateModelRepo {
                                 this.${this.name} = ${this.name};
                             }{{#if !@last}}{{newline}}{{/if}}
                             {{/if}}{{/each}}
+                        
                         """);
 
 
@@ -881,6 +882,8 @@ public class TemplateModelRepo {
                 {{tab}}{{tab}}</dependency>{{#if !@last}}{{newline}}{{tab}}{{tab}}{{/if}}{{/each}}
                 {{tab}}</dependencies>
                 </project>
+                
+                <# ${groupLink} /#>
                 """;
 
         HashMap<String, Object> metadata = getHashMapPOM();

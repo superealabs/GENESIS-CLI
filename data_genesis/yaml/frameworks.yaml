@@ -15,7 +15,9 @@
 
         import org.springframework.boot.SpringApplication;
         import org.springframework.boot.autoconfigure.SpringBootApplication;
+        {{#if useEurekaServer}}import org.springframework.cloud.client.discovery.EnableDiscoveryClient;{{/if}}
 
+        {{#if useEurekaServer}}@EnableDiscoveryClient{{/if}}
         @SpringBootApplication
         public class ${majStart(projectName)}Application {
         {{tab}}public static void main(String[] args) {
@@ -80,6 +82,36 @@
             prefer-ip-address: true
             ip-address: $[spring.cloud.client.ip-address]  # Dynamically resolve IP
             non-secure-port: ${projectNonSecurePort}  # Specify the non-secure port explicitly
+        management:
+          endpoints:
+            web:
+              exposure:
+                include: health,info
+          endpoint:
+            health:
+              show-details: always
+            info:
+              enabled: true
+          info:
+            env:
+              enabled: true
+            java:
+              enabled: true
+            build:
+              enabled: true
+        info:
+          app:
+            name: $[spring.application.name]
+            description: "${projectDescription}"
+            version: "0.0.1-SNAPSHOT"
+            technical:
+              spring-boot:
+                version: "${frameworkVersion}"
+              server:
+                port: $[server.port]
+              database:
+                url: $[spring.datasource.url]
+                type: "${databaseType}"
         {{/if}}
 
       destinationPath: "${destinationFolder}/${majStart(projectName)}/src/main/resources/"

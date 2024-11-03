@@ -91,6 +91,9 @@ public class ProjectGenerator {
 
             // ALT rendering for specific placeholders
             content = engine.simpleRenderAlt(content, Map.of("spring-cloud.version", "${spring-cloud.version}"));
+            content = engine.simpleRenderAlt(content, Map.of("spring.application.name", "${spring.application.name}"));
+            content = engine.simpleRenderAlt(content, Map.of("server.port", "${server.port}"));
+            content = engine.simpleRenderAlt(content, Map.of("spring.datasource.url", "${spring.datasource.url}"));
 
             System.out.println("\nEditing file:");
             System.out.println("Rendered destination path: " + destinationFilePath);
