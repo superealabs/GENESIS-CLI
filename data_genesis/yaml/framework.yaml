@@ -171,7 +171,7 @@
       {{tab}}public String getAll${majStart(classNameLink)}(Model model) {
       {{tab}}    List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(className)}();
       {{tab}}    model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
-      {{tab}}    return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
+      {{tab}}    return "${lowerCase(classNameLink)}";
       {{tab}}}
       
       {{tab}}@GetMapping("/create-${lowerCase(className)}")

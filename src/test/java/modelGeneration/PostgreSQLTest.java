@@ -17,6 +17,10 @@ import utils.FileUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
+import java.util.HashMap;
+
+import static genesis.config.langage.generator.framework.FrameworkMetadataProvider.getAllListViewHashMap;
+import static genesis.config.langage.generator.project.ProjectGenerator.engine;
 
 public class PostgreSQLTest {
 
@@ -59,16 +63,26 @@ public class PostgreSQLTest {
 
         try (Connection connection = database.getConnection(credentials)) {
             TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
-            GenesisGenerator mvcGenerator = new MVCGenerator();
+            GenesisGenerator mvcGenerator = new MVCGenerator(engine);
 
             for (TableMetadata tableMetadata : entities) {
 //                mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
 //                mvcGenerator.generateDao(framework, language, tableMetadata, projectName, groupLink);
 //                mvcGenerator.generateService(framework, language, tableMetadata, projectName, groupLink);
 //                mvcGenerator.generateController(framework, language, tableMetadata, projectName, groupLink);
+//
+//                String layout = mvcGenerator.generateView(framework, language, editor, tableMetadata, "Test", "labs");
+//                System.out.println("\n====== GENERATED ======\n" + layout);
 
-                String layout = mvcGenerator.generateView(framework, language, editor, tableMetadata, "Test", "labs");
-                System.out.println("\n====== GENERATED ======\n" + layout);
+                String templateContent = "th:each=${lowerCase(className)} : <#${/#>${lowerCase(classNameLink)}<#}/#>";
+
+                HashMap<String, Object> metadataFinally = getAllListViewHashMap(framework, editor, tableMetadata, "test", "labs");
+                String result = engine.render(templateContent, metadataFinally);
+
+                StringBuilder resultCleaned = new StringBuilder(result);
+                engine.dropCommentary(resultCleaned);
+
+                System.out.println(resultCleaned);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -132,7 +146,7 @@ public class PostgreSQLTest {
             TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
             TableMetadata tableMetadata = entities[1]; //Employe
 
-            GenesisGenerator mvcGenerator = new MVCGenerator();
+            GenesisGenerator mvcGenerator = new MVCGenerator(engine);
             String projectName = "TestProject", groupLink = "com";
 
             String model = mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);

@@ -15,7 +15,11 @@ import java.util.HashMap;
 import static genesis.config.langage.generator.framework.FrameworkMetadataProvider.*;
 
 public class MVCGenerator implements GenesisGenerator {
-    private static final TemplateEngine engine = new TemplateEngine();
+    private final TemplateEngine engine;
+
+    public MVCGenerator(TemplateEngine engine) {
+        this.engine = engine;
+    }
 
     @Override
     public String generateModel(Framework framework, Language language, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
@@ -148,7 +152,9 @@ public class MVCGenerator implements GenesisGenerator {
         // Rendue final
         HashMap<String, Object> metadataFinally = getAllListViewHashMap(framework, editor, tableMetadata, projectName, groupLink);
         String result = engine.render(secondResult, metadataFinally);
-        engine.simpleRender(result, metadataFinally);
+
+        StringBuilder resultCleaned = new StringBuilder(result);
+        engine.dropCommentary(resultCleaned);
 
         String fileName = framework.getView().getListViewName();
         String fileSavePath = framework.getView().getViewSavePath();

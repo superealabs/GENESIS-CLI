@@ -84,7 +84,9 @@
         <script src="/assets/js/dashboards-analytics.js"
           th:src="@{/assets/js/dashboards-analytics.js}"></script>
     tableLoop:
-      dataLoop: "th:each=\"${lowerCase(className)} : <$--${--$>${lowerCase(classNameLink)}<$--}--$>\""
+      dataLoop: "th:each=${lowerCase(className)} : <#${/#>${lowerCase(classNameLink)}<#}/#>"
+      dataValues: "th:text=\"<#${/#>${lowerCase(className)}.get${majStart(${this.name})}<#}/#>\""
+      dataKeys: ""
   insert:
     input:
       - inputType: "Date"

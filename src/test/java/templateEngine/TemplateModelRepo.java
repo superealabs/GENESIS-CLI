@@ -4,6 +4,10 @@ import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
+import genesis.config.langage.Editor;
+import genesis.config.langage.Framework;
+import genesis.config.langage.generator.project.ProjectGenerator;
+import genesis.config.langage.generator.project.ProjectMetadataProvider;
 import genesis.engine.TemplateEngine;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
@@ -15,11 +19,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static genesis.config.langage.generator.framework.FrameworkMetadataProvider.getAllListViewHashMap;
+import static genesis.config.langage.generator.framework.FrameworkMetadataProvider.getHashMapIntermediaire;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TemplateModelRepo {
     TemplateEngine engine = new TemplateEngine();
     String templatePrimary = FileUtils.getFileContent("data_genesis/Template.templ");
+
 
     public TemplateModelRepo() throws FileNotFoundException {
     }

@@ -35,7 +35,7 @@ public class TemplateEngine {
     private static final String FUNCTION_OPEN_PARENTHESIS = "(";
     private static final String FUNCTION_CLOSED_PARENTHESIS = ")";
 
-    private final Map<String, String> commentMap = new HashMap<>();
+    private static Map<String, String> commentMap = new HashMap<>();
 
     private static final Map<String, Function<String, String>> FUNCTIONS_MAP = new HashMap<>();
 

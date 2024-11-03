@@ -69,6 +69,8 @@ public class Editor {
     @ToString
     public static class TableLoop {
         private String dataLoop;
+        private String dataKeys;
+        private String dataValues;
     }
 
     @Getter

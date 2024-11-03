@@ -16,7 +16,11 @@ import java.util.List;
 import java.util.Map;
 
 public class ProjectMetadataProvider {
-    private static final TemplateEngine engine = new TemplateEngine();
+    private final TemplateEngine engine;
+
+    public ProjectMetadataProvider(TemplateEngine engine) {
+        this.engine = engine;
+    }
 
     static HashMap<String, Object> getInitialHashMap(String projectName, String groupLink) {
         HashMap<String, Object> metadata = new HashMap<>();
@@ -26,7 +30,7 @@ public class ProjectMetadataProvider {
         return metadata;
     }
 
-    static HashMap<String, Object> getApplicationPropertiesHashMap(String projectPort,
+    public HashMap<String, Object> getApplicationPropertiesHashMap(String projectPort,
                                                                    String logLevel,
                                                                    Database database,
                                                                    Credentials credentials,
@@ -91,7 +95,7 @@ public class ProjectMetadataProvider {
         return dependencies;
     }
 
-    static HashMap<String, Object> getProjectFilesEditsHashMap(String projectName,
+    public HashMap<String, Object> getProjectFilesEditsHashMap(String projectName,
                                                                String groupLink,
                                                                String projectPort,
                                                                String logLevel,
@@ -143,6 +147,8 @@ public class ProjectMetadataProvider {
         altMap.put("listLink", editor.getLayout().getMenu().getListLink());
         altMap.put("createLink", editor.getLayout().getMenu().getCreateLink());
         altMap.put("dataLoop", editor.getLayout().getTableLoop().getDataLoop());
+        altMap.put("dataKeys", editor.getLayout().getTableLoop().getDataKeys());
+        altMap.put("dataValues", editor.getLayout().getTableLoop().getDataValues());
 
         return altMap;
     }

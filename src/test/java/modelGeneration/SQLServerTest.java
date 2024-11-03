@@ -8,6 +8,7 @@ import genesis.config.langage.generator.framework.MVCGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.connexion.providers.SQLServerDatabase;
+import genesis.engine.TemplateEngine;
 import genesis.model.TableMetadata;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
@@ -19,6 +20,11 @@ import java.sql.*;
 public class SQLServerTest {
 
     Credentials credentials;
+    TemplateEngine engine;
+
+    public SQLServerTest(TemplateEngine engine) {
+        this.engine = engine;
+    }
 
     public SQLServerTest() {
         this.credentials = new Credentials();
@@ -51,7 +57,7 @@ public class SQLServerTest {
             tableMetadata.setTableName("Employe");
             tableMetadata.initialize(connection, credentials, database, language);
 
-            GenesisGenerator mvcGenerator = new MVCGenerator();
+            GenesisGenerator mvcGenerator = new MVCGenerator(engine);
             String projectName = "TestProject", groupLink = "com";
 
             String model = mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
@@ -83,7 +89,7 @@ public class SQLServerTest {
             TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
             TableMetadata tableMetadata = entities[1]; //Employe
 
-            GenesisGenerator mvcGenerator = new MVCGenerator();
+            GenesisGenerator mvcGenerator = new MVCGenerator(engine);
             String projectName = "TestProject", groupLink = "com";
 
             String model = mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);

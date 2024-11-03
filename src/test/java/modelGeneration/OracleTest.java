@@ -8,6 +8,7 @@ import genesis.config.langage.generator.framework.MVCGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.connexion.providers.OracleDatabase;
+import genesis.engine.TemplateEngine;
 import genesis.model.TableMetadata;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
@@ -20,6 +21,11 @@ import java.sql.SQLException;
 
 public class OracleTest {
     Credentials credentials;
+    TemplateEngine engine;
+
+    public OracleTest(TemplateEngine engine) {
+        this.engine = engine;
+    }
 
     public OracleTest() {
         this.credentials = new Credentials();
@@ -52,7 +58,7 @@ public class OracleTest {
             tableMetadata.setTableName("EMPLOYEE_T");
             tableMetadata.initialize(connection, credentials, database, language);
 
-            GenesisGenerator mvcGenerator = new MVCGenerator();
+            GenesisGenerator mvcGenerator = new MVCGenerator(engine);
             String projectName = "TestProject", groupLink = "com";
 
             String model = mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
@@ -84,7 +90,7 @@ public class OracleTest {
             TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
             TableMetadata tableMetadata = entities[1]; //Employe
 
-            GenesisGenerator mvcGenerator = new MVCGenerator();
+            GenesisGenerator mvcGenerator = new MVCGenerator(engine);
             String projectName = "TestProject", groupLink = "com";
 
             String model = mvcGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);

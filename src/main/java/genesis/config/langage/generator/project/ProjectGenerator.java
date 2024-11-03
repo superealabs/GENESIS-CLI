@@ -19,7 +19,6 @@ import java.sql.Connection;
 import java.util.HashMap;
 
 import static genesis.config.langage.generator.project.ProjectMetadataProvider.getInitialHashMap;
-import static genesis.config.langage.generator.project.ProjectMetadataProvider.getProjectFilesEditsHashMap;
 
 public class ProjectGenerator {
     public static final Editor[] editors;
@@ -29,9 +28,12 @@ public class ProjectGenerator {
     public static final TemplateEngine engine;
     public static final Framework[] frameworks;
 
+    public static ProjectMetadataProvider metadataProvider;
+
     static {
         try {
             engine = new TemplateEngine();
+            metadataProvider = new ProjectMetadataProvider(engine);
             editors = FileUtils.fromYaml(Editor[].class, FileUtils.getFileContent(Constantes.EDITOR_YAML));
             projects = FileUtils.fromYaml(Project[].class, FileUtils.getFileContent(Constantes.PROJECT_YAML));
             databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
@@ -113,7 +115,7 @@ public class ProjectGenerator {
         try (Connection connection = database.getConnection(credentials)) {
             // Récupération des entités depuis la base de données
             TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);
-            GenesisGenerator genesisGenerator = new MVCGenerator();
+            GenesisGenerator genesisGenerator = new MVCGenerator(engine);
 
             // Génération des composants MVC pour chaque table
             for (TableMetadata tableMetadata : entities) {
@@ -123,7 +125,7 @@ public class ProjectGenerator {
             // Initialisation des HashMap pour les templates
             HashMap<String, Object> initializeHashMap = getInitialHashMap(projectName, groupLink);
             HashMap<String, Object> altHashMap = ProjectMetadataProvider.getAltHashMap(editor);
-            HashMap<String, Object> projectFilesEditsHashMap = getProjectFilesEditsHashMap(projectName,
+            HashMap<String, Object> projectFilesEditsHashMap = metadataProvider.getProjectFilesEditsHashMap(projectName,
                     groupLink,
                     projectPort,
                     logLevel,
