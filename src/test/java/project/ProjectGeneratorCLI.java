@@ -13,38 +13,6 @@ public class ProjectGeneratorCLI {
         projectGeneratorHandler.generateProject();
     }
 
-    /* TODO : Génération .NET EF Core
-        frameworks.yaml :
-            - Model : juste content OK
-            - ModelDao :
-                - classe Repo extends Repo ... : OK
-                - unique False OK
-            - Service :
-                - Interface : OK
-                - additional file : impl OK
-            - Controller : juste content OK
-        projects.yaml :
-            - projectFilesEdits :
-                - Project.sln : OK
-                - Project.csproj : OK
-                - Program.cs : OK
-                - launchSettings.json : OK
-                - appSettings.json : OK
-                - HttpFile : OK
-                - DAO :
-                    - DbContext : OK
-                    - Repository : OK
-                    - IRepository : OK
-                - IService : OK
-                - projectFiles :
-                    - appSettings.Developpement.json OK
-                - projectFolders : none
-        - Génération de la solution :
-            - renderAndCopyAdditionalFiles :
-                - ModelDao OK
-                - Service ok
-    */
-
     @Test
     void generateProjectSpring() {
         var credentials = new Credentials()
@@ -137,7 +105,7 @@ public class ProjectGeneratorCLI {
                 .setHost("localhost")
                 .setPort("5432")
                 .setSchemaName("public")
-                .setDatabaseName("flm_dev")
+                .setDatabaseName("test_db")
                 .setUser("nomena")
                 .setPwd("root");
 
@@ -152,20 +120,29 @@ public class ProjectGeneratorCLI {
             var framework = ProjectGenerator.frameworks.get(frameworkId);
             var project = ProjectGenerator.projects.get(projectId);
 
-            String projectName = "TestRestNetFlm";
+            String projectName = "TestRestNet";
             String groupLink = "";
-            String projectPort = "9001";
+            String projectPort = "8080";
             String logLevel = "Information";
             String projectDescription = "An ASP.NET BEGIN Project";
             String frameworkVersion = "8.0";
             String languageVersion = "";
-            String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated";
+            String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated/";
 
             ProjectGenerator projectGenerator = new ProjectGenerator();
 
             HashMap<String, String> frameworkConfiguration = new HashMap<>();
             frameworkConfiguration.put("loggingLevel", logLevel);
             frameworkConfiguration.put("frameworkVersion", frameworkVersion);
+
+            //===== USE EUREKA SERVER =======//
+            framework.setUseCloud(true);
+            framework.setUseEurekaServer(true);
+            frameworkConfiguration.put("eurekaServerHttpProtocol", "http");
+            frameworkConfiguration.put("eurekaServerHost", "localhost");
+            frameworkConfiguration.put("eurekaServerPort", "8761");
+            frameworkConfiguration.put("projectNonSecurePort", projectPort);
+            //==============================//
 
             HashMap<String, String> languageConfiguration = new HashMap<>();
             frameworkConfiguration.put("languageVersion", languageVersion);

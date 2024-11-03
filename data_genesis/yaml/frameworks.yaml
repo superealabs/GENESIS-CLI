@@ -416,6 +416,29 @@
         - "6.0"
       defaultOption: "8.0"
 
+  eurekaClientConfigurations:
+    - name: "Eureka Server Http Protocol"
+      variableName: "eurekaServerHttpProtocol"
+      options:
+        - "http"
+        - "https"
+      defaultOption: "http"
+    - name: "Eureka Server Host"
+      variableName: "eurekaServerHost"
+      options:
+        - "localhost"
+      defaultOption: "localhost"
+    - name: "Eureka Server Port"
+      variableName: "eurekaServerPort"
+      options:
+        - "8761"
+      defaultOption: "8761"
+    - name: "Project Non Secure Port For Eureka Server"
+      variableName: "projectNonSecurePort"
+      options:
+        - "8080"
+      defaultOption: "8080"
+
   dependencies: [ ]
 
   model:

@@ -94,6 +94,8 @@ public class ProjectGenerator {
             content = engine.simpleRenderAlt(content, Map.of("spring.application.name", "${spring.application.name}"));
             content = engine.simpleRenderAlt(content, Map.of("server.port", "${server.port}"));
             content = engine.simpleRenderAlt(content, Map.of("spring.datasource.url", "${spring.datasource.url}"));
+            content = engine.simpleRenderAlt(content, Map.of("spring.datasource.url", "${spring.datasource.url}"));
+            content = engine.simpleRenderAlt(content, Map.of("HOSTNAME", "${HOSTNAME}"));
 
             System.out.println("\nEditing file:");
             System.out.println("Rendered destination path: " + destinationFilePath);
