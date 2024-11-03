@@ -58,7 +58,7 @@ public abstract class Database {
     public TableMetadata getEntity(Connection connection, Credentials credentials, String entityName, Language language) throws SQLException, ClassNotFoundException {
         TableMetadata tableMetadata = new TableMetadata();
         tableMetadata.setTableName(entityName);
-        tableMetadata.initialize(connection, credentials,  this, language);
+        tableMetadata.initialize(connection, credentials, this, language);
         return tableMetadata;
     }
 

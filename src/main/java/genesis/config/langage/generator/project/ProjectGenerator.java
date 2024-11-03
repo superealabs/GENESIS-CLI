@@ -79,7 +79,7 @@ public class ProjectGenerator {
             String content = projectFile.getContent();
             String extension = projectFile.getExtension();
 
-            content = engine.altSimpleRender(content,altHashMap);
+            content = engine.altSimpleRender(content, altHashMap);
 
             destinationFilePath = engine.simpleRender(destinationFilePath, initializeHashMap);
             content = engine.render(content, initializeHashMap);
@@ -102,7 +102,7 @@ public class ProjectGenerator {
                                 String hibernateDdlAuto,
                                 String springBootVersion,
                                 String projectDescription,
-                                String languageVersion)  {
+                                String languageVersion) {
 
         PostgreSQLDatabase database = (PostgreSQLDatabase) databases[databaseId];
         Framework framework = frameworks[frameworkId];
@@ -124,19 +124,19 @@ public class ProjectGenerator {
             HashMap<String, Object> initializeHashMap = getInitialHashMap(projectName, groupLink);
             HashMap<String, Object> altHashMap = ProjectMetadataProvider.getAltHashMap(editor);
             HashMap<String, Object> projectFilesEditsHashMap = getProjectFilesEditsHashMap(projectName,
-                                groupLink,
-                                projectPort,
-                                logLevel,
-                                database,
-                                credentials,
-                                language,
-                                hibernateDdlAuto,
-                                springBootVersion,
-                                projectDescription,
-                                languageVersion,
-                                framework,
-                                editor,
-                                entities);
+                    groupLink,
+                    projectPort,
+                    logLevel,
+                    database,
+                    credentials,
+                    language,
+                    hibernateDdlAuto,
+                    springBootVersion,
+                    projectDescription,
+                    languageVersion,
+                    framework,
+                    editor,
+                    entities);
 
 
             // Rendu et copie des dossiers du projet

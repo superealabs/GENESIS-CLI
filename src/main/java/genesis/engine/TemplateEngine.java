@@ -1,10 +1,11 @@
 package genesis.engine;
 
+import org.jetbrains.annotations.NotNull;
 import utils.FileUtils;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 public class TemplateEngine {
@@ -27,13 +28,14 @@ public class TemplateEngine {
     private static final String TAB_TAG = "{{tab}}";
     private static final String NEWLINE_TAG = "{{newline}}";
     private static final String REMOVE_LINE_TAG = "{{removeLine}}";
-    private static final String END_COMMENTARY_TAG = "<$--";
-    private static final String START_COMMENTARY_TAG = "--/$>";
+    private static final String START_COMMENTARY_TAG = "<#";
+    private static final String END_COMMENTARY_TAG = "/#>";
 
     private static final String BLOCK_END = "}}";
     private static final String FUNCTION_OPEN_PARENTHESIS = "(";
     private static final String FUNCTION_CLOSED_PARENTHESIS = ")";
 
+    private Map<String, String> commentMap = new HashMap<>();
 
     private static final Map<String, Function<String, String>> FUNCTIONS_MAP = new HashMap<>();
 
@@ -46,6 +48,10 @@ public class TemplateEngine {
     }
 
     public String simpleRender(String template, Map<String, Object> variables) {
+        return getSimpleRenderedTemplate(template, VARIABLE_PLACEHOLDER_PREFIX, VARIABLE_PLACEHOLDER_SUFFIX, variables);
+    }
+
+    private @NotNull String getSimpleRenderedTemplate(String template, String variablePlaceholderPrefix, String variablePlaceholderSuffix, Map<String, Object> variables) {
         if (template == null || template.isEmpty()) {
             throw new IllegalArgumentException("The template must not be empty.");
         }
@@ -53,8 +59,8 @@ public class TemplateEngine {
         StringBuilder result = new StringBuilder(template);
 
         int start = 0;
-        while ((start = result.indexOf(VARIABLE_PLACEHOLDER_PREFIX, start)) != -1) {
-            int end = result.indexOf(VARIABLE_PLACEHOLDER_SUFFIX, start);
+        while ((start = result.indexOf(variablePlaceholderPrefix, start)) != -1) {
+            int end = result.indexOf(variablePlaceholderSuffix, start);
             if (end == -1) break;
 
             String placeholder = result.substring(start + VARIABLE_PLACEHOLDER_PREFIX.length(), end).trim();
@@ -68,25 +74,7 @@ public class TemplateEngine {
     }
 
     public String altSimpleRender(String template, Map<String, Object> variables) {
-        if (template == null || template.isEmpty()) {
-            throw new IllegalArgumentException("The template must not be empty.");
-        }
-
-        StringBuilder result = new StringBuilder(template);
-
-        int start = 0;
-        while ((start = result.indexOf(VARIABLE_PLACEHOLDER_PREFIX_ALT, start)) != -1) {
-            int end = result.indexOf(VARIABLE_PLACEHOLDER_SUFFIX_ALT, start);
-            if (end == -1) break;
-
-            String placeholder = result.substring(start + VARIABLE_PLACEHOLDER_PREFIX.length(), end).trim();
-            String value = evaluatePlaceholderSimple(placeholder, variables);
-            result.replace(start, end + VARIABLE_PLACEHOLDER_SUFFIX.length(), value);
-
-            start += value.length();
-        }
-
-        return result.toString();
+        return getSimpleRenderedTemplate(template, VARIABLE_PLACEHOLDER_PREFIX_ALT, VARIABLE_PLACEHOLDER_SUFFIX_ALT, variables);
     }
 
     private String evaluatePlaceholderSimple(String placeholder, Map<String, Object> variables) {
@@ -124,17 +112,50 @@ public class TemplateEngine {
 
         StringBuilder result = new StringBuilder(template);
 
+        protectComments(result);
+
         evaluateLoops(result, variables);
-
         evaluateConditionals(result, variables);
-
         replaceVariables(result, variables);
-
         processSpecialTags(result);
 
-        checkUndefinedVariables(result);
+        restoreComments(result);
 
         return result.toString();
+    }
+
+    private void protectComments(StringBuilder template) {
+        int startIndex = 0;
+        while ((startIndex = template.indexOf(START_COMMENTARY_TAG, startIndex)) != -1) {
+            int endIndex = template.indexOf(END_COMMENTARY_TAG, startIndex);
+            if (endIndex == -1) break;
+
+            endIndex += END_COMMENTARY_TAG.length();
+
+            String comment = template.substring(startIndex, endIndex);
+            String marker = generateUniqueMarker(startIndex);
+            commentMap.put(marker, comment);
+
+            template.replace(startIndex, endIndex, marker);
+            startIndex += marker.length();
+        }
+    }
+
+    private void restoreComments(StringBuilder template) {
+        for (Map.Entry<String, String> entry : commentMap.entrySet()) {
+            String marker = entry.getKey();
+            String comment = entry.getValue();
+
+            int index = template.indexOf(marker);
+            if (index != -1) {
+                template.replace(index, index + marker.length(), comment);
+            }
+        }
+        commentMap.clear();
+    }
+
+    private String generateUniqueMarker(int position) {
+        return String.format("__COMMENT_%d__", position);
     }
 
     private void evaluateLoops(StringBuilder template, Map<String, Object> variables) throws Exception {
@@ -303,7 +324,6 @@ public class TemplateEngine {
     }
 
 
-
     private void replaceVariables(StringBuilder template, Map<String, Object> variables) {
         int start;
         while ((start = template.indexOf(VARIABLE_PLACEHOLDER_PREFIX)) != -1) {
@@ -346,19 +366,6 @@ public class TemplateEngine {
         int start;
         while ((start = template.indexOf(placeholder)) != -1) {
             template.replace(start, start + placeholder.length(), value);
-        }
-    }
-
-    private void checkUndefinedVariables(StringBuilder template) throws Exception {
-        int start;
-        while ((start = template.indexOf(VARIABLE_PLACEHOLDER_PREFIX)) != -1) {
-            int end = template.indexOf(VARIABLE_PLACEHOLDER_SUFFIX, start);
-            if (end != -1) {
-                String undefinedVariable = template.substring(start, end + 1);
-                throw new Exception("Undefined variable found: " + undefinedVariable);
-            } else {
-                break;
-            }
         }
     }
 
@@ -427,7 +434,7 @@ public class TemplateEngine {
     private void processSpecialTags(StringBuilder template) {
         replaceAllOccurrences(template, NEWLINE_TAG, "\n");
         replaceAllOccurrences(template, TAB_TAG, "\t");
-        
+
         // Supprimer les lignes contenant le tag {{removeLine}}
         int start;
         while ((start = template.indexOf(REMOVE_LINE_TAG)) != -1) {

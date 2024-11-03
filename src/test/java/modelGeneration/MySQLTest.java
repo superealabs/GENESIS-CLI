@@ -61,8 +61,8 @@ public class MySQLTest {
             System.out.println(language);
             System.out.println(framework);
 
-            System.out.println("\n====== GENERATED ======\n"+model);
-            System.out.println("\n====== GENERATED ======\n"+dao);
+            System.out.println("\n====== GENERATED ======\n" + model);
+            System.out.println("\n====== GENERATED ======\n" + dao);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -94,8 +94,8 @@ public class MySQLTest {
             System.out.println(language);
             System.out.println(framework);
 
-            System.out.println("\n====== GENERATED ======\n"+model);
-            System.out.println("\n====== GENERATED ======\n"+dao);
+            System.out.println("\n====== GENERATED ======\n" + model);
+            System.out.println("\n====== GENERATED ======\n" + dao);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

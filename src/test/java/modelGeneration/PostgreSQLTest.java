@@ -67,7 +67,7 @@ public class PostgreSQLTest {
 //                mvcGenerator.generateService(framework, language, tableMetadata, projectName, groupLink);
 //                mvcGenerator.generateController(framework, language, tableMetadata, projectName, groupLink);
 
-                String layout = mvcGenerator.generateView(framework,language,editor, tableMetadata, "Test", "labs");
+                String layout = mvcGenerator.generateView(framework, language, editor, tableMetadata, "Test", "labs");
                 System.out.println("\n====== GENERATED ======\n" + layout);
             }
         } catch (Exception e) {

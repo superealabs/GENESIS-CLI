@@ -1,12 +1,9 @@
 package genesis.config.langage;
 
+import genesis.config.CustomFile;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.util.Map;
-
-import genesis.config.CustomFile;
 
 @Getter
 @Setter

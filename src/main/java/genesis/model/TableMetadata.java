@@ -12,7 +12,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static utils.FileUtils.*;
+import static utils.FileUtils.toCamelCase;
 
 
 @Setter

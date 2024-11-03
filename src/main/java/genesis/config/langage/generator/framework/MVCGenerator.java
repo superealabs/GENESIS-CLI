@@ -138,7 +138,7 @@ public class MVCGenerator implements GenesisGenerator {
         String templateContent = loadListViewTemplate(editor);
 
         // Render les attributs specifiques
-        HashMap<String, Object> altMap =ProjectMetadataProvider.getAltHashMap(editor);
+        HashMap<String, Object> altMap = ProjectMetadataProvider.getAltHashMap(editor);
         String firstResult = engine.altSimpleRender(templateContent, altMap);
 
         // Render les attributs intermediaires
@@ -182,13 +182,13 @@ public class MVCGenerator implements GenesisGenerator {
         }
 
         generateListView(framework, language, editor, tableMetadata, projectName, groupLink);
-        generateCreateView(framework, language, editor, tableMetadata, projectName,groupLink);
+        generateCreateView(framework, language, editor, tableMetadata, projectName, groupLink);
 
         return "";
     }
 
     @Override
-    public void generateViewMainLayout(Framework framework, Language language, Editor editor,TableMetadata[] tableMetadatas, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
+    public void generateViewMainLayout(Framework framework, Language language, Editor editor, TableMetadata[] tableMetadatas, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
         if (language.getId() != framework.getLangageId()) {
             throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
         }
@@ -202,7 +202,7 @@ public class MVCGenerator implements GenesisGenerator {
 
         HashMap<String, Object> metadataFinally = getHashMapIntermediaire(tableMetadata, projectName, groupLink);
 
-        result =  engine.render(result, metadataFinally);
+        result = engine.render(result, metadataFinally);
 
         metadataFinally.putAll(metadata);
         FileUtils.overwriteFileContentByName(engine.simpleRender(editor.getLayout().getDestinationPath(), metadataFinally), editor.getLayout().getName(), result);

@@ -3,7 +3,6 @@ package genesis.config.langage.generator.framework;
 import genesis.config.langage.Editor;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
-import genesis.config.langage.Project;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.engine.TemplateEngine;
@@ -231,33 +230,7 @@ public class FrameworkMetadataProvider {
         return fieldMap;
     }
 
-    private Map<String, Object> getHashMapDaoUnique(Framework framework, TableMetadata[] tableMetadata, String projectName) throws Exception {
-        String packageDefault;
-        packageDefault = framework.getModelDao().getModelDaoSavePath();
-
-        Database database = tableMetadata[0].getDatabase();
-        String connectionString = database.getConnectionString().get(framework.getLangageId());
-        Map<String, Object> connectionStringMetadata = getCredentialsHashMap(database);
-        connectionString = engine.render(connectionString, connectionStringMetadata);
-
-        Map<String, Object> metadata = new HashMap<>(Map.of(
-                "projectName", projectName,
-                "packageValue", packageDefault,
-                "DBType", tableMetadata[0].getDatabase().getDaoName().get(framework.getLangageId()),
-                "connectionString", connectionString)
-        );
-
-        List<String> fields = new ArrayList<>();
-        for (TableMetadata tableMetadatum : tableMetadata) {
-            fields.add(tableMetadatum.getClassName());
-        }
-
-        metadata.put("entities", fields);
-
-        return metadata;
-    }
-
-    public static HashMap<String, Object> getDisplayHashMap(Editor editor){
+    public static HashMap<String, Object> getDisplayHashMap(Editor editor) {
         HashMap<String, Object> metadata = new HashMap<>();
 
         /*-- Header --*/
@@ -316,6 +289,32 @@ public class FrameworkMetadataProvider {
         metadata.putAll(fieldsMap);
         metadata.putAll(languageMetadata);
         metadata.putAll(primaryListViewHashMap);
+
+        return metadata;
+    }
+
+    private Map<String, Object> getHashMapDaoUnique(Framework framework, TableMetadata[] tableMetadata, String projectName) throws Exception {
+        String packageDefault;
+        packageDefault = framework.getModelDao().getModelDaoSavePath();
+
+        Database database = tableMetadata[0].getDatabase();
+        String connectionString = database.getConnectionString().get(framework.getLangageId());
+        Map<String, Object> connectionStringMetadata = getCredentialsHashMap(database);
+        connectionString = engine.render(connectionString, connectionStringMetadata);
+
+        Map<String, Object> metadata = new HashMap<>(Map.of(
+                "projectName", projectName,
+                "packageValue", packageDefault,
+                "DBType", tableMetadata[0].getDatabase().getDaoName().get(framework.getLangageId()),
+                "connectionString", connectionString)
+        );
+
+        List<String> fields = new ArrayList<>();
+        for (TableMetadata tableMetadatum : tableMetadata) {
+            fields.add(tableMetadatum.getClassName());
+        }
+
+        metadata.put("entities", fields);
 
         return metadata;
     }

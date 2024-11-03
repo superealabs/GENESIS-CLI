@@ -4,8 +4,6 @@ import genesis.config.langage.generator.project.ProjectGenerator;
 import genesis.connexion.Credentials;
 import org.junit.jupiter.api.Test;
 
-import java.util.Scanner;
-
 public class ProjectGeneratorCLI {
     public static void main(String[] args) {
         ProjectGeneratorHandler projectGeneratorHandler = new ProjectGeneratorHandler();
@@ -24,24 +22,24 @@ public class ProjectGeneratorCLI {
                 .setUseSSL(true)
                 .setAllowPublicKeyRetrieval(true);
 
-            int editorId = 0;
-            int projectId = 0;
-            int databaseId = 1;
-            int languageId = 0;
-            int frameworkId = 0;
-            String projectName = "layout1";
-            String groupLink = "labs";
-            String projectPort = "8000";
-            String logLevel = "INFO";
-            String hibernateDdlAuto = "none";
-            String frameworkVersion = "3.0.1";
-            String projectDescription = "Test Description";
-            String languageVersion = "17";
+        int editorId = 0;
+        int projectId = 0;
+        int databaseId = 1;
+        int languageId = 0;
+        int frameworkId = 0;
+        String projectName = "layout1";
+        String groupLink = "labs";
+        String projectPort = "8000";
+        String logLevel = "INFO";
+        String hibernateDdlAuto = "none";
+        String frameworkVersion = "3.0.1";
+        String projectDescription = "Test Description";
+        String languageVersion = "17";
 
-            var projectGenerator = new ProjectGenerator();
+        var projectGenerator = new ProjectGenerator();
 
-            projectGenerator.generateProject(databaseId, languageId, frameworkId, projectId, editorId, credentials, projectName, groupLink, projectPort, logLevel, hibernateDdlAuto, frameworkVersion, projectDescription, languageVersion);
-            System.out.println("\nProject generated successfully! 👨🏽‍💻");
+        projectGenerator.generateProject(databaseId, languageId, frameworkId, projectId, editorId, credentials, projectName, groupLink, projectPort, logLevel, hibernateDdlAuto, frameworkVersion, projectDescription, languageVersion);
+        System.out.println("\nProject generated successfully! 👨🏽‍💻");
 
 
     }

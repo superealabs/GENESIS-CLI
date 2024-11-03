@@ -17,12 +17,12 @@ import java.util.List;
 
 
 public class TableMetadataTest {
+    Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
+    Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
     private Connection connection;
     private Credentials credentials;
     private Database database;
     private Language language;
-    Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
-    Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
 
     public TableMetadataTest() throws FileNotFoundException {
     }

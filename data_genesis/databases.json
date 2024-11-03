@@ -7,10 +7,10 @@
         "groupId": "com.mysql",
         "artifactId": "mysql-connector-j"
       },
-        "2": {
-            "groupId": "",
-            "artifactId": "MySql.EntityFrameworkCore"
-        }
+      "2": {
+        "groupId": "",
+        "artifactId": "MySql.EntityFrameworkCore"
+      }
     },
     "driverType": "",
     "serviceName": "",

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.w3.org/1999/xhtml" layout:decorate="~{layout/main_layout}" lang="fr">
+<html lang="fr" layout:decorate="~{layout/main_layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
 
-<div layout:fragment="content" class="row">
+<div class="row" layout:fragment="content">
 
     <!-- Page header -->
     <div class="row align-items-center justify-content-between">
@@ -9,7 +9,7 @@
             <h2 class="fw-bold py-3 mb-3"><span class="text-muted fw-light">List of employe</span></h2>
         </div>
         <div class="col-6 text-end">
-            <button class="btn btn-primary mb-3" th:href="@{lowerCase(classNameLink)/create-employe}" >Create</button>
+            <button class="btn btn-primary mb-3" th:href="@{lowerCase(classNameLink)/create-employe}">Create</button>
         </div>
     </div>
 
@@ -31,35 +31,35 @@
                         </thead>
                         <tbody>
                         <tr th:each="employe : <$--Employes<$--}--$>">
-                            <td class="text-truncate align-middle mt-3" >
+                            <td class="text-truncate align-middle mt-3">
                             </td>
-                            <td class="text-truncate align-middle mt-3" >
+                            <td class="text-truncate align-middle mt-3">
                             </td>
-                            <td class="text-truncate align-middle mt-3" >
+                            <td class="text-truncate align-middle mt-3">
                             </td>
-                            <td class="text-truncate align-middle mt-3" >
+                            <td class="text-truncate align-middle mt-3">
                             </td>
-                            <td class="text-truncate align-middle mt-3" >
+                            <td class="text-truncate align-middle mt-3">
                             </td>
-                            
+
                             <td class="align-middle">
                                 <div class="row">
                                     <div class="col-lg-3 col-md-2 order-0">
                                         <div class="mt-0">
                                             <!-- Button trigger modal -->
                                             <button
-                                                    type="button"
                                                     class="btn btn-info"
                                                     data-bs-toggle="modal"
                                                     th:attr="data-bs-target='#updateModalCenter_'"
+                                                    type="button"
                                             >
                                                 <i class="bx bx-wallet"></i> Update
                                             </button>
 
                                             <!-- Modal -->
-                                            <div class="modal fade" th:id="'updateModalCenter_'"
+                                            <div aria-hidden="true" class="modal fade"
                                                  tabindex="-1"
-                                                 aria-hidden="true">
+                                                 th:id="'updateModalCenter_'">
                                                 <div class="modal-dialog modal-dialog-centered modal-lg"
                                                      role="document">
                                                     <div class="modal-content">
@@ -67,10 +67,10 @@
                                                             <h3 class="modal-title" id="updateModalCenterTitle">
                                                                 Modify this element</h3>
                                                             <button
-                                                                    type="button"
+                                                                    aria-label="close"
                                                                     class="btn-close"
                                                                     data-bs-dismiss="modal"
-                                                                    aria-label="close"
+                                                                    type="button"
                                                             ></button>
                                                         </div>
                                                         <div class="modal-body">
@@ -85,18 +85,18 @@
                                         <div class="mt-0">
                                             <!-- Button trigger modal -->
                                             <button
-                                                    type="button"
                                                     class="btn btn-success"
                                                     data-bs-toggle="modal"
                                                     th:attr="data-bs-target='#validateModalCenter_'"
+                                                    type="button"
                                             >
                                                 <i class="bx bx-check"></i> Confirm
                                             </button>
 
                                             <!-- Modal -->
-                                            <div class="modal fade" th:id="'validateModalCenter_'"
+                                            <div aria-hidden="true" class="modal fade"
                                                  tabindex="-1"
-                                                 aria-hidden="true">
+                                                 th:id="'validateModalCenter_'">
                                                 <div class="modal-dialog modal-dialog-centered modal-lg"
                                                      role="document">
                                                     <div class="modal-content">
@@ -104,19 +104,19 @@
                                                             <h3 class="modal-title" id="validateModalCenterTitle">
                                                                 Confirm</h3>
                                                             <button
-                                                                    type="button"
+                                                                    aria-label="close"
                                                                     class="btn-close"
                                                                     data-bs-dismiss="modal"
-                                                                    aria-label="close"
+                                                                    type="button"
                                                             ></button>
                                                         </div>
                                                         <div class="modal-body">
                                                             <p>Do you want to validate the changes to this element?</p>
-                                                            <button type="button" id="Cancel"
-                                                                    class="btn btn-secondary">Cancel
+                                                            <button class="btn btn-secondary" id="Cancel"
+                                                                    type="button">Cancel
                                                             </button>
-                                                            <button type="button" id="Confirm"
-                                                                    class="btn btn-success">Confirm
+                                                            <button class="btn btn-success" id="Confirm"
+                                                                    type="button">Confirm
                                                             </button>
                                                         </div>
                                                     </div>
@@ -128,18 +128,18 @@
                                         <div class="mt-0">
                                             <!-- Button trigger modal -->
                                             <button
-                                                    type="button"
                                                     class="btn btn-danger"
                                                     data-bs-toggle="modal"
                                                     th:attr="data-bs-target='#cancelModalCenter_'"
+                                                    type="button"
                                             >
                                                 <i class="bx bx-trash"></i> Cancel
                                             </button>
 
                                             <!-- Modal -->
-                                            <div class="modal fade" th:id="'cancelModalCenter_'"
+                                            <div aria-hidden="true" class="modal fade"
                                                  tabindex="-1"
-                                                 aria-hidden="true">
+                                                 th:id="'cancelModalCenter_'">
                                                 <div class="modal-dialog modal-dialog-centered modal-lg"
                                                      role="document">
                                                     <div class="modal-content">
@@ -147,19 +147,19 @@
                                                             <h3 class="modal-title" id="cancelModalCenterTitle">
                                                                 Cancellation</h3>
                                                             <button
-                                                                    type="button"
+                                                                    aria-label="close"
                                                                     class="btn-close"
                                                                     data-bs-dismiss="modal"
-                                                                    aria-label="close"
+                                                                    type="button"
                                                             ></button>
                                                         </div>
                                                         <div class="modal-body">
                                                             <p>Do you want to undo the changes made to this element?</p>
-                                                            <button type="button" id="editEvent"
-                                                                    class="btn btn-secondary">Keep the changes
+                                                            <button class="btn btn-secondary" id="editEvent"
+                                                                    type="button">Keep the changes
                                                             </button>
-                                                            <button type="button" id="deleteEvent"
-                                                                    class="btn btn-danger">Cancel
+                                                            <button class="btn btn-danger" id="deleteEvent"
+                                                                    type="button">Cancel
                                                             </button>
                                                         </div>
                                                     </div>

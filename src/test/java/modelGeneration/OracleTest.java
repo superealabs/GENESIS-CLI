@@ -14,7 +14,9 @@ import utils.FileUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 
 public class OracleTest {
     Credentials credentials;
@@ -60,8 +62,8 @@ public class OracleTest {
             System.out.println(language);
             System.out.println(framework);
 
-            System.out.println("\n====== GENERATED ======\n"+model);
-            System.out.println("\n====== GENERATED ======\n"+dao);
+            System.out.println("\n====== GENERATED ======\n" + model);
+            System.out.println("\n====== GENERATED ======\n" + dao);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -92,13 +94,12 @@ public class OracleTest {
             System.out.println(language);
             System.out.println(framework);
 
-            System.out.println("\n====== GENERATED ======\n"+model);
-            System.out.println("\n====== GENERATED ======\n"+dao);
+            System.out.println("\n====== GENERATED ======\n" + model);
+            System.out.println("\n====== GENERATED ======\n" + dao);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
 
 
     @Test
@@ -120,7 +121,7 @@ public class OracleTest {
             System.out.println("Driver Version: " + driverVersion);
             System.out.println("Major Version: " + majorVersion);
             System.out.println("Minor Version: " + minorVersion);
-            System.out.println("Database Product Name: " + databaseProductName+"\n\n");
+            System.out.println("Database Product Name: " + databaseProductName + "\n\n");
 
 /*
             ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"});

@@ -6,7 +6,7 @@
 CREATE TABLE Departement
 (
     DepartementID SERIAL PRIMARY KEY,
-    Nom    VARCHAR(50) NOT NULL
+    Nom           VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE Employe
@@ -15,7 +15,7 @@ CREATE TABLE Employe
     Nom           VARCHAR(50) NOT NULL,
     Prenom        VARCHAR(50) NOT NULL,
     DateNaissance DATE,
-    DepartementID        INT,
+    DepartementID INT,
     FOREIGN KEY (DepartementID) REFERENCES Departement (DepartementID)
 );
 

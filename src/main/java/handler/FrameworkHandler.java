@@ -1,12 +1,12 @@
 package handler;
 
-import utils.FileUtils;
-import genesis.config.Constantes;   
-import genesis.config.langage.Language;
+import genesis.config.Constantes;
 import genesis.config.langage.Framework;
+import genesis.config.langage.Language;
+import utils.FileUtils;
 
-import java.util.Scanner;
 import java.io.IOException;
+import java.util.Scanner;
 
 public class FrameworkHandler {
 
@@ -14,12 +14,12 @@ public class FrameworkHandler {
         System.out.println("Choose a framework:");
         Framework[] frameworks_mvc = FileUtils.fromJson(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_YAML));
         for (int i = 1; i < frameworks_mvc.length; i++) {
-            if ( frameworks_mvc[i].getLangageId() == language.getId() ) {
+            if (frameworks_mvc[i].getLangageId() == language.getId()) {
                 System.out.println((i + 1) + ") " + frameworks_mvc[i].getName());
             }
         }
         System.out.print(">");
-        return frameworks_mvc[scanner.nextInt() -1];
+        return frameworks_mvc[scanner.nextInt() - 1];
     }
 
 }

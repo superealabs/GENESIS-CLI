@@ -22,6 +22,7 @@ public class ThymeleafConfig {
         templateEngine.setEnableSpringELCompiler(true);  // Pour la compilation des expressions Spring EL
         return templateEngine;
     }
+
     @Bean
     public ITemplateResolver templateResolver() {
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();

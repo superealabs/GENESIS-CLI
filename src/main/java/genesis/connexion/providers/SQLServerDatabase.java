@@ -22,7 +22,7 @@ public class SQLServerDatabase extends Database {
     @Override
     protected String getJdbcUrl(Credentials credentials) {
         String port;
-        if (credentials.getPort()!=null)
+        if (credentials.getPort() != null)
             port = credentials.getPort();
         else port = getPort();
         return String.format("jdbc:sqlserver://%s:%s;databaseName=%s;user=%s;password=%s;encrypt=%s;trustServerCertificate=%s;",

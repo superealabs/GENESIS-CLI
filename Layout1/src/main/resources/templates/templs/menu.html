@@ -1,62 +1,62 @@
 <!-- Menu -->
-<aside th:fragment="layout-menu"
- id="layout-menu" 
-	class="layout-menu menu-vertical menu bg-menu-theme">
-	<div class="app-brand demo">
-		<a href="/" class="app-brand-link">
+<aside class="layout-menu menu-vertical menu bg-menu-theme"
+       id="layout-menu"
+       th:fragment="layout-menu">
+    <div class="app-brand demo">
+        <a class="app-brand-link" href="/">
 			<span class="app-brand-logo demo">
-				<img th:src="@{/assets/img/favicon/logo-projet-universel.jpg}"
- 
-					alt="Logo" style="width: 45px; height: auto;">
+				<img alt="Logo"
+
+                     style="width: 45px; height: auto;" th:src="@{/assets/img/favicon/logo-projet-universel.jpg}">
 			</span>
-			<span class="app-brand-text menu-text fw-bolder ms-2">Layout1 </span>
-		</a>
+            <span class="app-brand-text menu-text fw-bolder ms-2">Layout1 </span>
+        </a>
 
-		<a href="javascript:void(0);"
-		  class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
-			<i class="bx bx-chevron-left bx-sm align-middle"></i>
-		</a>
-	</div>
+        <a class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none"
+           href="javascript:void(0);">
+            <i class="bx bx-chevron-left bx-sm align-middle"></i>
+        </a>
+    </div>
 
-	<div class="menu-inner-shadow"></div>
+    <div class="menu-inner-shadow"></div>
 
-	<div class="menu">
-		<ul class="menu-inner py-1">
-			<!-- List Menu -->
-			<li class="menu-header small text-uppercase">
-				<span class="menu-header-text">CRUD</span>
-			</li>
+    <div class="menu">
+        <ul class="menu-inner py-1">
+            <!-- List Menu -->
+            <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">CRUD</span>
+            </li>
 
-			<li class="menu-item">
-				<a href="javascript:void(0);" class="menu-link menu-toggle">
-					<i class="menu-icon tf-icons bx bx-list-plus"></i>
-					<div data-i18n="List">List</div>
-				</a>
+            <li class="menu-item">
+                <a class="menu-link menu-toggle" href="javascript:void(0);">
+                    <i class="menu-icon tf-icons bx bx-list-plus"></i>
+                    <div data-i18n="List">List</div>
+                </a>
 
-				<ul class="menu-sub">
-				<li class="menu-item">
-						<a th:href="@{departements}" class="menu-link">
-							<div data-i18n="list-departement">List departement</div>
-						</a>
-					</li>
-				<li class="menu-item">
-						<a th:href="@{employes}" class="menu-link">
-							<div data-i18n="list-employe">List employe</div>
-						</a>
-					</li>
-				
-				</ul>
-			</li>
-		</ul>
-	</div>
+                <ul class="menu-sub">
+                    <li class="menu-item">
+                        <a class="menu-link" th:href="@{departements}">
+                            <div data-i18n="list-departement">List departement</div>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a class="menu-link" th:href="@{employes}">
+                            <div data-i18n="list-employe">List employe</div>
+                        </a>
+                    </li>
 
-<!-- 
-	<div class="container">
-		<div class="menu-item">
-			<a th:href="@{/logout}" class="menu-link">
-				<i class="bx bx-log-out"></i>Log out
-			</a>
-		</div>
-	</div> -->
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <!--
+        <div class="container">
+            <div class="menu-item">
+                <a th:href="@{/logout}" class="menu-link">
+                    <i class="bx bx-log-out"></i>Log out
+                </a>
+            </div>
+        </div> -->
 
 </aside>

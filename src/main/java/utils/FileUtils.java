@@ -1,22 +1,22 @@
 package utils;
 
-import genesis.connexion.Database;
-import com.google.gson.GsonBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import genesis.connexion.adapter.DatabaseTypeAdapter;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.google.gson.GsonBuilder;
+import genesis.connexion.Database;
+import genesis.connexion.adapter.DatabaseTypeAdapter;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Scanner;
-import java.nio.file.Files;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Scanner;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
-import java.time.LocalDateTime;
 import java.util.zip.ZipInputStream;
 
 public class FileUtils {
@@ -223,7 +223,6 @@ public class FileUtils {
 
         return builder.create().fromJson(json, clazz);
     }
-
 
 
     public static <T> T fromYamlFile(Class<T> clazz, String yamlFilePath) throws IOException {

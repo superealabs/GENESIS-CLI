@@ -22,7 +22,7 @@ public class MySQLDatabase extends Database {
     @Override
     protected String getJdbcUrl(Credentials credentials) {
         String port;
-        if (credentials.getPort()!=null)
+        if (credentials.getPort() != null)
             port = credentials.getPort();
         else port = getPort();
         return String.format("jdbc:mysql://%s:%s/%s?user=%s&password=%s&useSSL=%s&allowPublicKeyRetrieval=%s",

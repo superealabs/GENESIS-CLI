@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Controller
 public class HomeController {
 
-	@GetMapping
-	public String index() {
-	    return "index";
-	}
+    @GetMapping
+    public String index() {
+        return "index";
+    }
 }
