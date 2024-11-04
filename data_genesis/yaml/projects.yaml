@@ -122,7 +122,10 @@
         using System.Net;
         using System.Net.NetworkInformation;
         using System.Net.Sockets;
-        using Steeltoe.Discovery.Client;{{/if}}
+        using Steeltoe.Discovery.Client;
+        using Steeltoe.Management.Endpoint.Health;
+        using Steeltoe.Management.Endpoint;{{/if}}
+        using Microsoft.OpenApi.Models;
         using Microsoft.EntityFrameworkCore;
         using ${majStart(projectName)}.Data;
         using ${majStart(projectName)}.Repositories.Implementation;
@@ -132,23 +135,43 @@
 
         var builder = WebApplication.CreateBuilder(args);
         
+        builder.Services.AddSwaggerGen(c =>
+        {
+          c.SwaggerDoc("v1", new OpenApiInfo
+          {
+            Title = "${projectName}",               
+            Version = "v1",                       
+            Description = "${projectDescription}"
+          });
+        });
+        
         {{#if useEurekaServer}}
+        // Add Steeltoe Actuators for application monitoring and diagnostics
+        builder.Services.AddAllActuators(builder.Configuration);
+        builder.Services.AddHealthActuator();
         builder.Services.AddInfoActuator();
         
-        // Set Eureka IP address dynamically by iterating through the network interfaces
+        // Retrieve the local IP address dynamically
         string localIpAddress = NetworkInterface
-                                              .GetAllNetworkInterfaces()
-                                              .SelectMany(nic => nic.GetIPProperties().UnicastAddresses)
-                                              .Where(addr => addr.Address.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(addr.Address))
-                                              .Select(addr => addr.Address.ToString())
-                                              .FirstOrDefault() ?? "localhost";
+              .GetAllNetworkInterfaces()
+              .SelectMany(nic => nic.GetIPProperties().UnicastAddresses)
+              .Where(addr => addr.Address.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(addr.Address))
+              .Select(addr => addr.Address.ToString())
+              .FirstOrDefault() ?? "127.0.0.1";
         
+        // Configure Kestrel to listen on both the machine's IP address and localhost
+        builder.WebHost.ConfigureKestrel(options =>
+        {
+          options.Listen(IPAddress.Parse(localIpAddress), ${projectPort});
+          options.Listen(IPAddress.Loopback, ${projectPort});
+        });
+        
+        // Set the IP address in configuration for Eureka registration
         builder.Configuration["eureka:instance:ipAddress"] = localIpAddress;
         
-        // Add Eureka Discovery Client
-        builder.Services.AddDiscoveryClient(builder.Configuration);
-        {{/if}}
-
+        // Add Eureka Discovery Client for service registration with Eureka server
+        builder.Services.AddDiscoveryClient(builder.Configuration);{{/if}}
+        
         // Add services to the container.
         builder.Services.AddDbContext<${majStart(projectName)}Context>(options =>
             options.Use${daoName}(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -178,10 +201,14 @@
         }
 
         app.UseHttpsRedirection();
-        app.UseAuthorization();
+        {{#if useEurekaServer}}
+        // Map all actuators and controllers directly
+        app.MapAllActuators(_ => { });{{/if}}
         app.MapControllers();
-
+        
+        app.UseAuthorization();
         app.Run();
+
       destinationPath: "${destinationFolder}/${majStart(projectName)}/${majStart(projectName)}/"
 
     - fileType: "HttpFile"
@@ -234,13 +261,23 @@
             "Management": {
               "Endpoints": {
                 "Actuator": {
-                  "Path": "/actuator",
-                  "Enabled": true
+                  "Exposure": {
+                    "Include": [
+                      "health",
+                      "info",
+                      "*"
+                    ]
+                  }
+                },
+                "Health": {
+                  "ShowDetails": "Always"
                 },
                 "Info": {
-                  "Id": "info",
-                  "Enabled": true,
-                  "Path": "/info"
+                  "Application": {
+                    "name": "${projectName}",
+                    "description": "${projectDescription}",
+                    "version": "0.0.1-SNAPSHOT"
+                  }
                 }
               }
             }
@@ -271,9 +308,10 @@
                 <PackageReference Include="${DBartifactId}" Version="${frameworkVersion}.0"/>{{/if}}
                 <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0"/>
                 {{#if useEurekaServer}}<PackageReference Include="Steeltoe.Discovery.Eureka" Version="3.2.0"/>
+                <PackageReference Include="Steeltoe.Management.Endpoint.Info" Version="1.1.0" />
+                <PackageReference Include="Steeltoe.Management.Endpoint.Health" Version="1.1.0" />
                 <PackageReference Include="Steeltoe.Management.EndpointCore" Version="3.2.0" />
-                <PackageReference Include="Steeltoe.Management.Endpoint.Info" Version="3.2.0" />
-                {{/if}}
+                <PackageReference Include="Steeltoe.Management.TracingCore" Version="3.2.0" />{{/if}}
             </ItemGroup>
         </Project>
 

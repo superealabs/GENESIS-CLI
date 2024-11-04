@@ -73,6 +73,17 @@
             root: ${loggingLevel}
             {{#if useDB}}org.hibernate.SQL: ${loggingLevel}{{/if}}
         
+        springdoc:
+          api-docs:
+            path: /v3/api-docs
+          swagger-ui:
+            path: /swagger-ui.html
+            display-name: "${projectName} API"
+          info:
+            title: "${projectName}"
+            description: "${projectDescription}"
+            version: "1.0.0"
+        
         {{#if useEurekaServer}}
         eureka:
           client:
