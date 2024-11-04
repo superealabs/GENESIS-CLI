@@ -3,11 +3,11 @@ info:
   description: |
     Voici une description détaillée de mon application :
     
-      Elle utilise des variables comme ${variable} et des structures {key: value}.
+      Elle utilise des variables comme #{variable} et des structures {key: value}.
           Les caractères spéciaux $, {, }, etc., sont conservés tels quels.
     
     Exemple de configuration :
-      database.url=${DB_URL}
+      database.url=#{DB_URL}
         database.username=admin
           database.password={encrypted_password}
   version: 1.0.0

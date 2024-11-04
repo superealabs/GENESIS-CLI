@@ -149,7 +149,6 @@ find_maven_basedir() {
       break
     fi
     # workaround for JBEAP-8937 (on Solaris 10/Sparc)
-    if [ -d "${wdir}" ]; then
       wdir=$(cd "$wdir/.." || exit 1; pwd)
     fi
     # end of workaround
@@ -180,7 +179,6 @@ if [ -z "$BASE_DIR" ]; then
   exit 1;
 fi
 
-MAVEN_PROJECTBASEDIR=${MAVEN_BASEDIR:-"$BASE_DIR"}; export MAVEN_PROJECTBASEDIR
 log "$MAVEN_PROJECTBASEDIR"
 
 ##########################################################################################

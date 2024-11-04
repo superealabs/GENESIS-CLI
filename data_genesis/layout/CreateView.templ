@@ -2,7 +2,7 @@
     <div class="row g-4">
         <div class="col-sm-12 col-xl-6 offset-3">
             <div class="bg-secondary rounded h-100 p-4">
-                <h6 class="mb-4">List de ${lowerCase(className)}</h6>
+                <h6 class="mb-4">List de #{lowerCase(className)}</h6>
                 <table class="table">
                     <thead>
                         <tr>
@@ -10,25 +10,25 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each=" e: ${o}">
+                        <tr th:each=" e: #{o}">
                                 [viewTableLine] //mivadika inona
                                 <td>
-                                    <button type="button" th:class="'btn btn-primary '+${crud_button}" data-bs-toggle="modal"
-                                        th:data-bs-target="'#modifiermodal'+${e.get${majStart(primaryName)}()}">
+                                    <button type="button" th:class="'btn btn-primary '+#{crud_button}" data-bs-toggle="modal"
+                                        th:data-bs-target="'#modifiermodal'+#{e.get#{majStart(primaryName)}()}">
                                         <p><i class="bi bi-pencil"></i>Modifier</p>
                                     </button>
-                                    <div class="modal fade" th:id="'updateModal'+${e.get[primaryNameMaj]()}" tabindex="-1"
+                                    <div class="modal fade" th:id="'updateModal'+#{e.get[primaryNameMaj]()}" tabindex="-1"
                                         aria-labelledby="updateModalLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
-                                                <form th:action="'/update${lowerCase(className)}.do?indice_actu='+${indice_actu}" method="post"> //atao inona indice actu, dia aiza izy no initialiser
+                                                <form th:action="'/update#{lowerCase(className)}.do?indice_actu='+#{indice_actu}" method="post"> //atao inona indice actu, dia aiza izy no initialiser
                                                     <div class="modal-header">
-                                                        <h1 class="modal-title fs-5" id="updateModalLabel">Update ${lowerCase(className)}</h1>
+                                                        <h1 class="modal-title fs-5" id="updateModalLabel">Update #{lowerCase(className)}</h1>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <input type="hidden" name="${lowerCase(primaryName)}" th:value="${e.get${majStart(primaryName)}()}">
+                                                        <input type="hidden" name="#{lowerCase(primaryName)}" th:value="#{e.get#{majStart(primaryName)}()}">
                                                         [viewUpdateFormField] //mivadika inona
                                                     </div>
                                                     <div class="modal-footer">
@@ -40,9 +40,9 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <form th:action="'/delete${lowerCase(className)}.do?indice_actu='+${indice_actu}" method="post"> //dia mbola le indice sy actu ihany le blem
-                                        <input type="hidden" name="${lowerCase(primaryName)}" th:value="${e.get${majStart(primaryName)}()}">
-                                        <button type="submit" th:class="'btn btn-danger '+${crud_button}">
+                                    <form th:action="'/delete#{lowerCase(className)}.do?indice_actu='+#{indice_actu}" method="post"> //dia mbola le indice sy actu ihany le blem
+                                        <input type="hidden" name="#{lowerCase(primaryName)}" th:value="#{e.get#{majStart(primaryName)}()}">
+                                        <button type="submit" th:class="'btn btn-danger '+#{crud_button}">
                                             <p><i class="bi bi-trash"></i>Delete</p>
                                         </button>
                                     </form>
@@ -53,26 +53,26 @@
                 <nav>
                     <ul class="pagination justify-content-center">
                         <li class="page-item">
-                            <a class="page-link" th:href="'/tocrud${lowerCase(className)}.do?indice_actu='+${indice_premier}" aria-label="Precedent">
+                            <a class="page-link" th:href="'/tocrud#{lowerCase(className)}.do?indice_actu='+#{indice_premier}" aria-label="Precedent">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
                         <li class="page-item disabled"><a class="page-link">...</a></li>
-                        <li th:class="'page-item '+${bouton_precedent}"><a class="page-link" th:href="'/tocrud${lowerCase(className)}.do?indice_actu='+${indice_precedent}"><span th:text="${indice_precedent}"></span></a></li>
-                        <li class="page-item disabled page-active"><a class="page-link"><span th:text="${indice_actu}"></span></a></li>
-                        <li th:class="'page-item '+${bouton_suivant}"><a class="page-link" th:href="'/tocrud${lowerCase(className)}.do?indice_actu='+${indice_suivant}"><span th:text="${indice_suivant}"></span></a></li>
+                        <li th:class="'page-item '+#{bouton_precedent}"><a class="page-link" th:href="'/tocrud#{lowerCase(className)}.do?indice_actu='+#{indice_precedent}"><span th:text="#{indice_precedent}"></span></a></li>
+                        <li class="page-item disabled page-active"><a class="page-link"><span th:text="#{indice_actu}"></span></a></li>
+                        <li th:class="'page-item '+#{bouton_suivant}"><a class="page-link" th:href="'/tocrud#{lowerCase(className)}.do?indice_actu='+#{indice_suivant}"><span th:text="#{indice_suivant}"></span></a></li>
                         <li class="page-item disabled"><a class="page-link">...</a></li>
                         <li class="page-item">
-                            <a class="page-link" th:href="'/tocrud${lowerCase(className)}.do?indice_actu='+${indice_dernier}" aria-label="Suivant">
+                            <a class="page-link" th:href="'/tocrud#{lowerCase(className)}.do?indice_actu='+#{indice_dernier}" aria-label="Suivant">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>
                     </ul>
                 </nav>
-                <button type="button" th:class="'btn btn-primary '+${crud_button}" data-bs-toggle="modal" data-bs-target="#ajoutmodal">
+                <button type="button" th:class="'btn btn-primary '+#{crud_button}" data-bs-toggle="modal" data-bs-target="#ajoutmodal">
                     <p><i class="bi bi-plus"></i>Add</p>
                 </button>
-                <p style="color: red;" th:text="${message}"></p>
+                <p style="color: red;" th:text="#{message}"></p>
             </div>
         </div>
         <!-- Button modal ajout -->
@@ -81,9 +81,9 @@
         <div class="modal fade" id="ajoutmodal" tabindex="-1" aria-labelledby="ajoutmodalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    <form th:action="'/insert${lowerCase(className)}.do?indice_actu='+${indice_actu}" method="post">
+                    <form th:action="'/insert#{lowerCase(className)}.do?indice_actu='+#{indice_actu}" method="post">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="ajoutmodalLabel">Add a ${lowerCase(className)}</h1>
+                            <h1 class="modal-title fs-5" id="ajoutmodalLabel">Add a #{lowerCase(className)}</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">

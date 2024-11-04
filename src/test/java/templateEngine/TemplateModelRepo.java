@@ -35,7 +35,7 @@ public class TemplateModelRepo {
     void testCommentWithVariable() throws Exception {
         HashMap<String, Object> variables = new HashMap<>();
         variables.put("name", "John");
-        String template = "Hello /* Comment before */ ${name} /* Comment after */";
+        String template = "Hello /* Comment before */ #{name} /* Comment after */";
         String expected = "Hello /* Comment before */ John /* Comment after */";
         assertEquals(expected, engine.render(template, variables));
 
@@ -46,7 +46,7 @@ public class TemplateModelRepo {
     void testComment() throws Exception {
         HashMap<String, Object> variables = new HashMap<>();
         variables.put("name", "John");
-        String template = "Hello <#${name}/#>";
+        String template = "Hello <##{name}/#>";
 
         System.out.println(engine.render(template, variables));
     }
@@ -57,12 +57,12 @@ public class TemplateModelRepo {
         metadata.put("className", "person");
 
         metadata.put("namespace", "package");
-        metadata.put("package", "com.${lowerCase(projectName)}.models");
+        metadata.put("package", "com.#{lowerCase(projectName)}.models");
         metadata.put("namespaceStart", "");
         metadata.put("imports", "import jakarta.persistence.*;");
         metadata.put("classAnnotations", """
                 @Entity
-                @Table(name="${tableName}")""");
+                @Table(name="#{tableName}")""");
         metadata.put("classKeyword", "public class");
         metadata.put("extends", "");
         metadata.put("bracketStart", "{");
@@ -74,18 +74,18 @@ public class TemplateModelRepo {
                             {{#if this.isPrimaryKey}}
                             @Id
                             @GeneratedValue(strategy=GenerationType.IDENTITY)
-                            @Column(name="${this.columnName}"){{elseIf this.isForeignKey}}
+                            @Column(name="#{this.columnName}"){{elseIf this.isForeignKey}}
                             @ManyToOne
-                            @JoinColumn(name="${this.columnName}"){{else}}
-                            @Column(name="${this.columnName}"){{/if}}
-                            private ${this.type} ${this.name};{{#if !@last}}{{newline}}{{/if}}
+                            @JoinColumn(name="#{this.columnName}"){{else}}
+                            @Column(name="#{this.columnName}"){{/if}}
+                            private #{this.type} #{this.name};{{#if !@last}}{{newline}}{{/if}}
                             {{/each}}
                         """);
         metadata.put("constructors",
                 """
-                            public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
+                            public #{majStart(className)}({{#each fields}}#{this.type} #{this.name}{{#if !@last}}, {{/if}}{{/each}}) {
                                 {{#each fields}}
-                                this.${this.name} = ${this.name};{{#if !@last}}
+                                this.#{this.name} = #{this.name};{{#if !@last}}
                                 {{/if}}{{/each}}
                             }
                         """);
@@ -93,12 +93,12 @@ public class TemplateModelRepo {
                 """
                             {{#each fields}}
                             {{#if this.withGetters}}
-                            public ${this.type} get${majStart(this.name)}() {
-                                return ${this.name};
+                            public #{this.type} get#{majStart(this.name)}() {
+                                return #{this.name};
                             }{{/if}}
                             {{#if this.withSetters}}
-                            public void set${majStart(this.name)}(${this.type} ${this.name}) {
-                                this.${this.name} = ${this.name};
+                            public void set#{majStart(this.name)}(#{this.type} #{this.name}) {
+                                this.#{this.name} = #{this.name};
                             }{{#if !@last}}{{newline}}{{/if}}
                             {{/if}}{{/each}}
                         """);
@@ -172,14 +172,14 @@ public class TemplateModelRepo {
         metadata.put("projectName", "animalerie");
         metadata.put("className", "animal");
         metadata.put("classNameLink", "animals");
-        metadata.put("controllerName", "${majStart(className)}Controller");
+        metadata.put("controllerName", "#{majStart(className)}Controller");
 
         metadata.put("namespace", "package");
-        metadata.put("package", "com.${lowerCase(projectName)}.controllers");
+        metadata.put("package", "com.#{lowerCase(projectName)}.controllers");
         metadata.put("namespaceStart", "");
         metadata.put("controllerAnnotations", """
                 @Controller
-                {{tab}} @RequestMapping("/${classNameLink}")""");
+                {{tab}} @RequestMapping("/#{classNameLink}")""");
         metadata.put("classKeyword", "public class");
         metadata.put("pathVariableKeyword", "@PathVariable");
         metadata.put("modelAttributeKeyword", "@RequestBody");
@@ -197,10 +197,10 @@ public class TemplateModelRepo {
         HashMap<String, Object> metadata = new HashMap<>();
         metadata.put("projectName", "animalerie");
         metadata.put("className", "animal");
-        metadata.put("serviceName", "${majStart(className)}Service");
+        metadata.put("serviceName", "#{majStart(className)}Service");
 
         metadata.put("namespace", "package");
-        metadata.put("package", "com.${lowerCase(projectName)}.services");
+        metadata.put("package", "com.#{lowerCase(projectName)}.services");
         metadata.put("namespaceStart", "");
         metadata.put("serviceAnnotations", "@Service");
         metadata.put("classKeyword", "public class");
@@ -298,33 +298,33 @@ public class TemplateModelRepo {
         String templateContent = """
                  <#assign fields=metadata.fields>
                         \s
-                 package com.${metadata.projectName}.models;
+                 package com.#{metadata.projectName}.models;
                         \s
                  import jakarta.persistence.*;
                         \s
                  @Entity
-                 @Table(name="${metadata.tableName}")
+                 @Table(name="#{metadata.tableName}")
                  public class Person  {
                  <#list fields as field>
-                     private ${field.type} ${field.name};
+                     private #{field.type} #{field.name};
                  </#list>
                         \s
-                 public ${metadata.className}(<#list fields as field>${field.type} ${field.name}<#if field_has_next>, </#if></#list>) {
+                 public #{metadata.className}(<#list fields as field>#{field.type} #{field.name}<#if field_has_next>, </#if></#list>) {
                      <#list fields as field>
-                     this.${field.name} = ${field.name};
+                     this.#{field.name} = #{field.name};
                      </#list>
                  }
                         \s
                  <#list fields as field>
                  <#if field.withGetters>
-                 public ${field.type} get${field.name?cap_first}() {
-                     return ${field.name};
+                 public #{field.type} get#{field.name?cap_first}() {
+                     return #{field.name};
                  }
                  </#if>
 
                  <#if field.withSetters>
-                 public void set${field.name?cap_first}(${field.type} ${field.name}) {
-                     this.${field.name} = ${field.name};
+                 public void set#{field.name?cap_first}(#{field.type} #{field.name}) {
+                     this.#{field.name} = #{field.name};
                  }
                  </#if>
                  </#list>
@@ -415,37 +415,37 @@ public class TemplateModelRepo {
     @Test
     void templateEngineRenderModel() throws Exception {
         String template = """
-                package com.${lowerCase(projectName)}.models;
+                package com.#{lowerCase(projectName)}.models;
 
                 import jakarta.persistence.*;
                                 
                 @Entity
-                @Table(name="${tableName}")
-                public class ${majStart(className)} {
+                @Table(name="#{tableName}")
+                public class #{majStart(className)} {
                     {{#each fields}}
                     {{#if this.isPrimaryKey}}
                     @Id
                     @GeneratedValue(strategy=GenerationType.IDENTITY)
-                    @Column(name="${this.columnName}"){{elseIf this.isForeignKey}}
+                    @Column(name="#{this.columnName}"){{elseIf this.isForeignKey}}
                     @ManyToOne
-                    @JoinColumn(name="${this.columnName}"){{else}}
-                    @Column(name="${this.columnName}"){{/if}}
-                    private ${this.type} ${this.name};{{#if !@last}}{{newline}}{{/if}}
+                    @JoinColumn(name="#{this.columnName}"){{else}}
+                    @Column(name="#{this.columnName}"){{/if}}
+                    private #{this.type} #{this.name};{{#if !@last}}{{newline}}{{/if}}
                     {{/each}}
-                    public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
+                    public #{majStart(className)}({{#each fields}}#{this.type} #{this.name}{{#if !@last}}, {{/if}}{{/each}}) {
                         {{#each fields}}
-                        this.${this.name} = ${this.name};{{#if !@last}}
+                        this.#{this.name} = #{this.name};{{#if !@last}}
                         {{/if}}{{/each}}
                     }
                                 
                     {{#each fields}}
                     {{#if this.withGetters}}
-                    public ${this.type} get${majStart(this.name)}() {
-                        return ${this.name};
+                    public #{this.type} get#{majStart(this.name)}() {
+                        return #{this.name};
                     }{{/if}}
                     {{#if this.withSetters}}
-                    public void set${majStart(this.name)}(${this.type} ${this.name}) {
-                        this.${this.name} = ${this.name};
+                    public void set#{majStart(this.name)}(#{this.type} #{this.name}) {
+                        this.#{this.name} = #{this.name};
                     }{{#if !@last}}{{newline}}{{/if}}
                     {{/if}}{{/each}}
                 }
@@ -465,11 +465,11 @@ public class TemplateModelRepo {
                 {{#if this.isPrimaryKey}}
                 @Id
                 @GeneratedValue(strategy=GenerationType.IDENTITY)
-                @Column(name="${this.columnName}"){{elseIf this.isForeignKey}}
+                @Column(name="#{this.columnName}"){{elseIf this.isForeignKey}}
                 @ManyToOne
-                @JoinColumn(name="${this.columnName}"){{else}}
-                @Column(name="${this.columnName}"){{/if}}
-                private ${this.type} ${this.name};
+                @JoinColumn(name="#{this.columnName}"){{else}}
+                @Column(name="#{this.columnName}"){{/if}}
+                private #{this.type} #{this.name};
                 {{/each}}
                 """;
 
@@ -580,18 +580,18 @@ public class TemplateModelRepo {
         String template = """
                 using Microsoft.EntityFrameworkCore;
                 using System.ComponentModel.DataAnnotations;
-                using ${projectName}.Models;
+                using #{projectName}.Models;
                                
-                namespace ${packageValue};
+                namespace #{packageValue};
                                 
-                public class ${projectName}Context : DbContext
+                public class #{projectName}Context : DbContext
                 {
                     {{#each entities}}
-                    public DbSet<${this}> ${this}s { get; set; }
+                    public DbSet<#{this}> #{this}s { get; set; }
                     {{/each}}
                     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
                     {
-                        optionsBuilder.Use${DBType}(@"${connectionString}");
+                        optionsBuilder.Use#{DBType}(@"#{connectionString}");
                     }
                 }
                 """;
@@ -612,7 +612,7 @@ public class TemplateModelRepo {
     @Test
     void loopTest() throws Exception {
         TemplateEngine engine = new TemplateEngine();
-        String template = "Liste des éléments :\n{{#each items}}\n- ${lowerCase(this)}\n{{/each}}";
+        String template = "Liste des éléments :\n{{#each items}}\n- #{lowerCase(this)}\n{{/each}}";
 
         Map<String, Object> variables = new HashMap<>();
         List<String> items = List.of("Pomme", "Banane", "Orange");
@@ -625,59 +625,59 @@ public class TemplateModelRepo {
     @Test
     void templateEngineRenderController() throws Exception {
         String template = """
-                      ${namespace} ${package}${namespaceStart}
+                      #{namespace} #{package}#{namespaceStart}
                                \s
                       import org.springframework.ui.Model;
-                      import com.${lowerCase(projectName)}.models.${majStart(className)};
+                      import com.#{lowerCase(projectName)}.models.#{majStart(className)};
                       import org.springframework.stereotype.Controller;
                       import org.springframework.web.bind.annotation.*;
-                      import com.${lowerCase(projectName)}.repositories.${majStart(className)}Repository;
+                      import com.#{lowerCase(projectName)}.repositories.#{majStart(className)}Repository;
                       import org.springframework.web.servlet.view.RedirectView;
                       import org.springframework.beans.factory.annotation.Autowired;
                                \s
-                      ${controllerAnnotations}
-                      ${classKeyword} ${controllerName} ${extends}${bracketStart}
+                      #{controllerAnnotations}
+                      #{classKeyword} #{controllerName} #{extends}#{bracketStart}
                                \s
                       {{tab}}@Autowired
-                      {{tab}}private ${majStart(className)}Service ${lowerCase(className)}Service;
+                      {{tab}}private #{majStart(className)}Service #{lowerCase(className)}Service;
                                \s
                       {{tab}}@GetMapping
-                      {{tab}}public String getAll${majStart(classNameLink)}(Model model) ${bracketStart}
-                      {{tab}}    List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(className)}();
-                      {{tab}}    model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
-                      {{tab}}    return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
-                      {{tab}}${bracketEnd}
+                      {{tab}}public String getAll#{majStart(classNameLink)}(Model model) #{bracketStart}
+                      {{tab}}    List<#{majStart(className)}> #{lowerCase(classNameLink)} = #{lowerCase(className)}Service.getAll#{majStart(className)}();
+                      {{tab}}    model.addAttribute("#{lowerCase(classNameLink)}", #{lowerCase(classNameLink)});
+                      {{tab}}    return "#{lowerCase(classNameLink)}/list-#{lowerCase(className)}";
+                      {{tab}}#{bracketEnd}
                                \s
                       {{tab}}@GetMapping("/{id}")
-                      {{tab}}public String get${majStart(className)}ById(${pathVariableKeyword} Long id, Model model) ${bracketStart}
-                      {{tab}}     ${majStart(className)} ${lowerCase(className)} = ${lowerCase(className)}Service.get${majStart(className)}ById(id);
-                      {{tab}}     model.addAttribute("${lowerCase(className)}", ${lowerCase(className)});
-                      {{tab}}     return "${lowerCase(classNameLink)}/view-list-${lowerCase(className)}";
-                      {{tab}}${bracketEnd}
+                      {{tab}}public String get#{majStart(className)}ById(#{pathVariableKeyword} Long id, Model model) #{bracketStart}
+                      {{tab}}     #{majStart(className)} #{lowerCase(className)} = #{lowerCase(className)}Service.get#{majStart(className)}ById(id);
+                      {{tab}}     model.addAttribute("#{lowerCase(className)}", #{lowerCase(className)});
+                      {{tab}}     return "#{lowerCase(classNameLink)}/view-list-#{lowerCase(className)}";
+                      {{tab}}#{bracketEnd}
                                \s
                       {{tab}}@PostMapping
-                      {{tab}}public String create${majStart(className)}(${modelAttributeKeyword} ${majStart(className)} ${lowerCase(className)}, Model model) ${bracketStart}
-                      {{tab}}     ${majStart(className)} new${majStart(className)} = ${lowerCase(className)}Service.create${majStart(className)}(${lowerCase(className)});
-                      {{tab}}     model.addAttribute("new${majStart(className)}", new${majStart(className)});
-                      {{tab}}     return "${lowerCase(classNameLink)}/create-list-${lowerCase(className)}";
-                      {{tab}}${bracketEnd}
+                      {{tab}}public String create#{majStart(className)}(#{modelAttributeKeyword} #{majStart(className)} #{lowerCase(className)}, Model model) #{bracketStart}
+                      {{tab}}     #{majStart(className)} new#{majStart(className)} = #{lowerCase(className)}Service.create#{majStart(className)}(#{lowerCase(className)});
+                      {{tab}}     model.addAttribute("new#{majStart(className)}", new#{majStart(className)});
+                      {{tab}}     return "#{lowerCase(classNameLink)}/create-list-#{lowerCase(className)}";
+                      {{tab}}#{bracketEnd}
                             \s
                       {{tab}}@PutMapping("/{id}")
-                      {{tab}}public String update${majStart(className)}(${pathVariableKeyword} Long id, ${modelAttributeKeyword} ${majStart(className)} ${lowerCase(className)}, Model model) ${bracketStart}
-                      {{tab}}     ${majStart(className)} update${majStart(className)} = ${lowerCase(className)}Service.update${majStart(className)}(id, ${lowerCase(className)});
-                      {{tab}}     model.addAttribute("update${majStart(className)}", update${majStart(className)});
-                      {{tab}}     return "${lowerCase(classNameLink)}/update-list-${lowerCase(className)}";
-                      {{tab}}${bracketEnd}
+                      {{tab}}public String update#{majStart(className)}(#{pathVariableKeyword} Long id, #{modelAttributeKeyword} #{majStart(className)} #{lowerCase(className)}, Model model) #{bracketStart}
+                      {{tab}}     #{majStart(className)} update#{majStart(className)} = #{lowerCase(className)}Service.update#{majStart(className)}(id, #{lowerCase(className)});
+                      {{tab}}     model.addAttribute("update#{majStart(className)}", update#{majStart(className)});
+                      {{tab}}     return "#{lowerCase(classNameLink)}/update-list-#{lowerCase(className)}";
+                      {{tab}}#{bracketEnd}
                                \s
                       {{tab}}@DeleteMapping("/{id}")
-                      {{tab}}public String delete${majStart(className)}ById(${pathVariableKeyword} Long id, Model model) ${bracketStart}
-                      {{tab}}     ${lowerCase(className)}Service.delete${majStart(className)}(id);
-                      {{tab}}     model.addAttribute("message", "${majStart(className)} deleted successfully");
-                      {{tab}}     return "redirect:/${lowerCase(classNameLink)}";
-                      {{tab}}${bracketEnd}
+                      {{tab}}public String delete#{majStart(className)}ById(#{pathVariableKeyword} Long id, Model model) #{bracketStart}
+                      {{tab}}     #{lowerCase(className)}Service.delete#{majStart(className)}(id);
+                      {{tab}}     model.addAttribute("message", "#{majStart(className)} deleted successfully");
+                      {{tab}}     return "redirect:/#{lowerCase(classNameLink)}";
+                      {{tab}}#{bracketEnd}
                                \s
-                      ${bracketEnd}
-                      ${namespaceEnd}
+                      #{bracketEnd}
+                      #{namespaceEnd}
                 \s""";
 
         HashMap<String, Object> metadata = getHashMapController();
@@ -690,44 +690,44 @@ public class TemplateModelRepo {
     @Test
     void templateEngineRenderService() throws Exception {
         String template = """
-                 ${namespace} ${package}${namespaceStart}
+                 #{namespace} #{package}#{namespaceStart}
                                \s
-                 import com.${lowerCase(projectName)}.models.${majStart(className)};
+                 import com.#{lowerCase(projectName)}.models.#{majStart(className)};
                  import org.springframework.stereotype.Service;
-                 import com.${lowerCase(projectName)}.repositories.${majStart(className)}Repository;
+                 import com.#{lowerCase(projectName)}.repositories.#{majStart(className)}Repository;
                  import org.springframework.beans.factory.annotation.Autowired;
                                 \s
-                 ${serviceAnnotations}
-                 ${classKeyword} ${serviceName} ${extends}${bracketStart}
+                 #{serviceAnnotations}
+                 #{classKeyword} #{serviceName} #{extends}#{bracketStart}
                                 \s
                  {{tab}}@Autowired
-                 {{tab}}private ${majStart(className)}Repository ${lowerCase(className)}Repository;
+                 {{tab}}private #{majStart(className)}Repository #{lowerCase(className)}Repository;
                                 \s
-                 {{tab}}public List<${majStart(className)}> getAll${majStart(className)}() ${bracketStart}
-                 {{tab}}    return ${lowerCase(className)}Repository.findAll();
-                 {{tab}}${bracketEnd}
+                 {{tab}}public List<#{majStart(className)}> getAll#{majStart(className)}() #{bracketStart}
+                 {{tab}}    return #{lowerCase(className)}Repository.findAll();
+                 {{tab}}#{bracketEnd}
                                 \s
-                 {{tab}}public ${majStart(className)} get${majStart(className)}ById(Long id) ${bracketStart}
-                 {{tab}}    return ${lowerCase(className)}Repository.findById(id);
-                 {{tab}}${bracketEnd}
+                 {{tab}}public #{majStart(className)} get#{majStart(className)}ById(Long id) #{bracketStart}
+                 {{tab}}    return #{lowerCase(className)}Repository.findById(id);
+                 {{tab}}#{bracketEnd}
                                 \s
-                 {{tab}}public ${majStart(className)} create${majStart(className)}(${majStart(className)} ${lowerCase(className)}) ${bracketStart}
-                 {{tab}}    return ${lowerCase(className)}Repository.save(${lowerCase(className)});
-                 {{tab}}${bracketEnd}
+                 {{tab}}public #{majStart(className)} create#{majStart(className)}(#{majStart(className)} #{lowerCase(className)}) #{bracketStart}
+                 {{tab}}    return #{lowerCase(className)}Repository.save(#{lowerCase(className)});
+                 {{tab}}#{bracketEnd}
                                 \s
-                 {{tab}}public ${majStart(className)} update${majStart(className)}(Long id, ${majStart(className)} ${lowerCase(className)}) ${bracketStart}
-                 {{tab}}    ${majStart(className)} existing${majStart(className)} = ${lowerCase(className)}Repository.findById(id);
-                 {{tab}}    existing${majStart(className)} = ${lowerCase(className)};
-                 {{tab}}    existing${majStart(className)}.setId${majStart(className)}(id);
-                 {{tab}}    return ${lowerCase(className)}Repository.save(existing${lowerCase(className)});
-                 {{tab}}${bracketEnd}
+                 {{tab}}public #{majStart(className)} update#{majStart(className)}(Long id, #{majStart(className)} #{lowerCase(className)}) #{bracketStart}
+                 {{tab}}    #{majStart(className)} existing#{majStart(className)} = #{lowerCase(className)}Repository.findById(id);
+                 {{tab}}    existing#{majStart(className)} = #{lowerCase(className)};
+                 {{tab}}    existing#{majStart(className)}.setId#{majStart(className)}(id);
+                 {{tab}}    return #{lowerCase(className)}Repository.save(existing#{lowerCase(className)});
+                 {{tab}}#{bracketEnd}
                                 \s
-                 {{tab}}public void delete${majStart(className)}(Long id) ${bracketStart}
-                 {{tab}}    ${lowerCase(className)}Repository.deleteById(id);
-                 {{tab}}${bracketEnd}
+                 {{tab}}public void delete#{majStart(className)}(Long id) #{bracketStart}
+                 {{tab}}    #{lowerCase(className)}Repository.deleteById(id);
+                 {{tab}}#{bracketEnd}
                                 \s
-                 ${bracketEnd}
-                 ${namespaceEnd}
+                 #{bracketEnd}
+                 #{namespaceEnd}
                 \s""";
 
         HashMap<String, Object> metadata = getHashMapService();
@@ -758,14 +758,14 @@ public class TemplateModelRepo {
                 {{tab}}<parent>
                 {{tab}}{{tab}}<groupId>org.springframework.boot</groupId>
                 {{tab}}{{tab}}<artifactId>spring-boot-starter-parent</artifactId>
-                {{tab}}{{tab}}<version>${springBootVersion}</version>
+                {{tab}}{{tab}}<version>#{springBootVersion}</version>
                 {{tab}}{{tab}}<relativePath/>
                 {{tab}}</parent>
-                {{tab}}<groupId>${groupLink}</groupId>
-                {{tab}}<artifactId>${projectName}</artifactId>
+                {{tab}}<groupId>#{groupLink}</groupId>
+                {{tab}}<artifactId>#{projectName}</artifactId>
                 {{tab}}<version>0.0.1-SNAPSHOT</version>
-                {{tab}}<name>${projectName}</name>
-                {{tab}}<description>${projectDescription}</description>
+                {{tab}}<name>#{projectName}</name>
+                {{tab}}<description>#{projectDescription}</description>
                 {{tab}}<url/>
                 {{tab}}<licenses>
                 {{tab}}{{tab}}<license/>
@@ -780,14 +780,14 @@ public class TemplateModelRepo {
                 {{tab}}{{tab}}<url/>
                 {{tab}}</scm>
                 {{tab}}<properties>
-                {{tab}}{{tab}}<java.version>${languageVersion}</java.version>
+                {{tab}}{{tab}}<java.version>#{languageVersion}</java.version>
                 {{tab}}</properties>
                 {{tab}}<dependencies>
                 {{tab}}{{tab}}{{#each dependencies}}
                 {{tab}}{{tab}}<dependency>
-                {{tab}}{{tab}}{{tab}}<groupId>${this.groupId}</groupId>
-                {{tab}}{{tab}}{{tab}}<artifactId>${this.artifactId}</artifactId>
-                {{tab}}{{tab}}{{tab}}<version>${this.version}</version>
+                {{tab}}{{tab}}{{tab}}<groupId>#{this.groupId}</groupId>
+                {{tab}}{{tab}}{{tab}}<artifactId>#{this.artifactId}</artifactId>
+                {{tab}}{{tab}}{{tab}}<version>#{this.version}</version>
                 {{tab}}{{tab}}</dependency>{{#if !@last}}{{newline}}{{tab}}{{tab}}{{/if}}{{/each}}
                 {{tab}}</dependencies>
                 </project>

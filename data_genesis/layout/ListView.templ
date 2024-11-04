@@ -6,10 +6,10 @@
     <!-- Page header -->
     <div class="row align-items-center justify-content-between">
         <div class="col-6 text-start">
-            <h2 class="fw-bold py-3 mb-3"><span class="text-muted fw-light">List of ${lowerCase(className)}</span></h2>
+            <h2 class="fw-bold py-3 mb-3"><span class="text-muted fw-light">List of #{lowerCase(className)}</span></h2>
         </div>
         <div class="col-6 text-end">
-            <form ${createLink} method="get">
+            <form #{createLink} method="get">
                 <button type="submit" class="btn btn-primary mb-3">Create</button>
             </form>
         </div>
@@ -25,7 +25,7 @@
                         <thead class="thead-light">
                         <tr>
                             {{#each fields}}
-                            <th>${this.name}</th>
+                            <th>#{this.name}</th>
                             {{/each}}{{removeLine}}
                         </tr>
                         </thead>
