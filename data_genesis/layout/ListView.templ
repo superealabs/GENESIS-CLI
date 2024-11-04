@@ -9,7 +9,9 @@
             <h2 class="fw-bold py-3 mb-3"><span class="text-muted fw-light">List of ${lowerCase(className)}</span></h2>
         </div>
         <div class="col-6 text-end">
-            <button class="btn btn-primary mb-3" ${createLink} >Create</button>
+            <form ${createLink} method="get">
+                <button type="submit" class="btn btn-primary mb-3">Create</button>
+            </form>
         </div>
     </div>
 

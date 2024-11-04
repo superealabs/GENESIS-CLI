@@ -171,12 +171,12 @@
       {{tab}}public String getAll${majStart(classNameLink)}(Model model) {
       {{tab}}    List<${majStart(className)}> ${lowerCase(classNameLink)} = ${lowerCase(className)}Service.getAll${majStart(className)}();
       {{tab}}    model.addAttribute("${lowerCase(classNameLink)}", ${lowerCase(classNameLink)});
-      {{tab}}    return "${lowerCase(classNameLink)}";
+      {{tab}}    return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
       {{tab}}}
       
       {{tab}}@GetMapping("/create-${lowerCase(className)}")
       {{tab}}public String return${majStart(classNameLink)}(Model model) {
-      {{tab}}    return "create-${lowerCase(className)}";
+      {{tab}}    return "${lowerCase(classNameLink)}/create-${lowerCase(className)}";
       {{tab}}}
       
       {{tab}}@GetMapping("/{id}")
@@ -190,14 +190,14 @@
       {{tab}}public String create${majStart(className)}(@RequestBody ${majStart(className)} ${lowerCase(className)}, Model model) {
       {{tab}}    ${majStart(className)} new${majStart(className)} = ${lowerCase(className)}Service.create${majStart(className)}(${lowerCase(className)});
       {{tab}}    model.addAttribute("new${majStart(className)}", new${majStart(className)});
-      {{tab}}    return "${lowerCase(classNameLink)}/create-list-${lowerCase(className)}";
+      {{tab}}    return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
       {{tab}}}
       
       {{tab}}@PutMapping("/{id}")
       {{tab}}public String update${majStart(className)}(@PathVariable ${pkColumnType} id, @RequestBody ${majStart(className)} ${lowerCase(className)}, Model model) {
       {{tab}}    ${majStart(className)} update${majStart(className)} = ${lowerCase(className)}Service.update${majStart(className)}(id, ${lowerCase(className)});
       {{tab}}    model.addAttribute("update${majStart(className)}", update${majStart(className)});
-      {{tab}}    return "${lowerCase(classNameLink)}/update-list-${lowerCase(className)}";
+      {{tab}}    return "${lowerCase(classNameLink)}/list-${lowerCase(className)}";
       {{tab}}}
       
       {{tab}}@DeleteMapping("/{id}")

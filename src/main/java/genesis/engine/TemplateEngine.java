@@ -20,7 +20,7 @@ public class TemplateEngine {
     private static final String ELSE_IF_TOKEN = "{{elseIf ";
     private static final String ELSE_TOKEN = "{{else}}";
     private static final String IF_END = "{{/if}}";
-    private static final String VARIABLE_PLACEHOLDER_PREFIX = "${";
+    private static final String VARIABLE_PLACEHOLDER_PREFIX = "#{";
     private static final String VARIABLE_PLACEHOLDER_SUFFIX = "}";
     private static final String VARIABLE_PLACEHOLDER_PREFIX_ALT = "$[";
     private static final String VARIABLE_PLACEHOLDER_SUFFIX_ALT = "]";
