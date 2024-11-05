@@ -9,9 +9,7 @@
             <h2 class="fw-bold py-3 mb-3"><span class="text-muted fw-light">List of #{lowerCase(className)}</span></h2>
         </div>
         <div class="col-6 text-end">
-            <form #{createLink} method="get">
-                <button type="submit" class="btn btn-primary mb-3">Create</button>
-            </form>
+            <a class="btn btn-primary mb-3" ${createLink} ">Create</a>
         </div>
     </div>
 
@@ -34,7 +32,7 @@
                             {{#each fields}}
                             <td class="text-truncate align-middle mt-3" $[dataValues]> $[dataKeys]
                             </td>
-                            {{/each}}
+
                             <td class="align-middle">
                                 <div class="row">
                                     <div class="col-lg-3 col-md-2 order-0">
@@ -44,13 +42,13 @@
                                                     type="button"
                                                     class="btn btn-info"
                                                     data-bs-toggle="modal"
-                                                    th:attr="data-bs-target='#updateModalCenter_'"
+                                                    th:attr="data-bs-target='#updateModalCenter_' + #{this.primaryColumn.name}"
                                             >
                                                 <i class="bx bx-wallet"></i> Update
                                             </button>
 
                                             <!-- Modal -->
-                                            <div class="modal fade" th:id="'updateModalCenter_'"
+                                            <div class="modal fade" th:id="'updateModalCenter_' + #{this.primaryColumn.name}"
                                                  tabindex="-1"
                                                  aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered modal-lg"
@@ -68,92 +66,12 @@
                                                         </div>
                                                         <div class="modal-body">
                                                             <!-- Select entity modification form -->
+                                                            <p>Form for modifying the entity goes here.</p>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 offset-1 col-md-2 order-1">
-                                        <div class="mt-0">
-                                            <!-- Button trigger modal -->
-                                            <button
-                                                    type="button"
-                                                    class="btn btn-success"
-                                                    data-bs-toggle="modal"
-                                                    th:attr="data-bs-target='#validateModalCenter_'"
-                                            >
-                                                <i class="bx bx-check"></i> Confirm
-                                            </button>
-
-                                            <!-- Modal -->
-                                            <div class="modal fade" th:id="'validateModalCenter_'"
-                                                 tabindex="-1"
-                                                 aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered modal-lg"
-                                                     role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h3 class="modal-title" id="validateModalCenterTitle">
-                                                                Confirm</h3>
-                                                            <button
-                                                                    type="button"
-                                                                    class="btn-close"
-                                                                    data-bs-dismiss="modal"
-                                                                    aria-label="close"
-                                                            ></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <p>Do you want to validate the changes to this element?</p>
-                                                            <button type="button" id="Cancel"
-                                                                    class="btn btn-secondary">Cancel
-                                                            </button>
-                                                            <button type="button" id="Confirm"
-                                                                    class="btn btn-success">Confirm
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 offset-1 col-md-2 order-2">
-                                        <div class="mt-0">
-                                            <!-- Button trigger modal -->
-                                            <button
-                                                    type="button"
-                                                    class="btn btn-danger"
-                                                    data-bs-toggle="modal"
-                                                    th:attr="data-bs-target='#cancelModalCenter_'"
-                                            >
-                                                <i class="bx bx-trash"></i> Cancel
-                                            </button>
-
-                                            <!-- Modal -->
-                                            <div class="modal fade" th:id="'cancelModalCenter_'"
-                                                 tabindex="-1"
-                                                 aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered modal-lg"
-                                                     role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h3 class="modal-title" id="cancelModalCenterTitle">
-                                                                Cancellation</h3>
-                                                            <button
-                                                                    type="button"
-                                                                    class="btn-close"
-                                                                    data-bs-dismiss="modal"
-                                                                    aria-label="close"
-                                                            ></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <p>Do you want to undo the changes made to this element?</p>
-                                                            <button type="button" id="editEvent"
-                                                                    class="btn btn-secondary">Keep the changes
-                                                            </button>
-                                                            <button type="button" id="deleteEvent"
-                                                                    class="btn btn-danger">Cancel
-                                                            </button>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            <button type="button" class="btn btn-success" data-bs-toggle="modal" th:attr="data-bs-target='#validateModalCenter_'">Confirm</button>
+                                                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" th:attr="data-bs-target='#cancelModalCenter_'">Cancel</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -161,6 +79,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                {{/each}}{{removeLine}}
                             </td>
                         </tr>
                         </tbody>
@@ -170,5 +89,63 @@
         </div>
     </div>
 
+    <!-- Modal for validation -->
+    <div class="modal fade" th:id="'validateModalCenter_'"
+         tabindex="-1"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg"
+             role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="validateModalCenterTitle">
+                        Confirm</h3>
+                    <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <p>Do you want to validate the changes to this element?</p>
+                    <button type="button" id="Cancel"
+                            class="btn btn-secondary" data-bs-dismiss="modal">Cancel
+                    </button>
+                    <button type="button" id="Confirm class="btn btn-success">Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for cancellation -->
+    <div class="modal fade" th:id="'cancelModalCenter_'"
+         tabindex="-1"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg"
+             role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="cancelModalCenterTitle">
+                        Cancellation</h3>
+                    <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <p>Do you want to undo the changes made to this element?</p>
+                    <button type="button" id="editEvent"
+                            class="btn btn-secondary" data-bs-dismiss="modal">Keep the changes
+                    </button>
+                    <button type="button" id="deleteEvent"
+                            class="btn btn-danger">Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </html>
