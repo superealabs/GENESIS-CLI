@@ -71,6 +71,8 @@ public class Editor {
         private String dataLoop;
         private String dataKeys;
         private String dataValues;
+        private String dataModificationId;
+        private String dataModificationButton;
     }
 
     @Getter

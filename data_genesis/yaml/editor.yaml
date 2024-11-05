@@ -84,10 +84,11 @@
         <script src="/assets/js/dashboards-analytics.js"
           th:src="@{/assets/js/dashboards-analytics.js}"></script>
     tableLoop:
+      dataKeys: ""
+      dataModificationId: "th:id=\"'updateModalCenter_' + #{this.primaryColumn.name}\""
       dataLoop: "th:each=\"#{lowerCase(className)} : ${ #{lowerCase(classNameLink)} }\""
       dataValues: "th:text=\"${ #{lowerCase(className)}.get#{majStart(this.name)}() }\""
-      dataKeys: ""
-      dataConfirmModal: "th:attr="data-bs-target='#validateModalCenter_'""
+      dataModificationButton: "th:attr=\"data-bs-target='#updateModalCenter_' + #{this.primaryColumn.name}\""
   insert:
     input:
       - inputType: "Date"
