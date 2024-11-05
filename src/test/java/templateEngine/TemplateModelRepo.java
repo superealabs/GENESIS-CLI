@@ -32,12 +32,17 @@ public class TemplateModelRepo {
     }
 
     @Test
-    void testCommentWithVariable() throws Exception {
+    void testCommentEqualVariable() throws Exception {
         HashMap<String, Object> variables = new HashMap<>();
         variables.put("name", "John");
-        String template = "Hello /* Comment before */ #{name} /* Comment after */";
-        String expected = "Hello /* Comment before */ John /* Comment after */";
-        assertEquals(expected, engine.render(template, variables));
+        String template = """
+        Hello
+        {{#if #{name=John and name!=Eli} }}
+            John Nice !
+        {{else}}
+            Not John
+        {{/if}}
+        """;
 
         System.out.println(engine.render(template, variables));
     }

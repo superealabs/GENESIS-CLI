@@ -228,6 +228,7 @@ public class TemplateEngine {
             if (ifEndIdx == -1) break;
 
             String condition = extractCondition(template, start);
+
             int contentStartIdx = findContentStartIdx(template, start);
 
             StringBuilder resultContent = new StringBuilder();
@@ -370,15 +371,12 @@ public class TemplateEngine {
     }
 
     private boolean evaluateCondition(String condition, Map<String, Object> variables) throws Exception {
-
         condition = condition.trim();
-
 
         if (condition.startsWith("!")) {
             String innerCondition = condition.substring(1).trim();
             return !evaluateCondition(innerCondition, variables);
         }
-
 
         return evaluateCompositeCondition(condition, variables);
     }
@@ -407,7 +405,6 @@ public class TemplateEngine {
 
 
     private boolean evaluateSimpleCondition(String condition, Map<String, Object> variables) throws Exception {
-
         if ("true".equalsIgnoreCase(condition)) {
             return true;
         }
@@ -422,13 +419,28 @@ public class TemplateEngine {
             } else {
                 throw new Exception("Variable '@last' is not a boolean.");
             }
-        } else {
-            Object conditionValue = variables.get(condition);
-            if (conditionValue == null) {
-                return false;
-            }
-            return conditionValue instanceof Boolean && (Boolean) conditionValue;
         }
+
+        if (condition.contains("=")) {
+            String[] parts = condition.split("=");
+            if (parts.length != 2) {
+                throw new Exception("Invalid condition format: " + condition);
+            }
+
+            String leftVar = parts[0].trim();
+            String rightVar = parts[1].trim();
+
+            Object leftValue = variables.get(leftVar);
+            Object rightValue = variables.get(rightVar);
+
+            return (leftValue == null && rightValue == null) || (leftValue != null && leftValue.equals(rightValue));
+        }
+
+        Object conditionValue = variables.get(condition);
+        if (conditionValue == null) {
+            return false;
+        }
+        return conditionValue instanceof Boolean && (Boolean) conditionValue;
     }
 
     private void processSpecialTags(StringBuilder template) {
