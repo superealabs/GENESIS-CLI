@@ -147,7 +147,7 @@ public class MVCGenerator implements GenesisGenerator {
 
         // Render les attributs intermediaires
         HashMap<String, Object> intermed = getHashMapIntermediaire(tableMetadata, projectName, groupLink);
-        String secondResult = engine.simpleRender(firstResult, intermed);
+        String secondResult = engine.render(firstResult, intermed);
 
         // Rendue final
         HashMap<String, Object> metadataFinally = getAllListViewHashMap(framework, editor, tableMetadata, projectName, groupLink);
