@@ -77,6 +77,8 @@
         
         server:
           port: ${projectPort}
+          servlet:
+            context-path: /${toKebabCase(projectName)}
         
         # Logs Configuration
         logging:

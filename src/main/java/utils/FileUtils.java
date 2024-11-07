@@ -13,44 +13,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Scanner;
 import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 public class FileUtils {
-
-    public static void extractDir(String sourcedir, String target) {
-        byte[] buffer = new byte[4096];
-        File file = new File(sourcedir);
-
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(file))) {
-            unZip(target, buffer, zis);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static void unZip(String target, byte[] buffer, ZipInputStream zis) throws IOException {
-        ZipEntry ze = zis.getNextEntry();
-
-        while (ze != null) {
-            String fileName = ze.getName();
-            File newFile = new File(target + File.separator + fileName);
-            if (ze.isDirectory()) {
-                newFile.mkdir();
-            } else {
-
-                try (FileOutputStream fos = new FileOutputStream(newFile)) {
-                    int len;
-                    while ((len = zis.read(buffer)) > 0) {
-                        fos.write(buffer, 0, len);
-                    }
-                }
-
-            }
-            zis.closeEntry();
-            ze = zis.getNextEntry();
-        }
-    }
 
     public static String getFileContent(String filePath) throws FileNotFoundException {
         StringBuilder content = new StringBuilder();
@@ -65,54 +29,66 @@ public class FileUtils {
         return content.toString();
     }
 
-    public static void overwriteFileContent(String filePath, String content) throws IOException {
-        File file = new File(filePath);
-
-        try (FileWriter writer = new FileWriter(file, false)) {
-            writer.write(content);
-        }
-
-    }
-
     public static String minStart(String string) {
-        return string.replaceFirst(String.valueOf(string.charAt(0)), String.valueOf(string.charAt(0)).toLowerCase());
+        return string.transform(s -> s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toLowerCase()));
     }
 
     public static String majStart(String string) {
-        return string.replaceFirst(String.valueOf(string.charAt(0)), String.valueOf(string.charAt(0)).toUpperCase());
+        return string.transform(s -> s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase()));
     }
 
     public static String toCamelCase(String string) {
-        String[] words = string.split("_");
-        StringBuilder camelCase = new StringBuilder(words[0].toLowerCase()); // Le premier mot reste en minuscule
+        return string.transform(s -> {
+            String[] words = s.split("_");
+            StringBuilder camelCase = new StringBuilder(words[0].toLowerCase());
 
-        for (int i = 1; i < words.length; i++) {
-            camelCase.append(majStart(words[i]));
-        }
+            for (int i = 1; i < words.length; i++) {
+                camelCase.append(majStart(words[i]));
+            }
 
-        return camelCase.toString();
+            return camelCase.toString();
+        });
     }
 
     public static String toKebabCase(String input) {
-        if (input == null || input.isEmpty()) {
-            return input;
-        }
-
-        StringBuilder result = new StringBuilder();
-        input = input.replace("_", "");
-
-        for (char c : input.toCharArray()) {
-            if (Character.isUpperCase(c)) {
-                if (!result.isEmpty()) {
-                    result.append("-");
-                }
-                result.append(Character.toLowerCase(c));
-            } else {
-                result.append(c);
+        return input.transform(s -> {
+            if (s.isEmpty()) {
+                return s;
             }
-        }
 
-        return result.toString();
+            StringBuilder result = new StringBuilder();
+            s = s.replace("_", "");
+
+            for (char c : s.toCharArray()) {
+                if (Character.isUpperCase(c)) {
+                    if (!result.isEmpty()) {
+                        result.append("-");
+                    }
+                    result.append(Character.toLowerCase(c));
+                } else {
+                    result.append(c);
+                }
+            }
+
+            return result.toString();
+        });
+    }
+
+    public static String formatReadable(String s) {
+        return s.transform(str -> {
+            String newString = str.replace("_", " ");
+            StringBuilder newWord = new StringBuilder();
+
+            for (char charact : newString.toCharArray()) {
+                if (Character.isUpperCase(charact)) {
+                    newWord.append(" ").append(Character.toLowerCase(charact));
+                } else {
+                    newWord.append(charact);
+                }
+            }
+
+            return majStart(newWord.toString());
+        });
     }
 
     public static void createFileStructure(String filePath) {
@@ -205,24 +181,6 @@ public class FileUtils {
 
         file = new File(filename);
         file.mkdir();
-    }
-
-    public static String formatReadable(String s) {
-        String newString = s;
-        newString = newString.replace("_", " ");
-        char[] characts = newString.toCharArray();
-        StringBuilder newWord = new StringBuilder();
-
-        for (char charact : characts) {
-            if (Character.isUpperCase(charact)) {
-                newWord.append(" ").append(Character.toLowerCase(charact));
-            } else {
-                newWord.append(charact);
-            }
-        }
-
-        newWord = new StringBuilder(majStart(newWord.toString()));
-        return newWord.toString();
     }
 
     public static <T> T fromJson(Class<T> clazz, String json) {

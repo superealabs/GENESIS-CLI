@@ -1,0 +1,19 @@
+### GET request to example server
+GET https://examples.http-client.intellij.net/get
+    ?generated-in=IntelliJ IDEA
+
+###
+
+POST https://api.groq.com/openai/v1/chat/completions
+Authorization: Bearer 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
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Explain me what a LLM is and why they're important"
+    }
+  ],
+  "model": "llama3-8b-8192"
+}

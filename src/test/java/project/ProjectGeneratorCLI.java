@@ -127,7 +127,7 @@ public class ProjectGeneratorCLI {
             String projectDescription = "An ASP.NET BEGIN Project";
             String frameworkVersion = "8.0";
             String languageVersion = "";
-            String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated/";
+            String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated/test";
 
             ProjectGenerator projectGenerator = new ProjectGenerator();
 
@@ -170,6 +170,57 @@ public class ProjectGeneratorCLI {
 
     @Test
     void generateProjectSpringEurekaServer() {
+        try {
+
+            int languageId = Constantes.Java_ID;
+            int frameworkId = Constantes.Spring_Eureka_Server_ID;
+            int projectId = Constantes.Maven_ID;
+
+            var language = ProjectGenerator.languages.get(languageId);
+            var framework = ProjectGenerator.frameworks.get(frameworkId);
+            var project = ProjectGenerator.projects.get(projectId);
+
+            String projectName = "TestEurekaServer";
+            String groupLink = "labs.test";
+            String projectPort = "8761";
+            String logLevel = "INFO";
+            String projectDescription = "Eureka Server Project For Testing Genesis API Generator";
+            String frameworkVersion = "3.3.5";
+            String languageVersion = "21";
+
+            String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated/discovery";
+
+            ProjectGenerator projectGenerator = new ProjectGenerator();
+
+            HashMap<String, String> frameworkConfiguration = new HashMap<>();
+            frameworkConfiguration.put("loggingLevel", logLevel);
+            frameworkConfiguration.put("frameworkVersion", frameworkVersion);
+
+            HashMap<String, String> languageConfiguration = new HashMap<>();
+            languageConfiguration.put("languageVersion", languageVersion);
+
+            projectGenerator.generateProject(
+                    null,
+                    language,
+                    framework,
+                    project,
+                    null,
+                    destinationFolder,
+                    projectName,
+                    groupLink,
+                    projectPort,
+                    projectDescription,
+                    languageConfiguration,
+                    frameworkConfiguration,
+                    null
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void generateProjectSpringApiGateway() {
         try {
 
             int languageId = Constantes.Java_ID;

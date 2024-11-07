@@ -135,14 +135,20 @@
 
         var builder = WebApplication.CreateBuilder(args);
         
+        var pathBase = builder.Configuration.GetValue<string>("PathBase");
+        
         builder.Services.AddSwaggerGen(c =>
         {
-          c.SwaggerDoc("v1", new OpenApiInfo
-          {
-            Title = "${projectName}",               
-            Version = "v1",                       
-            Description = "${projectDescription}"
-          });
+            c.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "${projectName}",               
+                Version = "v1",                       
+                Description = "${projectDescription}"
+            });
+            if (!string.IsNullOrEmpty(pathBase))
+            {
+              c.AddServer(new OpenApiServer { Url = pathBase });
+            }
         });
         
         {{#if useEurekaServer}}
@@ -162,8 +168,8 @@
         // Configure Kestrel to listen on both the machine's IP address and localhost
         builder.WebHost.ConfigureKestrel(options =>
         {
-          options.Listen(IPAddress.Parse(localIpAddress), ${projectPort});
-          options.Listen(IPAddress.Loopback, ${projectPort});
+            options.Listen(IPAddress.Parse(localIpAddress), ${projectPort});
+            options.Listen(IPAddress.Loopback, ${projectPort});
         });
         
         // Set the IP address in configuration for Eureka registration
@@ -192,6 +198,11 @@
         builder.Services.AddSwaggerGen();
 
         var app = builder.Build();
+        
+        if (!string.IsNullOrEmpty(pathBase))
+        {
+            app.UsePathBase(pathBase);
+        }
         
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
@@ -239,7 +250,8 @@
           "AllowedHosts": "*"{{#if useDB}},
           "ConnectionStrings": {
             "DefaultConnection": "${connectionString}"
-          }{{/if}}{{#if useEurekaServer}},
+          }{{/if}},
+          "PathBase": "/${toKebabCase(projectName)}"{{#if useEurekaServer}},
           "spring": {
             "application": {
               "name": "${projectName}"
@@ -349,7 +361,7 @@
             "windowsAuthentication": false,
             "anonymousAuthentication": true,
             "iisExpress": {
-              "applicationUrl": "http://localhost:53034",
+              "applicationUrl": "http://localhost:53034/${toKebabCase(projectName)}",
               "sslPort": 44349
             }
           },
@@ -359,7 +371,7 @@
               "dotnetRunMessages": true,
               "launchBrowser": true,
               "launchUrl": "swagger",
-              "applicationUrl": "http://localhost:${projectPort}",
+              "applicationUrl": "http://localhost:${projectPort}/${toKebabCase(projectName)}",
               "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
               }
@@ -369,7 +381,7 @@
               "dotnetRunMessages": true,
               "launchBrowser": true,
               "launchUrl": "swagger",
-              "applicationUrl": "https://localhost:7273;http://localhost:${projectPort}",
+              "applicationUrl": "https://localhost:7273/${toKebabCase(projectName)};http://localhost:${projectPort}",
               "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
               }
@@ -386,7 +398,7 @@
               "commandName": "Project",
               "launchBrowser": true,
               "launchUrl": "swagger",
-              "applicationUrl": "http://localhost:${projectPort}",
+              "applicationUrl": "http://localhost:${projectPort}/${toKebabCase(projectName)}",
               "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
               }
