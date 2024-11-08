@@ -22,6 +22,7 @@ public class Constantes {
     public static final int Spring_REST_API_ID = 1;
     public static final int NET_ID = 2;
     public static final int Spring_Eureka_Server_ID = 3;
+    public static final int Spring_Api_Gateway_ID = 4;
 
     // PROJECTS
     public static final int Maven_ID = 1;

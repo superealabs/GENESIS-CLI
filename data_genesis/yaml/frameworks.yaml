@@ -90,7 +90,7 @@
         eureka:
           client:
             service-url:
-              defaultZone: ${eurekaServerHttpProtocol}://${eurekaServerHost}:${eurekaServerPort}/eureka/
+              defaultZone: ${eurekaServerURL}
           instance:
             prefer-ip-address: true
             ip-address: $[spring.cloud.client.ip-address]  # Dynamically resolve IP
@@ -157,22 +157,11 @@
       defaultOption: "none"
 
   eurekaClientConfigurations:
-    - name: "Eureka Server Http Protocol"
-      variableName: "eurekaServerHttpProtocol"
+    - name: "Eureka Server URL"
+      variableName: "eurekaServerURL"
       options:
-        - "http"
-        - "https"
-      defaultOption: "http"
-    - name: "Eureka Server Host"
-      variableName: "eurekaServerHost"
-      options:
-        - "localhost"
-      defaultOption: "localhost"
-    - name: "Eureka Server Port"
-      variableName: "eurekaServerPort"
-      options:
-        - "8761"
-      defaultOption: "8761"
+        - "http://localhost:8761/eureka/"
+      defaultOption: "http://localhost:8761/eureka/"
     - name: "Project Non Secure Port For Eureka Server"
       variableName: "projectNonSecurePort"
       options:
@@ -430,22 +419,11 @@
       defaultOption: "8.0"
 
   eurekaClientConfigurations:
-    - name: "Eureka Server Http Protocol"
-      variableName: "eurekaServerHttpProtocol"
+    - name: "Eureka Server URL"
+      variableName: "eurekaServerURL"
       options:
-        - "http"
-        - "https"
-      defaultOption: "http"
-    - name: "Eureka Server Host"
-      variableName: "eurekaServerHost"
-      options:
-        - "localhost"
-      defaultOption: "localhost"
-    - name: "Eureka Server Port"
-      variableName: "eurekaServerPort"
-      options:
-        - "8761"
-      defaultOption: "8761"
+        - "http://localhost:8761/eureka/"
+      defaultOption: "http://localhost:8761/eureka/"
     - name: "Project Non Secure Port For Eureka Server"
       variableName: "projectNonSecurePort"
       options:
@@ -751,6 +729,281 @@
       scope: "{{removeLine}}"
     - groupId: "org.springframework.boot"
       artifactId: "spring-boot-starter-test"
+      version: "{{removeLine}}"
+      scope: "test"
+
+  model:
+    toGenerate: false
+    modelImports: ""
+    modelExtends: ""
+    modelAnnotations: ""
+    modelFieldContent: ""
+    modelGetterSetter: ""
+    modelConstructors: ""
+    modelSavePath: ""
+    modelPackage: ""
+
+  modelDao:
+    toGenerate: false
+    modelDaoImports: ""
+    modelDaoAnnotations: ""
+    modelDaoClassKeyword: ""
+    modelDaoExtends: ""
+    modelDaoName: ""
+    modelDaoFieldContent: ""
+    modelDaoMethodContent: ""
+    modelDaoConstructors: ""
+    modelDaoSavePath: ""
+    modelDaoPackage: ""
+    modelDaoAdditionalFiles: [ ]
+
+  service:
+    toGenerate: false
+    serviceImports: ""
+    serviceAnnotations: ""
+    serviceClassKeyword: ""
+    serviceExtends: ""
+    serviceName: ""
+    serviceFieldContent: ""
+    serviceConstructors: ""
+    serviceMethodContent: ""
+    serviceSavePath: ""
+    servicePackage: ""
+    serviceAdditionalFiles: [ ]
+
+  controller:
+    toGenerate: false
+    controllerImports: ""
+    controllerAnnotations: ""
+    controllerExtends: ""
+    controllerName: ""
+    controllerFieldContent: ""
+    controllerConstructors: ""
+    controllerMethodContent: ""
+    controllerSavePath: ""
+    controllerPackage: ""
+    controllerAdditionalFiles: [ ]
+
+
+- id: 4
+  languageId: 1
+  name: "Spring Boot - API Gateway"
+  template: "Template"
+  useDB: false
+  useCloud: true
+  useEurekaServer: false
+  withGroupId: true
+  additionalFiles:
+    - fileType: "MainFile"
+      fileName: "${majStart(projectName)}Application"
+      extension: "java"
+      content: |
+        package ${groupLink}.${lowerCase(projectName)};
+        
+        import org.springframework.boot.SpringApplication;
+        import org.springframework.boot.autoconfigure.SpringBootApplication;
+        {{#if useEurekaServer}}import org.springframework.cloud.client.discovery.EnableDiscoveryClient;{{/if}}
+
+        {{#if useEurekaServer}}@EnableDiscoveryClient{{/if}}
+        @SpringBootApplication
+        public class ${majStart(projectName)}Application {
+            public static void main(String[] args) {
+        		SpringApplication.run(${majStart(projectName)}Application.class, args);
+        	}
+        }
+
+      destinationPath: "${destinationFolder}/${majStart(projectName)}/src/main/java/${groupLinkPath}/${lowerCase(projectName)}"
+
+    - fileType: "TestFile"
+      fileName: "${majStart(projectName)}ApplicationTests"
+      extension: "java"
+      content: |
+        package ${groupLink}.${lowerCase(projectName)};
+
+        import org.junit.jupiter.api.Test;
+        import org.springframework.boot.test.context.SpringBootTest;
+
+        @SpringBootTest
+        class ${majStart(projectName)}ApplicationTests {
+
+        {{tab}}@Test
+        {{tab}}void contextLoads() {
+        {{tab}}}
+
+        }
+      destinationPath: "${destinationFolder}/${majStart(projectName)}/src/test/java/${groupLinkPath}/${lowerCase(projectName)}/"
+
+    - fileType: "SecurityConfig"
+      fileName: "SecurityConfig"
+      extension: "java"
+      content: |
+        package ${groupLink}.${lowerCase(projectName)}.config;
+        
+        import org.springframework.beans.factory.annotation.Value;
+        import org.springframework.context.annotation.Bean;
+        import org.springframework.context.annotation.Configuration;
+        import org.springframework.security.config.Customizer;
+        import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+        import org.springframework.security.config.web.server.ServerHttpSecurity;
+        import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+        import org.springframework.security.core.userdetails.User;
+        import org.springframework.security.core.userdetails.UserDetails;
+        import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+        import org.springframework.security.crypto.password.PasswordEncoder;
+        import org.springframework.security.web.server.SecurityWebFilterChain;
+        
+        @Configuration
+        @EnableWebFluxSecurity
+        public class SecurityConfig {
+            @Value("${security.user.username:api-gateway-user}")
+            private String username;
+            
+            @Value("${security.user.password:api-gateway-password}")
+            private String password;
+            
+            @Value("${security.user.role:USER}")
+            private String role;
+        
+            @Bean
+            public MapReactiveUserDetailsService userDetailsService() {
+                UserDetails user = User.builder()
+                    .username(username)
+                    .password(passwordEncoder().encode(password))
+                    .roles(role)
+                    .build();
+            
+                return new MapReactiveUserDetailsService(user);
+            }
+              
+            @Bean
+            public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+            }
+              
+            @Bean
+            public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+                http.authorizeExchange(exchanges -> exchanges
+                    .anyExchange().authenticated()
+                ).httpBasic(Customizer.withDefaults());
+              
+              return http.build();
+            }
+        }
+
+      destinationPath: "${destinationFolder}/${majStart(projectName)}/src/main/java/${groupLinkPath}/${lowerCase(projectName)}/config"
+
+    - fileType: "ApplicationYaml"
+      fileName: "application"
+      extension: "yaml"
+      content: |
+        server:
+          port: ${projectPort}
+        
+        security:
+          user:
+            username: ${username}
+            password: ${password}
+            role: ${toUpperCase(role)}}
+        
+        spring:
+          main:
+            web-application-type: reactive
+          application:
+            name: ${toKebabCase(projectName)}
+                
+          cloud:
+            gateway:
+              routes:
+              {{#each routes}}
+                - id: ${this.name}
+                  uri: ${this.uri}
+                  predicates:
+                    - Path=${this.path}
+              {{/each}}
+        {{#if useEurekaServer}}
+        eureka:
+          client:
+            service-url:
+              defaultZone: ${eurekaServerURL}
+          instance:
+            prefer-ip-address: true
+            ip-address: $[spring.cloud.client.ip-address]  # Dynamically resolve IP
+            non-secure-port: ${projectNonSecurePort}  # Specify the non-secure port explicitly{{/if}}
+          
+        management:
+          endpoints:
+            web:
+              exposure:
+                include: health,info
+          endpoint:
+            health:
+              show-details: always
+            info:
+              enabled: true
+          info:
+            env:
+              enabled: true
+            java:
+              enabled: true
+            build:
+              enabled: true
+        info:
+          app:
+            name: $[spring.application.name]
+            description: "${projectDescription}"
+            version: "0.0.1-SNAPSHOT"
+            technical:
+              spring-boot:
+                version: "${frameworkVersion}"
+              server:
+                port: $[server.port]
+        
+        logging:
+          level:
+            root: ${loggingLevel}
+            org.springframework.cloud.gateway: ${loggingLevel}
+
+
+      destinationPath: "${destinationFolder}/${majStart(projectName)}/src/main/resources/"
+
+  configurations:
+    - name: "Logging Level"
+      variableName: "loggingLevel"
+      options:
+        - "TRACE"
+        - "DEBUG"
+        - "INFO"
+        - "WARN"
+        - "ERROR"
+        - "FATAL"
+        - "OFF"
+      defaultOption: "INFO"
+    - name: "Version"
+      variableName: "frameworkVersion"
+      options:
+        - "3.3.5"
+        - "3.2.11"
+      defaultOption: "3.3.5"
+
+  dependencies:
+    - groupId: "org.springframework.cloud"
+      artifactId: "spring-cloud-starter-gateway"
+      version: "{{removeLine}}"
+      scope: "{{removeLine}}"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-test"
+      version: "{{removeLine}}"
+      scope: "test"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-webflux"
+      version: "{{removeLine}}"
+      scope: "test"
+    - groupId: "io.projectreactor"
+      artifactId: "reactor-test"
+      version: "{{removeLine}}"
+      scope: "test"
+    - groupId: "org.springframework.boot"
+      artifactId: "spring-boot-starter-security"
       version: "{{removeLine}}"
       scope: "test"
 

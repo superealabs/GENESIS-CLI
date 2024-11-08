@@ -56,7 +56,7 @@ public class ProjectGeneratorCLI {
             String hibernateDdlAuto = "none";
             String projectDescription = "Test Project";
             String frameworkVersion = "3.3.5";
-            String languageVersion = "21";
+            String languageVersion = "17";
             String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated/service";
 
             ProjectGenerator projectGenerator = new ProjectGenerator();
@@ -69,9 +69,7 @@ public class ProjectGeneratorCLI {
             //===== USE EUREKA SERVER =======//
             framework.setUseCloud(true);
             framework.setUseEurekaServer(true);
-            frameworkConfiguration.put("eurekaServerHttpProtocol", "http");
-            frameworkConfiguration.put("eurekaServerHost", "localhost");
-            frameworkConfiguration.put("eurekaServerPort", "8761");
+            frameworkConfiguration.put("eurekaServerURL", "http://localhost:8761/eureka");
             frameworkConfiguration.put("projectNonSecurePort", projectPort);
             //==============================//
 
@@ -138,9 +136,7 @@ public class ProjectGeneratorCLI {
             //===== USE EUREKA SERVER =======//
             framework.setUseCloud(true);
             framework.setUseEurekaServer(true);
-            frameworkConfiguration.put("eurekaServerHttpProtocol", "http");
-            frameworkConfiguration.put("eurekaServerHost", "localhost");
-            frameworkConfiguration.put("eurekaServerPort", "8761");
+            frameworkConfiguration.put("eurekaServerURL", "http://localhost:8761/eureka");
             frameworkConfiguration.put("projectNonSecurePort", projectPort);
             //==============================//
 
@@ -186,7 +182,7 @@ public class ProjectGeneratorCLI {
             String logLevel = "INFO";
             String projectDescription = "Eureka Server Project For Testing Genesis API Generator";
             String frameworkVersion = "3.3.5";
-            String languageVersion = "21";
+            String languageVersion = "17";
 
             String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated/discovery";
 
@@ -224,28 +220,36 @@ public class ProjectGeneratorCLI {
         try {
 
             int languageId = Constantes.Java_ID;
-            int frameworkId = Constantes.Spring_Eureka_Server_ID;
+            int frameworkId = Constantes.Spring_Api_Gateway_ID;
             int projectId = Constantes.Maven_ID;
 
             var language = ProjectGenerator.languages.get(languageId);
             var framework = ProjectGenerator.frameworks.get(frameworkId);
             var project = ProjectGenerator.projects.get(projectId);
 
-            String projectName = "TestEurekaServer";
+            String projectName = "TestApiGateway";
             String groupLink = "labs.test";
-            String projectPort = "8761";
+            String projectPort = "8090";
             String logLevel = "INFO";
-            String projectDescription = "Eureka Server Project For Testing Genesis API Generator";
+            String projectDescription = "API Gateway Project For Testing Genesis API Generator";
             String frameworkVersion = "3.3.5";
-            String languageVersion = "21";
+            String languageVersion = "17";
 
-            String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated/discovery";
+            String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated/gateway";
 
             ProjectGenerator projectGenerator = new ProjectGenerator();
 
             HashMap<String, String> frameworkConfiguration = new HashMap<>();
             frameworkConfiguration.put("loggingLevel", logLevel);
             frameworkConfiguration.put("frameworkVersion", frameworkVersion);
+
+            //===== USE EUREKA SERVER =======//
+            framework.setUseCloud(true);
+            framework.setUseEurekaServer(true);
+            frameworkConfiguration.put("eurekaServerURL", "http://localhost:8761/eureka");
+            frameworkConfiguration.put("projectNonSecurePort", projectPort);
+            //==============================//
+
 
             HashMap<String, String> languageConfiguration = new HashMap<>();
             languageConfiguration.put("languageVersion", languageVersion);
