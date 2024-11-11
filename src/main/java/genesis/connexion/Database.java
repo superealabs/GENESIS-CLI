@@ -22,16 +22,6 @@ import java.util.Map;
 @Setter
 @Getter
 @ToString
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "name"
-)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = MySQLDatabase.class, name = "mysql"),
-        @JsonSubTypes.Type(value = PostgreSQLDatabase.class, name = "postgresql"),
-        @JsonSubTypes.Type(value = OracleDatabase.class, name = "oracle"),
-        @JsonSubTypes.Type(value = SQLServerDatabase.class, name = "sqlServer")
-})
 public abstract class Database {
     private int id;
     private String driverName;

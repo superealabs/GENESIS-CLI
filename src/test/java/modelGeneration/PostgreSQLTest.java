@@ -45,7 +45,7 @@ public class PostgreSQLTest {
         Language language = languages[0];                                   // Java
         Framework framework = frameworks[0];                                // Spring MVC
 
-        String projectName = "TestProject", groupLink = "com", destinationFolder = "/Users/nomena/STAGE/GENESIS";
+        String projectName = "TestProject", groupLink = "com", destinationFolder = "/Users/nomena/STAGE/GENESIS/generated";
 
         try (Connection connection = database.getConnection(credentials)) {
             TableMetadata[] entities = database.getEntities(connection, credentials, language).toArray(new TableMetadata[0]);

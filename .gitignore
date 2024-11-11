@@ -3,4 +3,5 @@ out
 *.iml
 target
 generated
+*.DS_Store
 
