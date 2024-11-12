@@ -49,7 +49,7 @@ public class ProjectGeneratorCLI {
             String languageVersion = "21";
             String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated/Fana";
 */
-            String projectName = "TestRest";
+            String projectName = "WebApiSpring";
             String groupLink = "com.labs";
             String projectPort = "8000";
             String logLevel = "INFO";
@@ -118,7 +118,7 @@ public class ProjectGeneratorCLI {
             var framework = ProjectGenerator.frameworks.get(frameworkId);
             var project = ProjectGenerator.projects.get(projectId);
 
-            String projectName = "TestRestNet";
+            String projectName = "WebApiNet";
             String groupLink = "";
             String projectPort = "8080";
             String logLevel = "Information";
