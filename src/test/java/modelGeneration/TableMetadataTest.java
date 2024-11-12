@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -24,7 +25,7 @@ public class TableMetadataTest {
     private Database database;
     private Language language;
 
-    public TableMetadataTest(Connection connection) throws FileNotFoundException {
+    public TableMetadataTest(Connection connection) throws IOException {
         this.connection = connection;
     }
 

@@ -1,7 +1,9 @@
 package utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.GsonBuilder;
 import genesis.connexion.Database;
 import genesis.connexion.adapter.DatabaseTypeAdapter;
@@ -183,14 +185,14 @@ public class FileUtils {
         file.mkdir();
     }
 
-    public static <T> T fromJson(Class<T> clazz, String json) {
-        GsonBuilder builder = (new GsonBuilder()).registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter());
-        builder.registerTypeAdapter(LocalTime.class, new LocalTimeTypeAdapter());
-        builder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter());
+    public static <T> T fromJson(Class<T> clazz, String json) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
 
-        builder.registerTypeAdapter(Database.class, new DatabaseTypeAdapter());
+        SimpleModule customModule = new SimpleModule();
+        objectMapper.registerModule(customModule);
 
-        return builder.create().fromJson(json, clazz);
+        return objectMapper.readValue(json, clazz);
     }
 
 

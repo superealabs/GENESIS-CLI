@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class TestMetaData {
 
@@ -26,7 +27,7 @@ public class TestMetaData {
     }
 
     @Test
-    void postgresMetaData() throws FileNotFoundException {
+    void postgresMetaData() throws IOException {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
         PostgreSQLDatabase database = (PostgreSQLDatabase) databases[1];
         TableMetadata tableMetadata = new TableMetadata();

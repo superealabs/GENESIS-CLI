@@ -103,7 +103,7 @@ public class SQLServerTest {
 
 
     @Test
-    void metaDataTEST() throws FileNotFoundException {
+    void metaDataTEST() throws IOException {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
 
         SQLServerDatabase database = (SQLServerDatabase) databases[2];    // SQLServer

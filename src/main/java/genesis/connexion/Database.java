@@ -1,8 +1,14 @@
 package genesis.connexion;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.connexion.model.TableMetadata;
+import genesis.connexion.providers.MySQLDatabase;
+import genesis.connexion.providers.OracleDatabase;
+import genesis.connexion.providers.PostgreSQLDatabase;
+import genesis.connexion.providers.SQLServerDatabase;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,6 +22,16 @@ import java.util.Map;
 @Setter
 @Getter
 @ToString
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "name"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = MySQLDatabase.class, name = "MySQL"),
+        @JsonSubTypes.Type(value = PostgreSQLDatabase.class, name = "PostgreSQL"),
+        @JsonSubTypes.Type(value = OracleDatabase.class, name = "Oracle"),
+        @JsonSubTypes.Type(value = SQLServerDatabase.class, name = "SQL Server")
+})
 public abstract class Database {
     private int id;
     private String driverName;

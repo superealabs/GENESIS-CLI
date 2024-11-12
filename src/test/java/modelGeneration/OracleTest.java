@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.*;
 
 public class OracleTest {
@@ -94,7 +95,7 @@ public class OracleTest {
 
     */
     @Test
-    void metaDataTEST() throws FileNotFoundException {
+    void metaDataTEST() throws IOException {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
 
         OracleDatabase database = (OracleDatabase) databases[3];    // Oracle

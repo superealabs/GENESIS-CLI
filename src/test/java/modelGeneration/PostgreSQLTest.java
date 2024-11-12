@@ -100,7 +100,7 @@ public class PostgreSQLTest {
 
 
     @Test
-    void metaDataTEST() throws FileNotFoundException {
+    void metaDataTEST() throws IOException {
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
 
         PostgreSQLDatabase database = (PostgreSQLDatabase) databases[1];    // PostgreSQL
