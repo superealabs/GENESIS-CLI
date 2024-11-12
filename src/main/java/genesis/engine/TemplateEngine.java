@@ -31,8 +31,6 @@ public class TemplateEngine {
     private static final String FUNCTION_CLOSED_PARENTHESIS = ")";
     private static final String START_COMMENTARY_TAG = "<#";
     private static final String END_COMMENTARY_TAG = "/#>";
-
-    private final Map<String, String> commentMap = new HashMap<>();
     private static final Map<String, Function<String, String>> FUNCTIONS_MAP = new HashMap<>();
 
     static {
@@ -43,6 +41,8 @@ public class TemplateEngine {
         FUNCTIONS_MAP.put("toCamelCase", FileUtils::toCamelCase);
         FUNCTIONS_MAP.put("toKebabCase", FileUtils::toKebabCase);
     }
+
+    private final Map<String, String> commentMap = new HashMap<>();
 
     public String simpleRender(String template, Map<String, Object> variables) {
         if (template == null || template.isEmpty()) {

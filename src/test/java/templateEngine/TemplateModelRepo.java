@@ -362,7 +362,7 @@ public class TemplateModelRepo {
                      return ${field.name};
                  }
                  </#if>
-
+                
                  <#if field.withSetters>
                  public void set${field.name?cap_first}(${field.type} ${field.name}) {
                      this.${field.name} = ${field.name};
@@ -457,9 +457,9 @@ public class TemplateModelRepo {
     void templateEngineRenderModel() throws Exception {
         String template = """
                  package com.${lowerCase(projectName)}.models;
-
+                
                  import jakarta.persistence.*;
-
+                
                  @Entity
                  @Table(name="${tableName}")
                  public class ${majStart(className)} {
@@ -478,7 +478,7 @@ public class TemplateModelRepo {
                          this.${this.name} = ${this.name};{{#if !@last}}
                          {{/if}}{{/each}}
                      }
-
+                
                      {{#each fields}}
                      {{#if this.withGetters}}
                      public ${this.type} get${majStart(this.name)}() {
@@ -528,10 +528,10 @@ public class TemplateModelRepo {
     void testDbContext() throws Exception {
         String template = """
                 namespace ${majStart(projectName)}.Data;
-
+                
                 using Microsoft.EntityFrameworkCore;
                 using Models;
-
+                
                 public class ${majStart(projectName)}Context : DbContext
                 {
                     public ${majStart(projectName)}Context(DbContextOptions<${majStart(projectName)}Context> options) : base(options)
@@ -540,7 +540,7 @@ public class TemplateModelRepo {
                     {{#each entities}}
                     public DbSet<${this}> ${this}s { get; set; }
                     {{/each}}
-
+                
                     protected override void OnModelCreating(ModelBuilder modelBuilder)
                     {
                         {{#each entities}}
@@ -672,9 +672,9 @@ public class TemplateModelRepo {
                 using Microsoft.EntityFrameworkCore;
                 using System.ComponentModel.DataAnnotations;
                 using ${projectName}.Models;
-                               
+                
                 namespace ${packageValue};
-                                
+                
                 public class ${projectName}Context : DbContext
                 {
                     {{#each entities}}

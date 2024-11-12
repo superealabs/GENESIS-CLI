@@ -1,14 +1,8 @@
 package genesis.connexion;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.connexion.model.TableMetadata;
-import genesis.connexion.providers.MySQLDatabase;
-import genesis.connexion.providers.OracleDatabase;
-import genesis.connexion.providers.PostgreSQLDatabase;
-import genesis.connexion.providers.SQLServerDatabase;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

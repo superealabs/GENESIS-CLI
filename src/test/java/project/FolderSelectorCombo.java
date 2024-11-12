@@ -1,6 +1,6 @@
 package project;
 
-//import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
 
 import javax.swing.*;
 import java.io.File;
@@ -55,7 +55,7 @@ public class FolderSelectorCombo {
 
     private static File getFolderUsingFileChooser() {
         try {
-            //UIManager.setLookAndFeel(new FlatDarkLaf());
+            UIManager.setLookAndFeel(new FlatDarkLaf());
         } catch (Exception e) {
             System.out.println("Error loading FlatLaf. Using default Look and Feel.");
         }
