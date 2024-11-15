@@ -1,12 +1,13 @@
 package utils;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.GsonBuilder;
 import genesis.connexion.Database;
-import genesis.connexion.adapter.DatabaseTypeAdapter;
+import genesis.connexion.adapter.DatabaseDeserializer;
 
 import java.io.*;
 import java.nio.file.*;
@@ -30,6 +31,20 @@ public class FileUtils {
 
         return content.toString();
     }
+
+    public static String removeLastS(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+
+        char lastChar = input.charAt(input.length() - 1);
+        if (lastChar == 's' || lastChar == 'S') {
+            return input.substring(0, input.length() - 1);
+        }
+
+        return input;
+    }
+
 
     public static String minStart(String string) {
         return string.transform(s -> s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toLowerCase()));
@@ -189,8 +204,9 @@ public class FileUtils {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        SimpleModule customModule = new SimpleModule();
-        objectMapper.registerModule(customModule);
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(Database.class, new DatabaseDeserializer());
+        objectMapper.registerModule(module);
 
         return objectMapper.readValue(json, clazz);
     }

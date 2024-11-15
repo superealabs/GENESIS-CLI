@@ -248,7 +248,12 @@ public class ProjectGeneratorHandler {
         Map<Integer, String> databaseNames = ProjectGenerator.databases.entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
-                        entry -> entry.getValue().getName()
+                        entry -> {
+                            if (entry.getValue() == null) {
+                                throw new IllegalArgumentException("Entry with key " + entry.getKey() + " has a null value.");
+                            }
+                            return entry.getValue().getName();
+                        }
                 ));
 
         return getSelectionId(scanner, databaseNames, "database");

@@ -378,13 +378,24 @@
           import org.springframework.context.annotation.Configuration;
           import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
           import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+          import org.springframework.web.servlet.config.annotation.CorsRegistry;
+          
           
           @Configuration
           public class WebConfig implements WebMvcConfigurer {
+          {{tab}}@Override
+          {{tab}}public void addCorsMappings(CorsRegistry registry) {
+          {{tab}}    registry.addMapping("/**")
+          {{tab}}        .allowedOrigins("*")
+          {{tab}}        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+          {{tab}}        .allowedHeaders("*")
+          {{tab}}        .allowCredentials(true)
+          {{tab}}        .maxAge(3600);
+          {{tab}}}
           
           {{tab}}@Override
           {{tab}}public void addViewControllers(ViewControllerRegistry registry) {
-          {{tab}}{{tab}}registry.addRedirectViewController("/", "/swagger-ui/index.html");
+          {{tab}}    registry.addRedirectViewController("/", "/swagger-ui/index.html");
           {{tab}}}
           }
         destinationPath: "${destinationFolder}/${majStart(projectName)}/src/main/java/${groupLinkPath}/${lowerCase(projectName)}/config"

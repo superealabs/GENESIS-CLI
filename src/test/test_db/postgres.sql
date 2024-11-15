@@ -9,7 +9,7 @@ create sequence departement_deptid_seq
 create sequence employe_employeid_seq
     as integer;
 
-create table if not exists departement
+create table if not exists departements
 (
     dept_id bigint default nextval('departement_deptid_seq'::regclass) not null
         constraint departement_pkey
@@ -17,9 +17,9 @@ create table if not exists departement
     nom     varchar(50)                                                not null
 );
 
-alter sequence departement_deptid_seq owned by departement.dept_id;
+alter sequence departement_deptid_seq owned by departements.dept_id;
 
-create table if not exists employe
+create table if not exists employes
 (
     employe_id     bigint default nextval('employe_employeid_seq'::regclass) not null
         constraint employe_pkey
@@ -29,18 +29,18 @@ create table if not exists employe
     date_naissance date,
     dept_id        bigint
         constraint employe_deptid_fkey
-            references departement
+            references departements
 );
 
-alter sequence employe_employeid_seq owned by employe.employe_id;
+alter sequence employe_employeid_seq owned by employes.employe_id;
 
 
 
-INSERT INTO departement (Nom)
+INSERT INTO departements (Nom)
 VALUES ('Informatique'),
        ('Ressources Humaines');
 
-INSERT INTO employe (Nom, Prenom, Date_Naissance, Dept_ID)
+INSERT INTO employes (Nom, Prenom, Date_Naissance, Dept_ID)
 VALUES ('Dupont', 'Jean', '1985-06-15', 1),
        ('Martin', 'Sophie', '1990-09-23', 2),
        ('Durand', 'Luc', '1978-01-10', 1);

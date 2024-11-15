@@ -12,6 +12,7 @@ import genesis.connexion.providers.SQLServerDatabase;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import utils.FileUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -22,16 +23,6 @@ import java.util.Map;
 @Setter
 @Getter
 @ToString
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "name"
-)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = MySQLDatabase.class, name = "MySQL"),
-        @JsonSubTypes.Type(value = PostgreSQLDatabase.class, name = "PostgreSQL"),
-        @JsonSubTypes.Type(value = OracleDatabase.class, name = "Oracle"),
-        @JsonSubTypes.Type(value = SQLServerDatabase.class, name = "SQL Server")
-})
 public abstract class Database {
     private int id;
     private String driverName;
@@ -87,8 +78,6 @@ public abstract class Database {
         try (ResultSet tables = metaData.getTables(null, credentials.getSchemaName(), "%", new String[]{"TABLE"})) {
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
-                String tableSchema = tables.getString("TABLE_SCHEM");
-
                 tableNames.add(tableName);
             }
         }

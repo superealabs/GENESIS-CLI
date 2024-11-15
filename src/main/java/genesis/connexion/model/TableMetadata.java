@@ -12,9 +12,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static utils.FileUtils.majStart;
-import static utils.FileUtils.toCamelCase;
-
+import static utils.FileUtils.*;
+import java.util.stream.Stream;
 
 @Setter
 @Getter
@@ -52,7 +51,15 @@ public class TableMetadata {
             fetchPrimaryKeys(metaData, tableName, listeCols);
             fetchForeignKeys(metaData, tableName, listeCols);
 
-            setClassName(FileUtils.majStart(toCamelCase(tableName.toLowerCase())));
+            setClassName(
+                    Stream.of(tableName)
+                            .map(String::toLowerCase)
+                            .map(FileUtils::toCamelCase)
+                            .map(FileUtils::majStart)
+                            .map(FileUtils::removeLastS)
+                            .findFirst()
+                            .orElse("")
+            );
             setColumns(listeCols.toArray(new ColumnMetadata[0]));
 
         } finally {
