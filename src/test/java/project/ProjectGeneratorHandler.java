@@ -31,7 +31,7 @@ public class ProjectGeneratorHandler {
             int frameworkId = getFrameworkSelection(scanner, language);
             Framework framework = ProjectGenerator.frameworks.get(frameworkId);
 
-            int databaseId = -1;
+            int databaseId;
             Database database = null;
             Connection connection = null;
             if (framework.getUseDB()) {

@@ -240,7 +240,7 @@ public class FrameworkMetadataProvider {
         String packageDefault;
         packageDefault = framework.getModelDao().getModelDaoSavePath();
 
-        Database database = tableMetadata.get(0).getDatabase();
+        Database database = tableMetadata.getFirst().getDatabase();
         String connectionString = database.getConnectionString().get(framework.getLanguageId());
         Map<String, Object> connectionStringMetadata = getCredentialsHashMap(database);
         connectionString = engine.render(connectionString, connectionStringMetadata);

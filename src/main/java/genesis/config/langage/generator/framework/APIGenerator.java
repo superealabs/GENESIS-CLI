@@ -81,17 +81,6 @@ public class APIGenerator implements GenesisGenerator {
         return result;
     }
 
-    @Override
-    public String generateDao(Framework framework, Language language, TableMetadata[] tableMetadata, String destinationFolder, String projectName, String groupLink) {
-        if (language.getId() != framework.getLanguageId()) {
-            throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLanguageId() + "').");
-        }
-//        String templateContent = framework.getModel().getModelDao().getContent();
-//
-//        Map<String, Object> metadata = getHashMapDaoUnique(framework, tableMetadata, projectName);
-//        return engine.render(templateContent, metadata);
-        return "";
-    }
 
     @Override
     public String generateService(Framework framework, Language language, TableMetadata tableMetadata, String destinationFolder, String projectName, String groupLink) throws Exception {
