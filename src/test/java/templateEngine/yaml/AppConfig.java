@@ -1,7 +1,9 @@
 package templateEngine.yaml;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Setter;
 
+@Setter
 public class AppConfig {
     private Info info;
 
@@ -10,11 +12,9 @@ public class AppConfig {
         return info;
     }
 
-    public void setInfo(Info info) {
-        this.info = info;
-    }
 }
 
+@Setter
 class Info {
     private String nom;
     private String version;
@@ -29,17 +29,9 @@ class Info {
         return nom;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
     @JsonProperty("version")
     public String getVersion() {
         return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
     }
 
     @JsonProperty("description")
@@ -47,7 +39,4 @@ class Info {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

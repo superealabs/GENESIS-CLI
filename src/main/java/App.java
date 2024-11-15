@@ -202,17 +202,17 @@ public class App {
             //ProjectSetup projectSetup = new ProjectSetup();
 
             /*---Generate codes for existing or new projects---*/
-            Application application = applicationHandler.chooseApplication(scanner);
+            applicationHandler.chooseApplication(scanner);
 
             /*---Enter information about the database you wish to use---*/
-            Database database = databaseHandler.chooseDatabase(scanner);
-            Credentials credentials = databaseHandler.inputCredentials(scanner);
+            databaseHandler.chooseDatabase(scanner);
+            databaseHandler.inputCredentials(scanner);
 
             /*---Choosing the programming language---*/
             Language language = languageHandler.chooseLanguage(scanner);
 
             /*---Choosing the framework---*/
-            Framework framework = frameworkHandler.chooseFramework(scanner, language);
+            frameworkHandler.chooseFramework(scanner, language);
 
             /*---Project configuration---*/
             //String projectName = projectSetup.setupProject(scanner, framework);

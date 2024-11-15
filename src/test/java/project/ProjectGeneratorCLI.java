@@ -38,17 +38,6 @@ public class ProjectGeneratorCLI {
             var framework = ProjectGenerator.frameworks.get(frameworkId);
             var project = ProjectGenerator.projects.get(projectId);
 
-/*
-            String projectName = "ProjetIrai";
-            String groupLink = "com.flm.irai";
-            String projectPort = "8080";
-            String logLevel = "INFO";
-            String hibernateDdlAuto = "none";
-            String projectDescription = "Projet irai - Backend - Spring boot";
-            String frameworkVersion = "3.3.5";
-            String languageVersion = "21";
-            String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated/Fana";
-*/
             String projectName = "WebApiSpring";
             String groupLink = "com.labs";
             String projectPort = "8000";

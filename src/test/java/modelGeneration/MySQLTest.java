@@ -17,7 +17,7 @@ import java.sql.Connection;
 
 public class MySQLTest {
 
-    Credentials credentials;
+    final Credentials credentials;
 
     public MySQLTest() {
         this.credentials = new Credentials()

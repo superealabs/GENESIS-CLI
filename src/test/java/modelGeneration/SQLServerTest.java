@@ -12,13 +12,12 @@ import genesis.connexion.providers.SQLServerDatabase;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
 
 public class SQLServerTest {
 
-    Credentials credentials;
+    final Credentials credentials;
 
     public SQLServerTest() {
         this.credentials = new Credentials()

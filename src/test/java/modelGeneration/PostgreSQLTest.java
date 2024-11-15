@@ -12,13 +12,12 @@ import genesis.connexion.providers.PostgreSQLDatabase;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
 
 public class PostgreSQLTest {
 
-    Credentials credentials;
+    final Credentials credentials;
 
     public PostgreSQLTest() {
         this.credentials = new Credentials()

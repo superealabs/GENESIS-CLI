@@ -1,6 +1,5 @@
 package utils;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -175,7 +174,7 @@ public class FileUtils {
                         copyFile(path.toString(), destination.toString(), "");
                     }
                 } catch (IOException e) {
-                    e.getMessage();
+                    System.err.println(e.getMessage());
                 }
             });
         }
@@ -183,10 +182,10 @@ public class FileUtils {
 
     public static void createDirectory(String filePath) {
         String filename = "";
-        String currentChar = "";
+        String currentChar;
 
         File file;
-        for (int i = 0; i < filePath.toCharArray().length; ++i) {
+        for (int i = 0; i < filePath.length(); ++i) {
             currentChar = String.valueOf(filePath.charAt(i));
             if (currentChar.equals("/")) {
                 file = new File(filename);

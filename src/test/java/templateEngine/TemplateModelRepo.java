@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 public class TemplateModelRepo {
-    TemplateEngine engine = new TemplateEngine();
-    String templatePrimary = FileUtils.getFileContent("data_genesis/Template.templ");
+    final TemplateEngine engine = new TemplateEngine();
+    final String templatePrimary = FileUtils.getFileContent("data_genesis/Template.templ");
 
     public TemplateModelRepo() throws FileNotFoundException {
     }
@@ -391,68 +391,7 @@ public class TemplateModelRepo {
         System.out.println(result);
     }
 
-    /*
-    @Test
-    void templateEngineRenderModelWithThymeleaf() {
-        // Configuration de Thymeleaf en mode texte
-        var templateEngine = new org.thymeleaf.TemplateEngine();
-        StringTemplateResolver templateResolver = new StringTemplateResolver();
-        templateResolver.setTemplateMode("TEXT");  // Mode texte au lieu de HTML
-        templateEngine.setTemplateResolver(templateResolver);
 
-        // Contenu du template sans balises HTML
-        String templateContent = """
-                package com.[(${metadata.projectName})].models;
-                       \s
-                import jakarta.persistence.*;
-                       \s
-                @Entity
-                @Table(name="[[${metadata.tableName}]]")
-                public class [[${metadata.className}]]  {
-               \s
-                    <th:block th:each="field : ${metadata.fields}">
-                        <th:block th:if="${field.type != null && field.name != null}">
-                            private [[${field.type}]] [[${field.name}]];
-                        </th:block>
-                    </th:block>
-                   \s
-                       \s
-                    public [[${metadata.className}]](<th:block th:each="field, fieldStat : ${metadata.fields}">
-                    [[${field.type}]] [[${field.name}]]<th:block th:if="${fieldStat.index < metadata.fields.size() - 1}">, </th:block>
-                    </th:block>) {
-                        <th:block th:each="field : ${metadata.fields}">
-                        this.[[${field.name}]] = [[${field.name}]];
-                        </th:block>
-                    }
-                       \s
-                    <th:block th:each="field : ${metadata.fields}">
-                        <th:block th:if="${field.withGetters}">
-                        public [[${field.type}]] get[[${#strings.capitalize(field.name)}]]() {
-                            return [[${field.name}]];
-                        }
-                        </th:block>
-                       \s
-                        <th:block th:if="${field.withSetters}">
-                        public void set[[${#strings.capitalize(field.name)}]]([[${field.type}]] [[${field.name}]]) {
-                            this.[[${field.name}]] = [[${field.name}]];
-                        }
-                        </th:block>
-                    </th:block>
-                }
-               \s""";
-
-        // Données du modèle
-        Map<String, Object> metadata = getHashMapIntermediaire();
-
-        // Contexte Thymeleaf
-        Context context = new Context();
-        context.setVariable("metadata", metadata);
-
-        // Rendu du template
-        String result = templateEngine.process(templateContent, context);
-        System.out.println(result);
-    }
-*/
     @Test
     void templateEngineRenderModel() throws Exception {
         String template = """

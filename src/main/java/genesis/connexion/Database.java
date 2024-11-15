@@ -1,18 +1,11 @@
 package genesis.connexion;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.connexion.model.TableMetadata;
-import genesis.connexion.providers.MySQLDatabase;
-import genesis.connexion.providers.OracleDatabase;
-import genesis.connexion.providers.PostgreSQLDatabase;
-import genesis.connexion.providers.SQLServerDatabase;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import utils.FileUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -20,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("CommentedOutCode")
 @Setter
 @Getter
 @ToString
@@ -101,35 +95,4 @@ public abstract class Database {
 
         return databaseMetadata;
     }
-/*
-    private Connection getOrCreateConnection(Connection connection, Credentials credentials) throws SQLException {
-        if (connection != null) {
-            return connection;
-        }
-        try {
-            return getConnection(credentials);
-        } catch (ClassNotFoundException e) {
-            throw new SQLException("Failed to create database connection", e);
-        }
-    }
-
-    private PreparedStatement prepareStatement(Connection connection, Credentials credentials, String entityName) throws SQLException {
-        String query = buildQuery(credentials, entityName);
-        return connection.prepareStatement(query);
-    }
-
-    private String buildQuery(Credentials credentials, String entityName) {
-        String query = getTablesQuery.replace("[databaseName]", credentials.getSchemaName());
-        if (!entityName.equals("*")) {
-            query += String.format(addEntitiesQuery, entityName);
-        }
-        return query;
-    }
-
-    private TableMetadata createEntityFromResult(ResultSet result) throws SQLException {
-        TableMetadata tableMetadata = new TableMetadata();
-        tableMetadata.setTableName(result.getString("table_name"));
-        return tableMetadata;
-    }
-*/
 }

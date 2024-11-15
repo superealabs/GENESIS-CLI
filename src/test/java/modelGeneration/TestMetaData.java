@@ -8,12 +8,11 @@ import genesis.connexion.providers.PostgreSQLDatabase;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class TestMetaData {
 
-    Credentials credentials;
+    final Credentials credentials;
 
     public TestMetaData(Credentials credentials) {
         this.credentials = credentials;
