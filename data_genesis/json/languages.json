@@ -8,6 +8,7 @@
         "name": "Language version",
         "variableName": "languageVersion",
         "options": [
+          "17",
           "21",
           "23"
         ],
