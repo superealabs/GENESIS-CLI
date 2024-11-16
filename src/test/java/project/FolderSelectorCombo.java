@@ -1,6 +1,6 @@
 package project;
 
-import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
 import javax.swing.*;
 import java.io.File;
@@ -18,9 +18,9 @@ public class FolderSelectorCombo {
         File selectedFolder = null;
         while (selectedFolder == null) {
             System.out.println("Enter the destination folder path");
-            System.out.println("1: Enter the folder path manually");
-            System.out.println("2: Use the folder selector");
-            System.out.print("Choice: ");
+            System.out.println("1) Manually");
+            System.out.println("2) Using the folder selector");
+            System.out.print("Choice index: ");
             String choice = scanner.nextLine().trim();
             switch (choice) {
                 case "1":
@@ -55,7 +55,7 @@ public class FolderSelectorCombo {
 
     private static File getFolderUsingFileChooser() {
         try {
-            UIManager.setLookAndFeel(new FlatDarkLaf());
+            UIManager.setLookAndFeel(new FlatMacLightLaf());
         } catch (Exception e) {
             System.out.println("Error loading FlatLaf. Using default Look and Feel.");
         }

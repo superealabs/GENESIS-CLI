@@ -8,6 +8,7 @@ import genesis.config.langage.generator.project.ProjectGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 
+import java.io.Console;
 import java.sql.Connection;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,6 +32,11 @@ public class ProjectGeneratorHandler {
             int frameworkId = getFrameworkSelection(scanner, language);
             Framework framework = ProjectGenerator.frameworks.get(frameworkId);
 
+            int projectId = getProjectId(scanner, framework);
+            var project = ProjectGenerator.projects.get(projectId);
+
+            String destinationFolder = FolderSelectorCombo.selectDestinationFolder(scanner);
+
             int databaseId;
             Database database = null;
             Connection connection = null;
@@ -39,11 +45,6 @@ public class ProjectGeneratorHandler {
                 database = ProjectGenerator.databases.get(databaseId);
                 connection = configureCredentials(scanner, database);
             }
-
-            int projectId = getProjectId(scanner, framework);
-            var project = ProjectGenerator.projects.get(projectId);
-
-            String destinationFolder = FolderSelectorCombo.selectDestinationFolder(scanner);
 
             String projectName = getNonEmptyInput(scanner, "Enter the project name");
 
@@ -103,11 +104,11 @@ public class ProjectGeneratorHandler {
 
     private void configureCommonCredentials(Scanner scanner, Database database) {
         credentials.setHost(getDefaultInput(scanner, "Enter the database host", "localhost"));
-        credentials.setDatabaseName(getDefaultInput(scanner, "Enter the database name", "test_db"));
-        credentials.setSchemaName(getDefaultInput(scanner, "Enter the schema name", "public"));
-        credentials.setUser(getDefaultInput(scanner, "Enter the database user", "nomena"));
-        credentials.setPwd(getDefaultInput(scanner, "Enter the database password", "root"));
         credentials.setPort(getDefaultInput(scanner, "Enter the database port", database.getPort()));
+        credentials.setDatabaseName(getDefaultInput(scanner, "Enter the database name", "test"));
+        credentials.setSchemaName(getDefaultInput(scanner, "Enter the schema name", "public"));
+        credentials.setUser(getDefaultInput(scanner, "Enter the database user", "root"));
+        credentials.setPwd(getPasswordInput(scanner, "Enter the database password", ""));
     }
 
     private void configureDatabaseSpecificCredentials(Scanner scanner, Database database) {
@@ -177,7 +178,7 @@ public class ProjectGeneratorHandler {
             }
             return connection;
         }
-        return null; // If the user does not want to modify the URL
+        return null;
     }
 
     private Connection testDatabaseConnection(Database database) {
@@ -210,6 +211,33 @@ public class ProjectGeneratorHandler {
             System.out.println("Using: " + input + "\n");
             return input;
         }
+    }
+
+    private String getPasswordInput(Scanner scanner, String prompt, String defaultValue) {
+        Console console = System.console();
+        String password;
+
+        if (console != null) {
+            char[] passwordChars = console.readPassword(prompt + ": ");
+            password = new String(passwordChars).trim();
+            if (password.isEmpty()) {
+                System.out.println("Using default password.\n");
+                password = defaultValue;
+            } else {
+                System.out.println("Password entered.\n");
+            }
+        } else {
+            System.out.print(prompt + " (default: " + (defaultValue.isEmpty() ? "<empty>" : "<hidden>") + "): ");
+            password = scanner.nextLine().trim();
+            if (password.isEmpty()) {
+                System.out.println("Using default password.\n");
+                password = defaultValue;
+            } else {
+                System.out.println("Password entered.\n");
+            }
+        }
+
+        return password;
     }
 
     private String getNonEmptyInput(Scanner scanner, String prompt) {
@@ -256,7 +284,7 @@ public class ProjectGeneratorHandler {
                         }
                 ));
 
-        return getSelectionId(scanner, databaseNames, "database");
+        return getSelectionId(scanner, databaseNames, "Database");
     }
 
     private int getLanguageSelection(Scanner scanner) {
@@ -271,7 +299,7 @@ public class ProjectGeneratorHandler {
             return -1;
         }
 
-        return getSelectionId(scanner, languageNames, "language");
+        return getSelectionId(scanner, languageNames, "Language");
     }
 
     private int getFrameworkSelection(Scanner scanner, Language language) {
@@ -289,7 +317,7 @@ public class ProjectGeneratorHandler {
             System.out.println("No valid frameworks found for the selected language.");
             return -1;
         }
-        return getSelectionId(scanner, validFrameworkNames, "framework");
+        return getSelectionId(scanner, validFrameworkNames, "Framework");
     }
 
     private int getProjectId(Scanner scanner, Framework framework) {
@@ -306,7 +334,7 @@ public class ProjectGeneratorHandler {
             return -1;
         }
 
-        return getSelectionId(scanner, languageNames, "project");
+        return getSelectionId(scanner, languageNames, "Build tool");
     }
 
     private int getSelectionId(Scanner scanner, Map<Integer, String> options, String optionType) {
@@ -314,12 +342,12 @@ public class ProjectGeneratorHandler {
         Collections.sort(keys);
 
         while (true) {
-            System.out.println("Options :");
+            System.out.println(optionType+" options :");
             for (int i = 0; i < keys.size(); i++) {
                 System.out.println((i + 1) + ") " + options.get(keys.get(i)));
             }
 
-            System.out.print("Enter the " + optionType + " index: ");
+            System.out.print("Enter the " + optionType.toLowerCase() + " index: ");
             try {
                 int index = Integer.parseInt(scanner.nextLine()) - 1;
                 if (index >= 0 && index < keys.size()) {
