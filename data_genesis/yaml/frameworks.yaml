@@ -1,6 +1,7 @@
 - id: 1
   languageId: 1
-  name: "Spring Boot - REST API"
+  baseFramework: "Spring Boot"
+  name: "Spring Boot - WEB API REST"
   template: "Template"
   useDB: true
   withGroupId: true
@@ -402,7 +403,8 @@
 
 - id: 2
   languageId: 2
-  name: ".NET EF REST API"
+  baseFramework: ".NET"
+  name: "ASP.NET Core - WEB API REST"
   template: "Template"
   useDB: true
   withGroupId: false
@@ -647,6 +649,7 @@
 
 - id: 3
   languageId: 1
+  baseFramework: "Spring Boot"
   name: "Spring Boot - Eureka Server"
   template: "Template"
   useDB: false
@@ -798,6 +801,7 @@
 
 - id: 4
   languageId: 1
+  baseFramework: "Spring Boot"
   name: "Spring Boot - API Gateway"
   template: "Template"
   useDB: false

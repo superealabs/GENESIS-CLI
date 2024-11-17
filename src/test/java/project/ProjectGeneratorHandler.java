@@ -26,17 +26,24 @@ public class ProjectGeneratorHandler {
         System.out.println("\n** Welcome to the GENESIS-CLI ** \n\n Let's get started 🚀\n");
 
         try (Scanner scanner = new Scanner(System.in)) {
+            // INITIALISATION
+            String projectName = getNonEmptyInput(scanner, "Enter the project name");
             int languageId = getLanguageSelection(scanner);
             Language language = ProjectGenerator.languages.get(languageId);
 
-            int frameworkId = getFrameworkSelection(scanner, language);
-            Framework framework = ProjectGenerator.frameworks.get(frameworkId);
+            String baseFramework = getBaseFrameworkSelection(scanner, language);
 
-            int projectId = getProjectId(scanner, framework);
+            int projectId = getProjectId(scanner, baseFramework);
             var project = ProjectGenerator.projects.get(projectId);
-
             String destinationFolder = FolderSelectorCombo.selectDestinationFolder(scanner);
 
+
+            // TYPE DE PROJET
+            int frameworkId = getFrameworkSelection(scanner, language, baseFramework);
+            Framework framework = ProjectGenerator.frameworks.get(frameworkId);
+
+
+            // CONFIGURATION DE LA BASE DE DONNÉES
             int databaseId;
             Database database = null;
             Connection connection = null;
@@ -46,8 +53,7 @@ public class ProjectGeneratorHandler {
                 connection = configureCredentials(scanner, database);
             }
 
-            String projectName = getNonEmptyInput(scanner, "Enter the project name");
-
+            // CONFIGURATION PERSONNALISÉES
             String groupLink = "";
             if (framework.getWithGroupId())
                 groupLink = getNonEmptyInput(scanner, "Enter the group link");
@@ -302,28 +308,68 @@ public class ProjectGeneratorHandler {
         return getSelectionId(scanner, languageNames, "Language");
     }
 
-    private int getFrameworkSelection(Scanner scanner, Language language) {
+    private String getBaseFrameworkSelection(Scanner scanner, Language language) {
+        Map<String, String> baseFrameworks = ProjectGenerator.frameworks.values().stream()
+                .filter(framework -> framework.getLanguageId() == language.getId())
+                .collect(Collectors.toMap(
+                        Framework::getBaseFramework,
+                        Framework::getBaseFramework,
+                        (existing, replacement) -> existing // To handle duplicates
+                ));
+
+        return getSelectionStr(scanner, baseFrameworks, "Framework");
+    }
+
+    private String getSelectionStr(Scanner scanner, Map<String, String> options, String optionType) {
+        List<String> keys = new ArrayList<>(options.keySet());
+        Collections.sort(keys);
+
+        while (true) {
+            System.out.println(optionType + " options:");
+            for (int i = 0; i < keys.size(); i++) {
+                System.out.println((i + 1) + ") " + options.get(keys.get(i)));
+            }
+
+            System.out.print("Enter the " + optionType.toLowerCase() + " index: ");
+            try {
+                int index = Integer.parseInt(scanner.nextLine()) - 1;
+                if (index >= 0 && index < keys.size()) {
+                    String selectedOption = keys.get(index);
+                    System.out.println("Using: " + (index + 1) + "- " + options.get(selectedOption) + "\n");
+                    return selectedOption;
+                } else {
+                    System.out.println("Error: Invalid index. Please select a valid option." + "\n");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Invalid input. Please enter a valid number.\n");
+            }
+        }
+    }
+
+
+    private int getFrameworkSelection(Scanner scanner, Language language, String baseFramework) {
         Map<Integer, Framework> frameworks = ProjectGenerator.frameworks;
 
         Map<Integer, String> validFrameworkNames = frameworks.entrySet().stream()
-                .filter(entry -> entry.getValue().getLanguageId() == language.getId())
+                .filter(entry -> entry.getValue().getLanguageId() == language.getId() &&
+                        entry.getValue().getBaseFramework().equalsIgnoreCase(baseFramework))
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         entry -> entry.getValue().getName()
                 ));
 
-
         if (validFrameworkNames.isEmpty()) {
-            System.out.println("No valid frameworks found for the selected language.");
+            System.out.println("No valid frameworks found for the selected base framework.");
             return -1;
         }
-        return getSelectionId(scanner, validFrameworkNames, "Framework");
+        return getSelectionId(scanner, validFrameworkNames, "Type of project");
     }
 
-    private int getProjectId(Scanner scanner, Framework framework) {
+
+    private int getProjectId(Scanner scanner, String baseframework) {
         Map<Integer, Project> projects = ProjectGenerator.projects;
         Map<Integer, String> languageNames = projects.entrySet().stream()
-                .filter(entry -> entry.getValue().getFrameworkIds().contains(framework.getId()))
+                .filter(entry -> entry.getValue().getBaseFrameworks().contains(baseframework))
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         entry -> entry.getValue().getName()

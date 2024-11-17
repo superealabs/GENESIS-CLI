@@ -1,8 +1,7 @@
 - id: 1
   name: "Maven"
-  frameworkIds:
-    - 1
-    - 3
+  baseFrameworks:
+    - "Spring Boot"
   projectFilesEdits:
     - fileType: "Xml"
       fileName: "pom"
@@ -110,8 +109,8 @@
 
 - id: 2
   name: "ASP.NET Core Project"
-  frameworkIds:
-    - 2
+  baseFrameworks:
+    - ".NET"
   projectFilesEdits:
     - fileType: "ProgramFile"
       fileName: "Program"
