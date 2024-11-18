@@ -160,6 +160,42 @@ public class ProjectGenerator {
         System.out.println("Backend component generation completed for project: " + projectName);
     }
 
+
+    public void generateProject(Database database,
+                                Language language,
+                                Framework framework,
+                                Project project,
+                                Credentials credentials,
+                                String destinationFolder,
+                                String projectName,
+                                String groupLink,
+                                String projectPort,
+                                String projectDescription,
+                                HashMap<String, String> langageConfiguration,
+                                HashMap<String, String> frameworkConfiguration,
+                                List<String> entityNames,
+                                Connection connection) throws Exception {
+
+        if (framework.getUseDB()) {
+            try (Connection connex = (connection != null) ? connection : database.getConnection(credentials)) {
+                List<TableMetadata> entities = database.getEntitiesByNames(entityNames, connex, credentials, language);
+                GenesisGenerator genesisGenerator = new APIGenerator(ProjectGenerator.engine);
+
+                for (TableMetadata tableMetadata : entities) {
+                    generateBackendComponents(genesisGenerator, framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+                }
+                generateProjectFiles(entities, credentials, destinationFolder, projectName, groupLink, projectPort, projectDescription, langageConfiguration, frameworkConfiguration, database, language, framework, project);
+
+            } catch (Exception e) {
+                throw new RuntimeException(e.getLocalizedMessage());
+            }
+        } else {
+            generateProjectFiles(null, credentials, destinationFolder, projectName, groupLink, projectPort, projectDescription, langageConfiguration, frameworkConfiguration, database, language, framework, project);
+        }
+    }
+
+
+
     public void generateProject(Database database,
                                 Language language,
                                 Framework framework,

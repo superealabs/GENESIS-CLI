@@ -31,6 +31,14 @@ public class FileUtils {
         return content.toString();
     }
 
+    public static String lowerCase(String input) {
+        if (input == null || input.isEmpty()) {
+            return input; // Renvoie null ou chaîne vide
+        }
+        return input.toLowerCase();
+    }
+
+
     public static String removeLastS(String input) {
         if (input == null || input.isEmpty()) {
             return input;
@@ -47,10 +55,6 @@ public class FileUtils {
 
     public static String minStart(String string) {
         return string.transform(s -> s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toLowerCase()));
-    }
-
-    public static String majStart(String string) {
-        return string.transform(s -> s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase()));
     }
 
     public static String toCamelCase(String string) {
@@ -122,7 +126,6 @@ public class FileUtils {
         }
     }
 
-
     public static void createFile(String filePath, String fileName, String fileExtension, String fileContent) throws IOException {
         // creation de la structure du projet
         createFileStructure(filePath);
@@ -137,7 +140,6 @@ public class FileUtils {
         file.createNewFile();
         Files.write(file.toPath(), fileContent.getBytes());
     }
-
 
     public static void copyFile(String sourceFilePath, String destinationFilePath, String fileName) throws IOException {
         Path destinationPath = Paths.get(destinationFilePath + fileName);
@@ -210,24 +212,33 @@ public class FileUtils {
         return objectMapper.readValue(json, clazz);
     }
 
-
     public static <T> T fromYamlFile(Class<T> clazz, String yamlFilePath) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
         return objectMapper.readValue(new File(yamlFilePath), clazz);
     }
-
 
     public static <T> T fromYaml(Class<T> clazz, String yamlContent) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
         return objectMapper.readValue(new StringReader(yamlContent), clazz);
     }
 
-
     public static String toJson(Object source) {
         GsonBuilder builder = (new GsonBuilder()).registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter());
         builder.registerTypeAdapter(LocalTime.class, new LocalTimeTypeAdapter());
         builder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter());
         return builder.create().toJson(source);
+    }
+
+    /*
+        public static String majStart(String string) {
+            return string.transform(s -> s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase()));
+        }
+    */
+    public static String majStart(String input) {
+        if (input == null || input.isEmpty()) {
+            return input; // Renvoie null ou chaîne vide pour éviter NullPointerException
+        }
+        return input.substring(0, 1).toUpperCase() + input.substring(1);
     }
 
 

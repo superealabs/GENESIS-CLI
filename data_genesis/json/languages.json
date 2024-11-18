@@ -30,6 +30,7 @@
       "string": "String",
       "date": "java.time.LocalDate",
       "timestamp": "java.time.LocalDateTime",
+      "time": "java.time.LocalTime",
       "boolean": "Boolean"
     }
   },
@@ -53,6 +54,8 @@
       "string": "string",
       "date": "DateOnly",
       "timestamp": "DateTime",
+      "time": "TimeSpan",
+
       "boolean": "Boolean"
     }
   }

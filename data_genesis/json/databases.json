@@ -31,7 +31,8 @@
       "DOUBLE": "double",
       "VARCHAR": "string",
       "DATE": "date",
-      "DATETIME": "timestamp"
+      "DATETIME": "timestamp",
+      "TIME": "time"
     },
     "excludeSchemas": [
       "information_schema",
@@ -85,7 +86,8 @@
       "date": "date",
       "timestamp without time zone": "timestamp",
       "timestamp": "timestamp",
-      "bool": "boolean"
+      "bool": "boolean",
+      "time": "time"
     },
     "excludeSchemas": [
       "information_schema",
@@ -165,6 +167,7 @@
       "VARCHAR2": "string",
       "DATE": "date",
       "TIMESTAMP": "timestamp",
+      "TIME": "time",
       "BLOB": "bytea",
       "CLOB": "text",
       "NCLOB": "text"

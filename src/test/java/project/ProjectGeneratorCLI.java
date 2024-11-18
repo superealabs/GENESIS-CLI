@@ -19,7 +19,7 @@ public class ProjectGeneratorCLI {
                 .setHost("localhost")
                 .setPort("5432")
                 .setSchemaName("public")
-                .setDatabaseName("test_db")
+                .setDatabaseName("mon_refuge_test")
                 .setUser("nomena")
                 .setPwd("root")
                 .setTrustCertificate(true)
@@ -38,7 +38,7 @@ public class ProjectGeneratorCLI {
             var framework = ProjectGenerator.frameworks.get(frameworkId);
             var project = ProjectGenerator.projects.get(projectId);
 
-            String projectName = "WebApiSpring";
+            String projectName = "MonRefuge";
             String groupLink = "com.labs";
             String projectPort = "8000";
             String logLevel = "INFO";
@@ -46,7 +46,7 @@ public class ProjectGeneratorCLI {
             String projectDescription = "Test Project";
             String frameworkVersion = "3.3.5";
             String languageVersion = "17";
-            String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated/service";
+            String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated/";
 
             ProjectGenerator projectGenerator = new ProjectGenerator();
 

@@ -108,7 +108,7 @@
       destinationPath: "${destinationFolder}/${majStart(projectName)}/"
 
 - id: 2
-  name: "ASP.NET Core Project"
+  name: "MSBuild for .NET "
   baseFrameworks:
     - ".NET"
   projectFilesEdits:

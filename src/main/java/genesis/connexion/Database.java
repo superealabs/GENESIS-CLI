@@ -51,7 +51,7 @@ public abstract class Database {
         return connection;
     }
 
-    protected abstract String getJdbcUrl(Credentials credentials);
+    public abstract String getJdbcUrl(Credentials credentials);
 
     public TableMetadata getEntity(Connection connection, Credentials credentials, String entityName, Language language) throws SQLException, ClassNotFoundException {
         TableMetadata tableMetadata = new TableMetadata();
@@ -64,6 +64,18 @@ public abstract class Database {
         TableMetadata tableMetadata = new TableMetadata();
         return tableMetadata.initializeTables(null, connection, credentials, this, language);
     }
+
+    public List<TableMetadata> getEntitiesByNames(List<String> entityNames, Connection connection, Credentials credentials, Language language) throws SQLException, ClassNotFoundException {
+        if (entityNames.isEmpty())
+            return getEntities(connection, credentials, language);
+
+        List<TableMetadata> tableMetadataList = new ArrayList<>();
+        for (String entityName : entityNames) {
+            tableMetadataList.add(getEntity(connection, credentials, entityName, language));
+        }
+        return tableMetadataList;
+    }
+
 
     public List<String> getAllTableNames(Connection connection) throws SQLException {
         List<String> tableNames = new ArrayList<>();

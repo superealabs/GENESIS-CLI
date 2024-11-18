@@ -7,9 +7,15 @@ import genesis.config.langage.Project;
 import genesis.config.langage.generator.project.ProjectGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
+import genesis.connexion.SQLRunner;
+import utils.FileUtils;
 
 import java.io.Console;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,11 +53,19 @@ public class ProjectGeneratorHandler {
             int databaseId;
             Database database = null;
             Connection connection = null;
+            List<String> entityNames = new ArrayList<>();
             if (framework.getUseDB()) {
                 databaseId = getDatabaseId(scanner);
                 database = ProjectGenerator.databases.get(databaseId);
                 connection = configureCredentials(scanner, database);
+
+                handleScriptExecution(scanner, database, connection);
+
+                // Récupérer les noms des entités et gérer la sélection
+                List<String> allTableNames = fetchEntityNames(database, connection);
+                entityNames = handleEntitySelection(scanner, allTableNames);
             }
+
 
             // CONFIGURATION PERSONNALISÉES
             String groupLink = "";
@@ -83,6 +97,7 @@ public class ProjectGeneratorHandler {
                     projectDescription,
                     languageConfiguration,
                     frameworkConfiguration,
+                    entityNames,
                     connection
             );
             System.out.println("\nProject generated successfully! 👨🏽‍💻\n\nSee you on the next project 👋🏼\n");
@@ -92,6 +107,193 @@ public class ProjectGeneratorHandler {
             e.printStackTrace();
         }
     }
+
+
+    private String generateSQL(String description) {
+        // Placeholder implementation
+        String sql = "-- SQL script generated based on the description: " + description + "\n";
+        sql += """
+                CREATE TABLE example_table (
+                    id INT PRIMARY KEY,
+                    name VARCHAR(255)
+                );""";
+        return sql;
+    }
+
+
+
+    private void handleScriptExecution(Scanner scanner, Database database, Connection connection) {
+        String input = getNonEmptyInput(scanner, "Would you like to execute a script in the database? (y/n)");
+        if (input.equalsIgnoreCase("y")) {
+            input = getNonEmptyInput(scanner, "Would you like to generate the script? (y/n)");
+
+            if (input.equalsIgnoreCase("y")) {
+                handleGeneratedScript(scanner, connection);
+            } else {
+                handleExistingScript(scanner, connection);
+            }
+        } else {
+            System.out.println("Skipping script execution.");
+        }
+    }
+
+
+    private void handleGeneratedScript(Scanner scanner, Connection connection) {
+        String description = getNonEmptyInput(scanner, "Enter a description of the tables or modifications to create");
+        String scriptContent = GroqApiClient.generateSQL(description);
+
+        // Demander le chemin pour enregistrer le fichier SQL
+        System.out.println("Enter the path where the SQL file should be saved");
+        String sqlFilePath = FolderSelectorCombo.selectDestinationFolder(scanner);
+
+        // Créer le fichier SQL
+        if (!createSQLFile(sqlFilePath, scriptContent)) {
+            return; // Si le fichier n'est pas créé, on quitte
+        }
+
+        String input = getNonEmptyInput(scanner, "Confirm execution of the generated script? (y/n)");
+        if (!input.equalsIgnoreCase("y")) {
+            System.out.println("Skipping script execution.");
+            return;
+        }
+
+        executeSQLScript(connection, scriptContent);
+    }
+
+
+    private void handleExistingScript(Scanner scanner, Connection connection) {
+        String scriptPath = getNonEmptyInput(scanner, "Enter the path of the SQL script to execute");
+
+        String scriptContent;
+        try {
+            scriptContent = FileUtils.getFileContent(scriptPath);
+        } catch (FileNotFoundException e) {
+            System.out.println("SQL script file not found: " + e.getMessage());
+            return;
+        }
+
+        String input = getNonEmptyInput(scanner, "Confirm execution of the script? (y/n)");
+        if (!input.equalsIgnoreCase("y")) {
+            System.out.println("Skipping script execution.");
+            return;
+        }
+
+        executeSQLScript(connection, scriptContent);
+    }
+
+
+    private boolean createSQLFile(String sqlFilePath, String scriptContent) {
+        try {
+            String filename = "generated_script_"+ LocalDateTime.now();
+            FileUtils.createSimpleFile(sqlFilePath, filename, "sql", scriptContent);
+            System.out.println("SQL file created at: " + sqlFilePath + "/"+filename+".sql");
+            return true;
+        } catch (IOException e) {
+            System.out.println("Error creating SQL file: " + e.getMessage());
+            return false;
+        }
+    }
+
+
+    private void executeSQLScript(Connection connection, String scriptContent) {
+        try {
+            SQLRunner.execute(connection, scriptContent);
+            System.out.println("Script executed successfully.");
+        } catch (Exception e) {
+            System.out.println("Error executing script: " + e.getMessage());
+        }
+    }
+
+
+
+
+
+    private List<String> fetchEntityNames(Database database, Connection connection) {
+        List<String> allTableNames = new ArrayList<>();
+        try {
+            allTableNames = database.getAllTableNames(connection);
+            if (allTableNames.isEmpty()) {
+                System.out.println("No tables found in the database.");
+            } else {
+                System.out.println("\nAvailable entities in the database:");
+                for (int i = 0; i < allTableNames.size(); i++) {
+                    System.out.println((i + 1) + ") " + allTableNames.get(i));
+                }
+                System.out.println("*  Select all entities");
+            }
+        } catch (SQLException e) {
+            System.out.println("An error occurred while fetching table names: " + e.getMessage());
+        }
+        return allTableNames;
+    }
+
+    /*
+    Avant de demander le choix des entités, on demande à l'utilisateur s'il veut exécuter un script dans la base de données,
+    si OUI :
+           on demande s'il veut générer le script:
+                     si oui, on demande une description textuelle des tables ou modifications à créer,
+                     (on appelle une fonction generateSQL(String description))
+                    si non, on skip
+                    on demande le path du fichier SQL
+                    et on va créer un fichier SQL à partir de generateSQL (utilise les méthodes dans FileUtils)
+                    confirmer (y/n)
+           sinon
+                on demande juste le path du script à exécuter (pour l'exécution de script utilise SQL Runner)
+    sinon on skip et on demande les entités à choisir
+     */
+
+    private List<String> handleEntitySelection(Scanner scanner, List<String> allTableNames) {
+        if (allTableNames.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        while (true) {
+            System.out.println("\nEnter the numbers of the entities you want to use, separated by commas (e.g., 1,3,5) or enter * to select all:");
+            String input = scanner.nextLine().trim();
+
+            if (input.equals("*")) {
+                System.out.println("All entities selected.");
+                return new ArrayList<>();
+            }
+
+            List<String> selectedEntities = validateEntitySelection(input, allTableNames);
+
+            if (!selectedEntities.isEmpty()) {
+                System.out.println("Selected entities: " + String.join(", ", selectedEntities)+"\n\n");
+                return selectedEntities;
+            }
+
+            System.out.println("\nInvalid selection. Please try again.");
+        }
+    }
+
+
+    private List<String> validateEntitySelection(String input, List<String> allTableNames) {
+        List<String> selectedEntities = new ArrayList<>();
+        String[] selectedIndexes = input.split(",");
+
+        boolean hasInvalidSelection = false;
+
+        for (String index : selectedIndexes) {
+            try {
+                int idx = Integer.parseInt(index.trim()) - 1;
+                if (idx >= 0 && idx < allTableNames.size()) {
+                    selectedEntities.add(allTableNames.get(idx));
+                } else {
+                    System.out.println("Invalid selection: " + index);
+                    hasInvalidSelection = true;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input: " + index);
+                hasInvalidSelection = true;
+            }
+        }
+
+        return hasInvalidSelection ? new ArrayList<>() : selectedEntities;
+    }
+
+
+
 
     private Connection configureCredentials(Scanner scanner, Database database) {
         configureCommonCredentials(scanner, database);
@@ -172,13 +374,15 @@ public class ProjectGeneratorHandler {
     }
 
     private Connection handleConnectionFailure(Scanner scanner, Database database) {
-        System.out.println("Connection failed. Would you like to modify the JDBC URL? (yes/no)");
-        String choice = scanner.next().trim().toLowerCase();
-        if ("yes".equals(choice)) {
-            String customUrl = getNonEmptyInput(scanner, "Enter the custom JDBC URL:");
+        String choice = getNonEmptyInput(scanner, "Connection failed. Would you like to modify the JDBC URL? (y/n)");
+        if ("y".equals(choice)) {
+            String previousJdbcUrl = database.getJdbcUrl(credentials);
+            System.out.println("(Previous JDBC URL: \"" + previousJdbcUrl + "\")");
+
+            String customUrl = getNonEmptyInput(scanner, "Enter the custom Connexion  String URL");
             Connection connection = testDatabaseConnection(database, customUrl);
             if (connection != null) {
-                System.out.println("Connection successful with custom URL.");
+                System.out.println("Connection successful with custom URL 🎉\n");
             } else {
                 System.out.println("Connection failed with custom URL.");
             }
@@ -192,7 +396,8 @@ public class ProjectGeneratorHandler {
             Connection connection = database.getConnection(credentials);
             return connection.isValid(2) ? connection : null;
         } catch (Exception e) {
-            System.out.println("Error testing connection: " + e.getMessage());
+            String formattedMessage = String.join("\n", e.getMessage().split("\\."));
+            System.out.println("Error testing connection: " + formattedMessage);
             return null;
         }
     }

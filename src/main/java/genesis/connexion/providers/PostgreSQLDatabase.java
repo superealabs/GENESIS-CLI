@@ -12,7 +12,7 @@ import java.util.List;
 
 public class PostgreSQLDatabase extends Database {
     @Override
-    protected String getJdbcUrl(Credentials credentials) {
+    public String getJdbcUrl(Credentials credentials) {
         String port;
         if (credentials.getPort() != null)
             port = credentials.getPort();

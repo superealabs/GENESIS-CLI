@@ -5,6 +5,8 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 import genesis.engine.TemplateEngine;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 
@@ -350,25 +352,25 @@ public class TemplateModelRepo {
                      private ${field.type} ${field.name};
                  </#list>
                         \s
-                 public ${metadata.className}(<#list fields as field>${field.type} ${field.name}<#if field_has_next>, </#if></#list>) {
+                     public ${metadata.className}(<#list fields as field>${field.type} ${field.name}<#if field_has_next>, </#if></#list>) {
+                         <#list fields as field>
+                         this.${field.name} = ${field.name};
+                         </#list>
+                     }
+                            \s
                      <#list fields as field>
-                     this.${field.name} = ${field.name};
-                     </#list>
-                 }
-                        \s
-                 <#list fields as field>
-                 <#if field.withGetters>
-                 public ${field.type} get${field.name?cap_first}() {
-                     return ${field.name};
-                 }
-                 </#if>
+                     <#if field.withGetters>
+                     public ${field.type} get${field.name?cap_first}() {
+                         return ${field.name};
+                     }
+                     </#if>
                 
-                 <#if field.withSetters>
-                 public void set${field.name?cap_first}(${field.type} ${field.name}) {
-                     this.${field.name} = ${field.name};
-                 }
-                 </#if>
-                 </#list>
+                     <#if field.withSetters>
+                     public void set${field.name?cap_first}(${field.type} ${field.name}) {
+                         this.${field.name} = ${field.name};
+                     }
+                     </#if>
+                     </#list>
                  }
                 \s""";
 
@@ -436,6 +438,74 @@ public class TemplateModelRepo {
         String result = engine.render(template, metadata);
         System.out.println(result);
 
+    }
+
+
+    @Test
+    void testVelocityTemplate() {
+        // Initialisation du moteur Velocity
+        VelocityEngine velocityEngine = new VelocityEngine();
+        velocityEngine.init();
+
+        // Template Velocity
+        String template = """
+            package com.${projectName}.models;
+
+            import jakarta.persistence.*;
+
+            @Entity
+            @Table(name="${tableName}")
+            public class ${className} {
+                #foreach ($field in $fields)
+                #if ($field.isPrimaryKey)
+                @Id
+                @GeneratedValue(strategy=GenerationType.IDENTITY)
+                @Column(name="$field.columnName")
+                #elseif ($field.isForeignKey)
+                @ManyToOne
+                @JoinColumn(name="$field.columnName")
+                #else
+                @Column(name="$field.columnName")
+                #end
+                private $field.type $field.name;
+            
+                #end
+
+                // Constructor
+                public ${className}(#foreach ($field in $fields)$field.type $field.name#if (!$foreach.last), #end#end) {
+                    #foreach ($field in $fields)
+                    this.$field.name = $field.name;
+                    #end
+                }
+
+                // Getters and Setters
+            #foreach ($field in $fields)
+                #if ($field.withGetters)
+                public $field.type get${$field.name}() {
+                    return $field.name;
+                }
+                #end
+                #if ($field.withSetters)
+                public void set${$field.name}($field.type $field.name) {
+                    this.$field.name = $field.name;
+                }
+                #end
+            #end
+            }
+            """;
+
+        // Données (via votre méthode)
+        HashMap<String, Object> metadata = getHashMapIntermediaire();
+
+        // Contexte Velocity
+        VelocityContext context = new VelocityContext(metadata);
+
+        // Génération du résultat
+        StringWriter writer = new StringWriter();
+        velocityEngine.evaluate(context, writer, "VelocityTest", template);
+
+        // Résultat
+        System.out.println(writer);
     }
 
     @Test

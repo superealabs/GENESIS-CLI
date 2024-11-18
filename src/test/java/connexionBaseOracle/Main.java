@@ -1,14 +1,19 @@
 package connexionBaseOracle;
 
+import project.GroqApiClient;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        try (Connection c = getConnection()) {
+        /*try (Connection c = getConnection()) {
             System.out.println("Connected to Oracle Database : " + c);
-        }
+        }*/
+
+        String sql = GroqApiClient.generateSQL("A table for customers in a PostgreSQL database");
+        System.out.println(sql);
     }
 
     public static Connection getConnection() throws ClassNotFoundException, SQLException {
