@@ -1,0 +1,10 @@
+@TestDbCRUD_HostAddress = http://localhost:9090
+
+GET {{TestDbCRUD_HostAddress}}/Houses
+Accept: application/json
+
+###
+GET {{TestDbCRUD_HostAddress}}/Testings
+Accept: application/json
+
+###
