@@ -32,7 +32,6 @@
                             {{#each fields}}
                             <td class="text-truncate align-middle mt-3" $[dataValues]> $[dataKeys]
                             </td>
-                            {{/each}}{{removeLine}}
                             <td class="align-middle">
                                 <div class="row">
                                     <div class="col-lg-3 col-md-2 order-0">
@@ -67,6 +66,7 @@
                                                         <div class="modal-body">
                                                             <!-- Select entity modification form -->
                                                            <form th:action="'/update#{majStart(className)}?indice_actu='+${indice_actu}" method="post">
+                                                           </form>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -161,6 +161,7 @@
                                     </div>
                                 </div>
                             </td>
+                            {{/each}}{{removeLine}}
                         </tr>
                         </tbody>
                     </table>
@@ -168,6 +169,5 @@
             </div>
         </div>
     </div>
-
 </div>
 </html>
