@@ -149,8 +149,23 @@ public class ProjectMetadataProvider {
         altMap.put("dataLoop", editor.getLayout().getTableLoop().getDataLoop());
         altMap.put("dataKeys", editor.getLayout().getTableLoop().getDataKeys());
         altMap.put("dataValues", editor.getLayout().getTableLoop().getDataValues());
+
+        altMap.put("dataCancelId", editor.getLayout().getTableLoop().getDataCancelId());
+        altMap.put("dataValidationId", editor.getLayout().getTableLoop().getDataValidationId());
         altMap.put("dataModificationId", editor.getLayout().getTableLoop().getDataModificationId());
+
+        altMap.put("dataCancelButton", editor.getLayout().getTableLoop().getDataValidationButton());
+        altMap.put("dataValidationButton", editor.getLayout().getTableLoop().getDataValidationButton());
         altMap.put("dataModificationButton", editor.getLayout().getTableLoop().getDataModificationButton());
+
+        altMap.put("dataCancelTitleModal", editor.getLayout().getTableLoop().getDataCancelTitleModal());
+        altMap.put("dataValidationTitleModal", editor.getLayout().getTableLoop().getDataValidationTitleModal());
+        altMap.put("dataModificationTitleModal", editor.getLayout().getTableLoop().getDataModificationTitleModal());
+
+        altMap.put("dataEditEventButton", editor.getLayout().getTableLoop().getDataModificationTitleModal());
+        altMap.put("dataDeleteEventButton", editor.getLayout().getTableLoop().getDataModificationTitleModal());
+        altMap.put("dataCancelValidationButton", editor.getLayout().getTableLoop().getDataModificationTitleModal());
+        altMap.put("dataValidateValidationButton", editor.getLayout().getTableLoop().getDataModificationTitleModal());
 
         return altMap;
     }

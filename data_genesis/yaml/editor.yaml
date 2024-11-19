@@ -87,8 +87,20 @@
       dataKeys: ""
       dataValues: "th:text=\"${ #{lowerCase(className)}.#{this.name} }\""
       dataLoop: "th:each=\"#{lowerCase(className)} : ${ #{lowerCase(classNameLink)} }\""
-      dataModificationId: "th:id=\"'updateModalCenter_' + ${ #{lowerCase(className)}.#{this.pkColumnName} }\""
-      dataModificationButton: "th:attr=\"data-bs-target='#updateModalCenter_' + ${ #{lowerCase(className)}.#{this.pkColumnName} }\""
+      dataCancelId: "th:id=\"'cancelModalCenter_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
+      dataModificationId: "th:id=\"'updateModalCenter_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
+      dataValidationId: "th:id=\"'validateModalCenter_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
+      dataCancelTitleModal: "th:id=\"'cancelModalCenterTitle_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
+      dataValidationTitleModal: "th:id=\"'validateModalCenterTitle_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
+      dataModificationTitleModal: "th:id=\"'updateModalCenterTitle_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
+      dataCancelButton: "th:attr=\"data-bs-target='#cancelModalCenter_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
+      dataModificationButton: "th:attr=\"data-bs-target='#updateModalCenter_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
+      dataValidationButton: "th:attr=\"data-bs-target='#validateModalCenter_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
+      #
+      dataEditEventButton: "th:id=\"'editEvent_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
+      dataCancelValidationButton: "th:id=\"'cancel_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
+      dataDeleteEventButton: "th:id=\"'deleteEvent_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
+      dataValidateValidationButton: "th:id=\"'confirm_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
   insert:
     input:
       - inputType: "Date"
