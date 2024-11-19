@@ -24,19 +24,19 @@ public class ProjectGeneratorHandler {
         System.out.println("\n** Welcome to the GENESIS-CLI ** \n\n Let's get started 🚀\n");
 
         try (Scanner scanner = new Scanner(System.in)) {
-            configureCredentials(scanner);
-            int editorId = getEditorId(scanner);
-            int projectId = getProjectId(scanner);
-            String logLevel = getLogLevel(scanner);
-            int databaseId = getDatabaseId(scanner);
             int languageId = getLanguageId(scanner);
-            String groupLink = getGroupLink(scanner);
+            String languageVersion = getLanguageVersion(scanner);
             int frameworkId = getFrameworkId(scanner);
+            String frameworkVersion = getFrameworkVersion(scanner);
             String projectName = getProjectName(scanner);
             String projectPort = getProjectPort(scanner);
-            String languageVersion = getLanguageVersion(scanner);
+            int databaseId = getDatabaseId(scanner);
+            configureCredentials(scanner);
+            int projectId = getProjectId(scanner);
+            int editorId = getEditorId(scanner);
+            String logLevel = getLogLevel(scanner);
+            String groupLink = getGroupLink(scanner);
             String hibernateDdlAuto = getHibernateDdlAuto(scanner);
-            String frameworkVersion = getFrameworkVersion(scanner);
             String projectDescription = getProjectDescription(scanner);
 
             projectGenerator.generateProject(databaseId, languageId, frameworkId, projectId, editorId, credentials, projectName, groupLink, projectPort, logLevel, hibernateDdlAuto, frameworkVersion, projectDescription, languageVersion);

@@ -191,6 +191,7 @@ public class FrameworkMetadataProvider {
         metadata.put("projectName", projectName);
         metadata.put("groupLink", groupLink);
         metadata.put("pkColumnType", tableMetadata.getPrimaryColumn().getType());
+        metadata.put("pkColumnName", tableMetadata.getPrimaryColumn().getName());
         metadata.put("tableName", tableMetadata.getTableName());
         metadata.put("className", tableMetadata.getClassName());
         metadata.put("entityName", tableMetadata.getClassName());
@@ -274,7 +275,9 @@ public class FrameworkMetadataProvider {
 
         String createLink = engine.render(editor.getLayout().getMenu().getCreateLink(), getHashMapIntermediaire(tableMetadata, projectName, groupLink));
 
+
         metadata.put("createLink", createLink);
+
 
         return metadata;
     }

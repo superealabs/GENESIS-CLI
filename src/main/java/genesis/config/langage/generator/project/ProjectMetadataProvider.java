@@ -149,6 +149,8 @@ public class ProjectMetadataProvider {
         altMap.put("dataLoop", editor.getLayout().getTableLoop().getDataLoop());
         altMap.put("dataKeys", editor.getLayout().getTableLoop().getDataKeys());
         altMap.put("dataValues", editor.getLayout().getTableLoop().getDataValues());
+        altMap.put("dataModificationId", editor.getLayout().getTableLoop().getDataModificationId());
+        altMap.put("dataModificationButton", editor.getLayout().getTableLoop().getDataModificationButton());
 
         return altMap;
     }
