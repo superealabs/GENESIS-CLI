@@ -152,12 +152,22 @@ public class TableMetadata {
                 //String pkColumnName = foreignKeys.getString("PKCOLUMN_NAME");
                 for (ColumnMetadata field : listeCols) {
                     if (field.getReferencedColumn().equalsIgnoreCase(fkColumnName)) {
-                        field.setName(toCamelCase(field.getName()) + majStart(toCamelCase(pkTableName.toLowerCase())));
                         field.setForeign(true);
-                        field.setReferencedTable(toCamelCase(pkTableName));
+
                         field.setReferencedColumn(field.getReferencedColumn());
                         field.setColumnType(toCamelCase(field.getType()));
-                        field.setType(FileUtils.majStart(toCamelCase(pkTableName)));
+                        field.setName(
+                                field.getName()
+                                        .transform(FileUtils::toCamelCase)
+                                        .transform(name -> name + FileUtils.majStart(FileUtils.toCamelCase(pkTableName.toLowerCase())))
+                        );
+                        field.setReferencedTable(pkTableName.transform(FileUtils::toCamelCase));
+                        field.setType(pkTableName
+                                .transform(FileUtils::toCamelCase)
+                                .transform(FileUtils::removeLastS)
+                                .transform(FileUtils::majStart)
+                        );
+
                     }
                 }
             }

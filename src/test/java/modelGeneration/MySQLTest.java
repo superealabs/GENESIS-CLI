@@ -57,8 +57,8 @@ public class MySQLTest {
             String destinationFolder = "/Users/nomena/STAGE/GENESIS";
 
 
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
-            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink, false);
+            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink, false);
 
             System.out.println(database);
             System.out.println(language);
@@ -92,8 +92,8 @@ public class MySQLTest {
             String destinationFolder = "/Users/nomena/STAGE/GENESIS";
 
 
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
-            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink, false);
+            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink, false);
 
             System.out.println(database);
             System.out.println(language);

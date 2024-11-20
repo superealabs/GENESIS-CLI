@@ -1,0 +1,72 @@
+server:
+  port: 9000
+
+security:
+  user:
+    username: admin
+    password: admin
+    role: user
+
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+      - id: WEB-API-SPRING
+        uri: lb://WEB-API-SPRING
+        predicates:
+          - Path=/web-api-spring/**
+          - Method=GET,POST,PUT,DELETE
+
+      - id: WEB-API-NET
+        uri: lb://WEBAPINET
+        predicates:
+          - Path=/web-api-net/**
+          - Method=GET,POST,PUT,DELETE
+
+      
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    ip-address: ${spring.cloud.client.ip-address}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+    info:
+      enabled: true
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    build:
+      enabled: true
+info:
+  app:
+    name: ${spring.application.name}
+    description: "API Gateway Reactive Project"
+    version: "0.0.1-SNAPSHOT"
+    technical:
+      spring-boot:
+        version: "3.3.5"
+      server:
+        port: ${server.port}
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: INFO

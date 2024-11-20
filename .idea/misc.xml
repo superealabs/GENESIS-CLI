@@ -24,6 +24,11 @@
         <option value="$PROJECT_DIR$/generated/service/service2/pom.xml" />
         <option value="$PROJECT_DIR$/generated/my-app/pom.xml" />
         <option value="$PROJECT_DIR$/generated/service/WebApiSpring/pom.xml" />
+        <option value="$PROJECT_DIR$/generated/discovery/TestEurekaServerPeer/pom.xml" />
+        <option value="$PROJECT_DIR$/sample-projects/WebApiSpring/pom.xml" />
+        <option value="$PROJECT_DIR$/sample-projects/TestEurekaServer/pom.xml" />
+        <option value="$PROJECT_DIR$/sample-projects/TestEurekaServerPeer/pom.xml" />
+        <option value="$PROJECT_DIR$/sample-projects/ApiGateway/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
@@ -35,6 +40,9 @@
         <option value="$PROJECT_DIR$/TestREST/pom.xml" />
         <option value="$PROJECT_DIR$/generated/Test2CLI/pom.xml" />
         <option value="$PROJECT_DIR$/generated/Test2Cli/pom.xml" />
+        <option value="$PROJECT_DIR$/generated/service/WebApiSpring/pom.xml" />
+        <option value="$PROJECT_DIR$/sample-projects/TestEurekaServer/pom.xml" />
+        <option value="$PROJECT_DIR$/sample-projects/TestEurekaServerPeer/pom.xml" />
       </set>
     </option>
   </component>

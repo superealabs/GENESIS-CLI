@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: test-eureka-server
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+
+  instance:
+      prefer-ip-address: true
+      ip-address: ${spring.cloud.client.ip-address}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+    info:
+      enabled: true
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    build:
+      enabled: true
+info:
+  app:
+    name: ${spring.application.name}
+    description: "Test Eureka Server Project"
+    version: "0.0.1-SNAPSHOT"
+    technical:
+      spring-boot:
+        version: "3.3.5"
+      server:
+        port: ${server.port}
+
+server:
+  port: 8761
+
+logging:
+  level:
+    eureka: DEBUG
+    root: DEBUG

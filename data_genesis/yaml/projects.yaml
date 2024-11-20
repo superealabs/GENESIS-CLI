@@ -258,14 +258,14 @@
           },
           "eureka": {
             "client": {
-              "serviceUrl": "${eurekaServerHttpProtocol}://${eurekaServerHost}:${eurekaServerPort}/eureka/",
+              "serviceUrl": "${eurekaServerURL}",
               "shouldFetchRegistry": "false",
               "shouldRegisterWithEureka": true,
               "validateCertificates": false
             },
             "instance": {
               "appName": "${projectName}",
-              "port": "${projectNonSecurePort}",
+              "port": "${projectPort}",
               "hostname": "$[HOSTNAME]",
               "preferIpAddress": true
             },
@@ -564,7 +564,7 @@
         public interface IService<T, in TKey> where T : class
         {
             Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object?>>[]? includeProperties);
-            Task<T?> GetByIdAsync(long id, params Expression<Func<T, object?>>[]? includeProperties);
+            Task<T?> GetByIdAsync(TKey id, params Expression<Func<T, object?>>[]? includeProperties);
             Task AddAsync(T entity);
             Task UpdateAsync(T entity);
             Task DeleteAsync(TKey id);

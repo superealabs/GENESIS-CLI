@@ -54,8 +54,8 @@ public class SQLServerTest {
             GenesisGenerator mvcGenerator = new APIGenerator();
             String projectName = "TestProject", groupLink = "com", destinationFolder = "/Users/nomena/STAGE/GENESIS";
 
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
-            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink, false);
+            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink, false);
 
             System.out.println(database);
             System.out.println(language);
@@ -86,8 +86,8 @@ public class SQLServerTest {
             GenesisGenerator mvcGenerator = new APIGenerator();
             String projectName = "TestProject", groupLink = "com", destinationFolder = "/Users/nomena/STAGE/GENESIS";
 
-            String model = mvcGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
-            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+            String model = mvcGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink, false);
+            String dao = mvcGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink, false);
 
             System.out.println(database);
             System.out.println(language);

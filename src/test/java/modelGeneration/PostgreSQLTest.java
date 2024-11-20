@@ -51,10 +51,10 @@ public class PostgreSQLTest {
             GenesisGenerator mvcGenerator = new APIGenerator();
 
             for (TableMetadata tableMetadata : entities) {
-                mvcGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
-                mvcGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
-                mvcGenerator.generateService(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
-                mvcGenerator.generateController(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+                mvcGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink, false);
+                mvcGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink, false);
+                mvcGenerator.generateService(framework, language, tableMetadata, destinationFolder, projectName, groupLink, false);
+                mvcGenerator.generateController(framework, language, tableMetadata, destinationFolder, projectName, groupLink, false);
             }
 
         } catch (Exception e) {
@@ -81,10 +81,10 @@ public class PostgreSQLTest {
 
             String model = "";
             for (TableMetadata tableMetadata : entities) {
-                model = mvcGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
-                mvcGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
-                mvcGenerator.generateService(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
-                mvcGenerator.generateController(framework, language, tableMetadata, destinationFolder, projectName, groupLink);
+                model = mvcGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink, false);
+                mvcGenerator.generateDao(framework, language, tableMetadata, destinationFolder, projectName, groupLink, false);
+                mvcGenerator.generateService(framework, language, tableMetadata, destinationFolder, projectName, groupLink, false);
+                mvcGenerator.generateController(framework, language, tableMetadata, destinationFolder, projectName, groupLink, false);
             }
 
             System.out.println(database);

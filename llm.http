@@ -17,3 +17,11 @@ Content-Type: application/json
   ],
   "model": "llama3-8b-8192"
 }
+
+###
+
+GET http://172.30.1.207:9000/actuator/info
+Authorization: Basic admin admin
+
+
+###

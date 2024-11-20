@@ -2,10 +2,14 @@ package project;
 
 import genesis.config.Constantes;
 import genesis.config.langage.generator.project.ProjectGenerator;
+import handler.ProjectGeneratorHandler;
 import genesis.connexion.Credentials;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ProjectGeneratorCLI {
     public static void main(String[] args) {
@@ -19,7 +23,7 @@ public class ProjectGeneratorCLI {
                 .setHost("localhost")
                 .setPort("5432")
                 .setSchemaName("public")
-                .setDatabaseName("mon_refuge_test")
+                .setDatabaseName("test_db")
                 .setUser("nomena")
                 .setPwd("root")
                 .setTrustCertificate(true)
@@ -38,19 +42,19 @@ public class ProjectGeneratorCLI {
             var framework = ProjectGenerator.frameworks.get(frameworkId);
             var project = ProjectGenerator.projects.get(projectId);
 
-            String projectName = "MonRefuge";
+            String projectName = "WebApiSpring";
             String groupLink = "com.labs";
             String projectPort = "8000";
             String logLevel = "INFO";
             String hibernateDdlAuto = "none";
             String projectDescription = "Test Project";
             String frameworkVersion = "3.3.5";
-            String languageVersion = "17";
-            String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated/";
+            String languageVersion = "21";
+            String destinationFolder = "/Users/nomena/STAGE/GENESIS/sample-projects";
 
             ProjectGenerator projectGenerator = new ProjectGenerator();
 
-            HashMap<String, String> frameworkConfiguration = new HashMap<>();
+            HashMap<String, Object> frameworkConfiguration = new HashMap<>();
             frameworkConfiguration.put("hibernateDdlAuto", hibernateDdlAuto);
             frameworkConfiguration.put("loggingLevel", logLevel);
             frameworkConfiguration.put("frameworkVersion", frameworkVersion);
@@ -62,8 +66,11 @@ public class ProjectGeneratorCLI {
             frameworkConfiguration.put("projectNonSecurePort", projectPort);
             //==============================//
 
-            HashMap<String, String> languageConfiguration = new HashMap<>();
+            HashMap<String, Object> languageConfiguration = new HashMap<>();
             languageConfiguration.put("languageVersion", languageVersion);
+
+            List<String> generationOptions = List.of("Model", "DAO", "Service", "Controller");
+            List<String> entityNames = new ArrayList<>();
 
             projectGenerator.generateProject(
                     database,
@@ -78,8 +85,12 @@ public class ProjectGeneratorCLI {
                     projectDescription,
                     languageConfiguration,
                     frameworkConfiguration,
-                    null
+                    entityNames,
+                    null,
+                    generationOptions,
+                    true
             );
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -118,7 +129,7 @@ public class ProjectGeneratorCLI {
 
             ProjectGenerator projectGenerator = new ProjectGenerator();
 
-            HashMap<String, String> frameworkConfiguration = new HashMap<>();
+            HashMap<String, Object> frameworkConfiguration = new HashMap<>();
             frameworkConfiguration.put("loggingLevel", logLevel);
             frameworkConfiguration.put("frameworkVersion", frameworkVersion);
 
@@ -129,7 +140,7 @@ public class ProjectGeneratorCLI {
             frameworkConfiguration.put("projectNonSecurePort", projectPort);
             //==============================//
 
-            HashMap<String, String> languageConfiguration = new HashMap<>();
+            HashMap<String, Object> languageConfiguration = new HashMap<>();
             frameworkConfiguration.put("languageVersion", languageVersion);
 
             projectGenerator.generateProject(
@@ -177,11 +188,11 @@ public class ProjectGeneratorCLI {
 
             ProjectGenerator projectGenerator = new ProjectGenerator();
 
-            HashMap<String, String> frameworkConfiguration = new HashMap<>();
+            HashMap<String, Object> frameworkConfiguration = new HashMap<>();
             frameworkConfiguration.put("loggingLevel", logLevel);
             frameworkConfiguration.put("frameworkVersion", frameworkVersion);
 
-            HashMap<String, String> languageConfiguration = new HashMap<>();
+            HashMap<String, Object> languageConfiguration = new HashMap<>();
             languageConfiguration.put("languageVersion", languageVersion);
 
             projectGenerator.generateProject(
@@ -228,9 +239,24 @@ public class ProjectGeneratorCLI {
 
             ProjectGenerator projectGenerator = new ProjectGenerator();
 
-            HashMap<String, String> frameworkConfiguration = new HashMap<>();
+            HashMap<String, Object> frameworkConfiguration = new HashMap<>();
             frameworkConfiguration.put("loggingLevel", logLevel);
             frameworkConfiguration.put("frameworkVersion", frameworkVersion);
+
+            //===== API GATEWAY ROUTES ======//
+            List<Map<String, Object>> routes = new ArrayList<>();
+
+            // Ajout des routes
+            routes.add(createRoute("route1", "http://service1", "/path1", "GET"));
+            routes.add(createRoute("route2", "http://service2", "/path2", "POST"));
+            routes.add(createRoute("route3", "http://service3", "/path3", "PUT"));
+
+            frameworkConfiguration.put("routes", routes);
+
+            frameworkConfiguration.put("username", "admin");
+            frameworkConfiguration.put("password", "admin");
+            frameworkConfiguration.put("role", "user");
+
 
             //===== USE EUREKA SERVER =======//
             framework.setUseCloud(true);
@@ -240,7 +266,7 @@ public class ProjectGeneratorCLI {
             //==============================//
 
 
-            HashMap<String, String> languageConfiguration = new HashMap<>();
+            HashMap<String, Object> languageConfiguration = new HashMap<>();
             languageConfiguration.put("languageVersion", languageVersion);
 
             projectGenerator.generateProject(
@@ -261,5 +287,16 @@ public class ProjectGeneratorCLI {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static Map<String, Object> createRoute(String id, String uri, String path, String method) {
+        Map<String, Object> route = new HashMap<>();
+        route.put("id", id);
+        route.put("uri", uri);
+
+        route.put("path", path);
+        route.put("method", method);
+
+        return route;
     }
 }

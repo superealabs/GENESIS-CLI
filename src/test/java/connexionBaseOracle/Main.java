@@ -1,18 +1,24 @@
 package connexionBaseOracle;
 
-import project.GroqApiClient;
+import genesis.config.Constantes;
+import genesis.config.langage.generator.project.GroqApiClient;
+import genesis.connexion.Database;
+import utils.FileUtils;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Main {
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, IOException {
         /*try (Connection c = getConnection()) {
             System.out.println("Connected to Oracle Database : " + c);
         }*/
+        Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
 
-        String sql = GroqApiClient.generateSQL("A table for customers in a PostgreSQL database");
+        String sql = GroqApiClient.generateSQL(databases[1],"A table for customers in a resto");
         System.out.println(sql);
     }
 

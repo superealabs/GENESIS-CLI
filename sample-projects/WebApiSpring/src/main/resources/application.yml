@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: web-api-spring
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/test_db
+    username: nomena
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate.format_sql: true
+
+
+server:
+  port: 8000
+  servlet:
+    context-path: /web-api-spring
+
+# Logs Configuration
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: INFO
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
+    ip-address: ${spring.cloud.client.ip-address}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+    info:
+      enabled: true
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    build:
+      enabled: true
+info:
+  app:
+    name: ${spring.application.name}
+    description: "Test Project"
+    version: "0.0.1-SNAPSHOT"
+    technical:
+      spring-boot:
+        version: "3.3.5"
+      server:
+        port: ${server.port}
+      database:
+        url: ${spring.datasource.url}
+        type: "PostgreSQL"
+

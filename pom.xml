@@ -216,7 +216,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>App</mainClass>
+                            <mainClass>GenesisApiCLI</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -241,7 +241,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
-                    <mainClass>App</mainClass>
+                    <mainClass>GenesisApiCLI</mainClass>
                 </configuration>
             </plugin>
             <plugin>

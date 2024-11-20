@@ -7,6 +7,7 @@
   withGroupId: true
   useCloud: false
   useEurekaServer: false
+  isGateway: false
   additionalFiles:
     - fileType: "MainFile"
       fileName: "${majStart(projectName)}Application"
@@ -57,9 +58,9 @@
         }
       destinationPath: "${destinationFolder}/${majStart(projectName)}/src/test/java/${groupLinkPath}/${lowerCase(projectName)}/"
 
-    - fileType: "ApplicationYaml"
+    - fileType: "ApplicationYml"
       fileName: "application"
-      extension: "yaml"
+      extension: "yml"
       content: |
         spring:
           application:
@@ -94,8 +95,7 @@
               defaultZone: ${eurekaServerURL}
           instance:
             prefer-ip-address: true
-            ip-address: $[spring.cloud.client.ip-address]  # Dynamically resolve IP
-            non-secure-port: ${projectNonSecurePort}  # Specify the non-secure port explicitly
+            ip-address: $[spring.cloud.client.ip-address]
         management:
           endpoints:
             web:
@@ -142,13 +142,13 @@
         - "FATAL"
         - "OFF"
       defaultOption: "INFO"
-    - name: "Version"
+    - name: "Framework Version"
       variableName: "frameworkVersion"
       options:
         - "3.3.5"
         - "3.2.11"
       defaultOption: "3.3.5"
-    - name: "HibernateDdlAuto"
+    - name: "Hibernate Ddl Auto"
       variableName: "hibernateDdlAuto"
       options:
         - "create"
@@ -163,11 +163,6 @@
       options:
         - "http://localhost:8761/eureka/"
       defaultOption: "http://localhost:8761/eureka/"
-    - name: "Project Non Secure Port For Eureka Server"
-      variableName: "projectNonSecurePort"
-      options:
-        - "8080"
-      defaultOption: "8080"
 
 
   dependencies:
@@ -222,21 +217,7 @@
       {{tab}}}{{#if !@last}}
       {{tab}}{{/if}}
       {{tab}}{{/if}}{{/each}}
-    modelConstructors: |
-      {{tab}}public ${majStart(className)}() {
-      {{tab}}}
-      
-      {{tab}}public ${majStart(className)}({{#each fieldsPK}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
-      {{tab}}   {{#each fieldsPK}}
-      {{tab}}   this.${this.name} = ${this.name};{{#if !@last}}
-      {{tab}}   {{/if}}{{/each}}
-      {{tab}}}
-      
-      {{tab}}public ${majStart(className)}({{#each fields}}${this.type} ${this.name}{{#if !@last}}, {{/if}}{{/each}}) {
-      {{tab}}   {{#each fields}}
-      {{tab}}   this.${this.name} = ${this.name};{{#if !@last}}
-      {{tab}}   {{/if}}{{/each}}
-      {{tab}}}
+    modelConstructors: "{{removeLine}}"
     modelSavePath: "${destinationFolder}/${majStart(projectName)}/src/main/java/${groupLinkPath}/${lowerCase(projectName)}/models"
     modelPackage: "${groupLink}.${lowerCase(projectName)}.models;"
   modelDao:
@@ -387,7 +368,7 @@
           {{tab}}@Override
           {{tab}}public void addCorsMappings(CorsRegistry registry) {
           {{tab}}    registry.addMapping("/**")
-          {{tab}}        .allowedOrigins("*")
+          {{tab}}        .allowedOriginPatterns("*")
           {{tab}}        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
           {{tab}}        .allowedHeaders("*")
           {{tab}}        .allowCredentials(true)
@@ -410,6 +391,7 @@
   withGroupId: false
   useCloud: false
   useEurekaServer: false
+  isGateway: false
   additionalFiles: [ ]
   configurations:
     - name: "Logging Level"
@@ -423,7 +405,7 @@
         - "Critical"
         - "None"
       defaultOption: "Information"
-    - name: "Version"
+    - name: "Framework Version"
       variableName: "frameworkVersion"
       options:
         - "8.0"
@@ -437,11 +419,7 @@
       options:
         - "http://localhost:8761/eureka/"
       defaultOption: "http://localhost:8761/eureka/"
-    - name: "Project Non Secure Port For Eureka Server"
-      variableName: "projectNonSecurePort"
-      options:
-        - "8080"
-      defaultOption: "8080"
+
 
   dependencies: [ ]
 
@@ -565,12 +543,12 @@
           {{tab}}{{tab}}await _repository.UpdateAsync(${minStart(className)});
           {{tab}}}
           
-          {{tab}}public async Task DeleteAsync(long id)
+          {{tab}}public async Task DeleteAsync(${pkColumnType} id)
           {{tab}}{
           {{tab}}{{tab}}await _repository.DeleteAsync(id);
           {{tab}}}
           
-          {{tab}}public async Task<bool> ExistsAsync(long id)
+          {{tab}}public async Task<bool> ExistsAsync(${pkColumnType} id)
           {{tab}}{
           {{tab}}{{tab}}return await _repository.ExistsAsync(id);
           {{tab}}}
@@ -655,6 +633,7 @@
   useDB: false
   useCloud: true
   useEurekaServer: false
+  isGateway: false
   withGroupId: true
   additionalFiles:
     - fileType: "MainFile"
@@ -695,9 +674,9 @@
         }
       destinationPath: "${destinationFolder}/${majStart(projectName)}/src/test/java/${groupLinkPath}/${lowerCase(projectName)}/"
 
-    - fileType: "ApplicationYaml"
+    - fileType: "ApplicationYml"
       fileName: "application"
-      extension: "yaml"
+      extension: "yml"
       content: |
         spring:
           application:
@@ -705,9 +684,41 @@
         
         eureka:
           client:
-            register-with-eureka: false
-            fetch-registry: false
+            register-with-eureka: ${useEurekaServer}
+            fetch-registry: ${useEurekaServer}
+        {{#if useEurekaServer}}
+          instance:
+              prefer-ip-address: true
+              ip-address: $[spring.cloud.client.ip-address]
         
+        management:
+          endpoints:
+            web:
+              exposure:
+                include: health,info
+          endpoint:
+            health:
+              show-details: always
+            info:
+              enabled: true
+          info:
+            env:
+              enabled: true
+            java:
+              enabled: true
+            build:
+              enabled: true
+        info:
+          app:
+            name: $[spring.application.name]
+            description: "${projectDescription}"
+            version: "0.0.1-SNAPSHOT"
+            technical:
+              spring-boot:
+                version: "${frameworkVersion}"
+              server:
+                port: $[server.port]
+        {{/if}}
         server:
           port: ${projectPort}
         
@@ -729,12 +740,20 @@
         - "FATAL"
         - "OFF"
       defaultOption: "INFO"
-    - name: "Version"
+    - name: "Framework Version"
       variableName: "frameworkVersion"
       options:
         - "3.3.5"
         - "3.2.11"
       defaultOption: "3.3.5"
+
+  eurekaClientConfigurations:
+    - name: "Eureka Server URL"
+      variableName: "eurekaServerURL"
+      options:
+        - "http://localhost:8761/eureka/"
+      defaultOption: "http://localhost:8761/eureka/"
+
 
   dependencies:
     - groupId: "org.springframework.cloud"
@@ -746,59 +765,6 @@
       version: "{{removeLine}}"
       scope: "test"
 
-  model:
-    toGenerate: false
-    modelImports: ""
-    modelExtends: ""
-    modelAnnotations: ""
-    modelFieldContent: ""
-    modelGetterSetter: ""
-    modelConstructors: ""
-    modelSavePath: ""
-    modelPackage: ""
-
-  modelDao:
-    toGenerate: false
-    modelDaoImports: ""
-    modelDaoAnnotations: ""
-    modelDaoClassKeyword: ""
-    modelDaoExtends: ""
-    modelDaoName: ""
-    modelDaoFieldContent: ""
-    modelDaoMethodContent: ""
-    modelDaoConstructors: ""
-    modelDaoSavePath: ""
-    modelDaoPackage: ""
-    modelDaoAdditionalFiles: [ ]
-
-  service:
-    toGenerate: false
-    serviceImports: ""
-    serviceAnnotations: ""
-    serviceClassKeyword: ""
-    serviceExtends: ""
-    serviceName: ""
-    serviceFieldContent: ""
-    serviceConstructors: ""
-    serviceMethodContent: ""
-    serviceSavePath: ""
-    servicePackage: ""
-    serviceAdditionalFiles: [ ]
-
-  controller:
-    toGenerate: false
-    controllerImports: ""
-    controllerAnnotations: ""
-    controllerExtends: ""
-    controllerName: ""
-    controllerFieldContent: ""
-    controllerConstructors: ""
-    controllerMethodContent: ""
-    controllerSavePath: ""
-    controllerPackage: ""
-    controllerAdditionalFiles: [ ]
-
-
 - id: 4
   languageId: 1
   baseFramework: "Spring Boot"
@@ -807,6 +773,7 @@
   useDB: false
   useCloud: true
   useEurekaServer: false
+  isGateway: true
   withGroupId: true
   additionalFiles:
     - fileType: "MainFile"
@@ -870,13 +837,13 @@
         @Configuration
         @EnableWebFluxSecurity
         public class SecurityConfig {
-            @Value("${security.user.username:api-gateway-user}")
+            @Value("$[security.user.username:admin]")
             private String username;
         
-            @Value("${security.user.password:api-gateway-password}")
+            @Value("$[security.user.password:admin]")
             private String password;
         
-            @Value("${security.user.role:USER}")
+            @Value("$[security.user.role:USER]")
             private String role;
         
             @Bean
@@ -907,9 +874,9 @@
 
       destinationPath: "${destinationFolder}/${majStart(projectName)}/src/main/java/${groupLinkPath}/${lowerCase(projectName)}/config"
 
-    - fileType: "ApplicationYaml"
+    - fileType: "ApplicationYml"
       fileName: "application"
-      extension: "yaml"
+      extension: "yml"
       content: |
         server:
           port: ${projectPort}
@@ -918,7 +885,7 @@
           user:
             username: ${username}
             password: ${password}
-            role: ${toUpperCase(role)}}
+            role: ${toUpperCase(role)}
         
         spring:
           main:
@@ -930,10 +897,12 @@
             gateway:
               routes:
               {{#each routes}}
-                - id: ${this.name}
-                  uri: ${this.uri}
-                  predicates:
-                    - Path=${this.path}
+              - id: ${this.id}
+                uri: ${this.uri}
+                predicates:
+                  - Path=${this.path}
+                  - Method=${this.method}
+        
               {{/each}}
         {{#if useEurekaServer}}
         eureka:
@@ -942,8 +911,7 @@
               defaultZone: ${eurekaServerURL}
           instance:
             prefer-ip-address: true
-            ip-address: $[spring.cloud.client.ip-address]  # Dynamically resolve IP
-            non-secure-port: ${projectNonSecurePort}  # Specify the non-secure port explicitly{{/if}}
+            ip-address: $[spring.cloud.client.ip-address]
         
         management:
           endpoints:
@@ -972,12 +940,11 @@
                 version: "${frameworkVersion}"
               server:
                 port: $[server.port]
-        
+        {{/if}}
         logging:
           level:
             root: ${loggingLevel}
             org.springframework.cloud.gateway: ${loggingLevel}
-
 
       destinationPath: "${destinationFolder}/${majStart(projectName)}/src/main/resources/"
 
@@ -993,12 +960,20 @@
         - "FATAL"
         - "OFF"
       defaultOption: "INFO"
-    - name: "Version"
+    - name: "Framework Version"
       variableName: "frameworkVersion"
       options:
         - "3.3.5"
         - "3.2.11"
       defaultOption: "3.3.5"
+
+  eurekaClientConfigurations:
+    - name: "Eureka Server URL"
+      variableName: "eurekaServerURL"
+      options:
+        - "http://localhost:8761/eureka/"
+      defaultOption: "http://localhost:8761/eureka/"
+
 
   dependencies:
     - groupId: "org.springframework.cloud"
@@ -1012,7 +987,7 @@
     - groupId: "org.springframework.boot"
       artifactId: "spring-boot-starter-webflux"
       version: "{{removeLine}}"
-      scope: "test"
+      scope: "{{removeLine}}"
     - groupId: "io.projectreactor"
       artifactId: "reactor-test"
       version: "{{removeLine}}"
@@ -1020,56 +995,4 @@
     - groupId: "org.springframework.boot"
       artifactId: "spring-boot-starter-security"
       version: "{{removeLine}}"
-      scope: "test"
-
-  model:
-    toGenerate: false
-    modelImports: ""
-    modelExtends: ""
-    modelAnnotations: ""
-    modelFieldContent: ""
-    modelGetterSetter: ""
-    modelConstructors: ""
-    modelSavePath: ""
-    modelPackage: ""
-
-  modelDao:
-    toGenerate: false
-    modelDaoImports: ""
-    modelDaoAnnotations: ""
-    modelDaoClassKeyword: ""
-    modelDaoExtends: ""
-    modelDaoName: ""
-    modelDaoFieldContent: ""
-    modelDaoMethodContent: ""
-    modelDaoConstructors: ""
-    modelDaoSavePath: ""
-    modelDaoPackage: ""
-    modelDaoAdditionalFiles: [ ]
-
-  service:
-    toGenerate: false
-    serviceImports: ""
-    serviceAnnotations: ""
-    serviceClassKeyword: ""
-    serviceExtends: ""
-    serviceName: ""
-    serviceFieldContent: ""
-    serviceConstructors: ""
-    serviceMethodContent: ""
-    serviceSavePath: ""
-    servicePackage: ""
-    serviceAdditionalFiles: [ ]
-
-  controller:
-    toGenerate: false
-    controllerImports: ""
-    controllerAnnotations: ""
-    controllerExtends: ""
-    controllerName: ""
-    controllerFieldContent: ""
-    controllerConstructors: ""
-    controllerMethodContent: ""
-    controllerSavePath: ""
-    controllerPackage: ""
-    controllerAdditionalFiles: [ ]
+      scope: "{{removeLine}}"

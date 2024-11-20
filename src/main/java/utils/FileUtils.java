@@ -31,6 +31,32 @@ public class FileUtils {
         return content.toString();
     }
 
+    public static String getFileContentSQL(String filePath) throws FileNotFoundException {
+        File file = new File(filePath);
+
+        if (!file.exists()) {
+            throw new FileNotFoundException("File not found: " + filePath);
+        }
+
+        StringBuilder content = new StringBuilder();
+        try (Scanner reader = new Scanner(file)) {
+            while (reader.hasNextLine()) {
+                String line = reader.nextLine().trim();
+                if (!line.isEmpty() && !line.startsWith("--")) {
+                    content.append(line).append(" ");
+                }
+            }
+        }
+
+        String finalContent = content.toString().trim();
+        if (finalContent.isEmpty()) {
+            throw new FileNotFoundException("The file is empty or contains only comments: " + filePath);
+        }
+
+        return finalContent.replaceAll("\\s+", " ").replaceAll(";\\s*", ";");
+    }
+
+
     public static String lowerCase(String input) {
         if (input == null || input.isEmpty()) {
             return input; // Renvoie null ou chaîne vide
@@ -135,9 +161,10 @@ public class FileUtils {
     }
 
     public static void createSimpleFile(String filePath, String fileName, String fileExtension, String fileContent) throws IOException {
-        // creation du fichier et son contenu
         File file = new File(filePath + "/" + fileName + "." + fileExtension);
-        file.createNewFile();
+        if (file.exists()) {
+            file.delete();
+        }
         Files.write(file.toPath(), fileContent.getBytes());
     }
 

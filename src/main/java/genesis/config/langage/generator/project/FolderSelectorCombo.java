@@ -1,4 +1,4 @@
-package project;
+package genesis.config.langage.generator.project;
 
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 

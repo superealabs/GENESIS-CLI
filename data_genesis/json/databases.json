@@ -9,7 +9,7 @@
       },
       "2": {
         "groupId": "",
-        "artifactId": "MySql.EntityFrameworkCore"
+        "artifactId": "Pomelo.EntityFrameworkCore.MySql"
       }
     },
     "driverType": "",
@@ -80,6 +80,8 @@
       "varchar": "string",
       "real": "double",
       "double": "double",
+      "float4": "double",
+      "float8": "double",
       "double precision": "double",
       "decimal": "double",
       "numeric": "double",

@@ -1,4 +1,4 @@
-package project;
+package genesis.config.langage.generator.project;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -6,6 +6,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.HashMap;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import genesis.connexion.Database;
 
 public class GroqApiClient {
 
@@ -13,31 +14,38 @@ public class GroqApiClient {
     private static final String API_KEY = "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"; // Remplacez par votre clé API Groq
     private static final String DEFAULT_MODEL = "llama3-8b-8192"; // Modèle LLM
 
-    public static String generateSQL(String description) {
+    public static String generateSQL(Database database, String description) {
         try {
-            String jsonPayload = buildRequestPayload(description);
+            String jsonPayload = buildRequestPayload(database, description);
             HttpRequest request = buildHttpRequest(jsonPayload);
             HttpResponse<String> response = sendHttpRequest(request);
             return parseResponse(response);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("ERROR when generating the SQL script :\n"+e.getMessage());
             return "-- Failed to generate SQL script. Error: " + e.getMessage();
         }
     }
 
 
-    private static String buildRequestPayload(String description) throws Exception {
+    private static String buildRequestPayload(Database database, String description) throws Exception {
         HashMap<String, Object> payload = new HashMap<>();
         HashMap<String, String> message = new HashMap<>();
         message.put("role", "user");
-        message.put("content", """
-        
-            By default, do not give any comment or explanation
-            unless it's explicitly asked in the description section.
-        
-            The description for generating a SQL script:
-        
-        """ + description);
+        message.put("content", String.format("""
+        Instructions:
+        - Provide the output in plain text format (not markdown).
+        - Do not include any comments or explanations in the output.
+        - We only need the SQL and it must be well formatted.
+        - All tables must have an unique primary key.
+        - Use the : "if not exists" when creating database objects.
+
+        Database Details:
+        - The database being used is: %s
+        - You can only use these database types: %s
+
+        Task Description:
+        """, database.getName(), database.getTypes().entrySet())+description);
+
         payload.put("messages", new HashMap[]{message});
         payload.put("model", DEFAULT_MODEL);
 

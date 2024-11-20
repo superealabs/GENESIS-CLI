@@ -1,9 +1,11 @@
-package project;
+package handler;
 
 import genesis.config.langage.ConfigurationMetadata;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.config.langage.Project;
+import genesis.config.langage.generator.project.FolderSelectorCombo;
+import genesis.config.langage.generator.project.GroqApiClient;
 import genesis.config.langage.generator.project.ProjectGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
@@ -13,6 +15,8 @@ import utils.FileUtils;
 import java.io.Console;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -20,6 +24,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ProjectGeneratorHandler {
+    public static final String COMPONENT_MODEL = "Model";
+    public static final String COMPONENT_DAO = "DAO";
+    public static final String COMPONENT_SERVICE = "Service";
+    public static final String COMPONENT_CONTROLLER = "Controller";
+
     private final Credentials credentials;
     private final ProjectGenerator projectGenerator;
 
@@ -28,7 +37,7 @@ public class ProjectGeneratorHandler {
         projectGenerator = new ProjectGenerator();
     }
 
-    void generateProject() {
+    public void generateProject() {
         System.out.println("\n** Welcome to the GENESIS-CLI ** \n\n Let's get started 🚀\n");
 
         try (Scanner scanner = new Scanner(System.in)) {
@@ -36,6 +45,7 @@ public class ProjectGeneratorHandler {
             String projectName = getNonEmptyInput(scanner, "Enter the project name");
             int languageId = getLanguageSelection(scanner);
             Language language = ProjectGenerator.languages.get(languageId);
+            HashMap<String, Object> languageConfiguration = configureLangage(scanner, language);
 
             String baseFramework = getBaseFrameworkSelection(scanner, language);
 
@@ -43,47 +53,70 @@ public class ProjectGeneratorHandler {
             var project = ProjectGenerator.projects.get(projectId);
             String destinationFolder = FolderSelectorCombo.selectDestinationFolder(scanner);
 
-
             // TYPE DE PROJET
             int frameworkId = getFrameworkSelection(scanner, language, baseFramework);
             Framework framework = ProjectGenerator.frameworks.get(frameworkId);
-
 
             // CONFIGURATION DE LA BASE DE DONNÉES
             int databaseId;
             Database database = null;
             Connection connection = null;
             List<String> entityNames = new ArrayList<>();
+            List<String> generationOptions = new ArrayList<>();
+            String groupLink = "";
+            boolean generateProjectStructure = true;
+
             if (framework.getUseDB()) {
                 databaseId = getDatabaseId(scanner);
                 database = ProjectGenerator.databases.get(databaseId);
+
                 connection = configureCredentials(scanner, database);
 
                 handleScriptExecution(scanner, database, connection);
 
-                // Récupérer les noms des entités et gérer la sélection
                 List<String> allTableNames = fetchEntityNames(database, connection);
                 entityNames = handleEntitySelection(scanner, allTableNames);
+
+                if (framework.getWithGroupId())
+                    groupLink = getNonEmptyInput(scanner, "Enter the group link");
+
+                // OPTIONS DE GÉNÉRATION
+                generationOptions = getGenerationOptions(scanner);
+
+                // OPTION POUR GÉNÉRER LA STRUCTURE DU PROJET OU PAS
+                generateProjectStructure = getGenerateProjectStructureOption(scanner);
             }
 
+            String projectPort = null;
+            String projectDescription = null;
+            HashMap<String, Object> frameworkConfiguration = new HashMap<>();
+            boolean useEurekaServer;
 
-            // CONFIGURATION PERSONNALISÉES
-            String groupLink = "";
-            if (framework.getWithGroupId())
-                groupLink = getNonEmptyInput(scanner, "Enter the group link");
+            if (generateProjectStructure) {
+                if (groupLink.isBlank() && framework.getWithGroupId())
+                    groupLink = getNonEmptyInput(scanner, "Enter the group link");
 
-            String projectPort = getValidPort(scanner);
-            String projectDescription = getNonEmptyInput(scanner, "Enter the project description");
 
-            HashMap<String, String> frameworkConfiguration = configureFramework(scanner, framework);
-            HashMap<String, String> languageConfiguration = configureLangage(scanner, language);
+                // CONFIGURATION PERSONNALISÉES
+                projectPort = getValidPort(scanner);
+                projectDescription = getNonEmptyInput(scanner, "Enter the project description");
 
-            String input = getNonEmptyInput(scanner, "Use a Eureka Server? (y/n)");
-            boolean useEurekaServer = input.equalsIgnoreCase("y");
+                frameworkConfiguration = configureFramework(scanner, framework);
 
-            if (useEurekaServer)
-                frameworkConfiguration.putAll(configureFrameworkWithEureka(scanner, framework));
+                // AJOUTER LA CONFIGURATION POUR L'API GATEWAY SI NÉCESSAIRE
+                if (framework.getIsGateway()) {
+                    configureApiGateway(scanner, frameworkConfiguration);
+                }
 
+                // ASSOCIATION EUREKA SERVER
+                String input = getNonEmptyInput(scanner, "Use an Eureka Server? (y/n)");
+                useEurekaServer = input.equalsIgnoreCase("y");
+
+                if (useEurekaServer)
+                    frameworkConfiguration.putAll(configureFrameworkWithEureka(scanner, framework));
+            }
+
+            // FIN PARCOURS
             projectGenerator.generateProject(
                     database,
                     language,
@@ -98,113 +131,282 @@ public class ProjectGeneratorHandler {
                     languageConfiguration,
                     frameworkConfiguration,
                     entityNames,
-                    connection
+                    connection,
+                    generationOptions,
+                    generateProjectStructure
             );
+
             System.out.println("\nProject generated successfully! 👨🏽‍💻\n\nSee you on the next project 👋🏼\n");
 
         } catch (Exception e) {
-            System.out.println("\nAn error occurred during project generation:");
-            e.printStackTrace();
+            System.err.println("\nAn error occurred during project generation: \n" + e.getMessage());
         }
     }
 
+    private void configureApiGateway(Scanner scanner, HashMap<String, Object> frameworkConfiguration) {
+        List<Map<String, Object>> routes = new ArrayList<>();
+        List<String> httpMethods = Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS", "TRACE", "CONNECT");
 
-    private String generateSQL(String description) {
-        // Placeholder implementation
-        String sql = "-- SQL script generated based on the description: " + description + "\n";
-        sql += """
-                CREATE TABLE example_table (
-                    id INT PRIMARY KEY,
-                    name VARCHAR(255)
-                );""";
-        return sql;
+        String addMoreRoutes;
+        do {
+            System.out.println("Configure a new route for the API Gateway.");
+
+            String routeId = getNonEmptyInput(scanner, "Enter route ID");
+            String uri = getNonEmptyInput(scanner, "Enter route URI (e.g., http://service1)");
+            String path = getNonEmptyInput(scanner, "Enter route path (predicate) (e.g., /path1)");
+
+            // Demander les méthodes HTTP avec indices
+            System.out.println("Select HTTP methods for this route:");
+            List<String> selectedMethods = handleOptionSelection(scanner, httpMethods, "HTTP method(s)");
+
+            Map<String, Object> route = new HashMap<>();
+            route.put("id", routeId);
+            route.put("uri", uri);
+            route.put("path", path);
+            route.put("method", String.join(",", selectedMethods)); // Combine les méthodes sélectionnées
+
+            routes.add(route);
+
+            addMoreRoutes = getNonEmptyInput(scanner, "Do you want to add another route? (y/n)");
+
+        } while (addMoreRoutes.equalsIgnoreCase("y"));
+
+        frameworkConfiguration.put("routes", routes);
+
+        // CONFIGURATION D'AUTHENTIFICATION POUR L'API GATEWAY
+        String username = getNonEmptyInput(scanner, "Enter username for API Gateway authentication");
+        String password = getNonEmptyInput(scanner, "Enter password for API Gateway authentication");
+        String role = getNonEmptyInput(scanner, "Enter role for API Gateway authentication");
+
+        frameworkConfiguration.put("username", username);
+        frameworkConfiguration.put("password", password);
+        frameworkConfiguration.put("role", role);
     }
 
+    private List<String> handleOptionSelection(Scanner scanner, List<String> options, String optionType) {
+        if (options.isEmpty()) {
+            return new ArrayList<>();
+        }
 
-
-    private void handleScriptExecution(Scanner scanner, Database database, Connection connection) {
-        String input = getNonEmptyInput(scanner, "Would you like to execute a script in the database? (y/n)");
-        if (input.equalsIgnoreCase("y")) {
-            input = getNonEmptyInput(scanner, "Would you like to generate the script? (y/n)");
-
-            if (input.equalsIgnoreCase("y")) {
-                handleGeneratedScript(scanner, connection);
-            } else {
-                handleExistingScript(scanner, connection);
+        while (true) {
+            System.out.println("\nAvailable " + optionType + ":");
+            for (int i = 0; i < options.size(); i++) {
+                System.out.println((i + 1) + ") " + options.get(i));
             }
-        } else {
-            System.out.println("Skipping script execution.");
+            System.out.println("\nEnter the numbers of the " + optionType.toLowerCase() + " you want to select, separated by commas (e.g., 1,3,5):");
+
+            String input = scanner.nextLine().trim();
+            List<String> selectedOptions = validateSelection(input, options);
+
+            if (!selectedOptions.isEmpty()) {
+                System.out.println("Selected " + optionType + ": " + String.join(", ", selectedOptions) + "\n");
+                return selectedOptions;
+            }
+
+            System.out.println("\nInvalid selection. Please try again.");
+        }
+    }
+
+    private List<String> validateSelection(String input, List<String> options) {
+        List<String> selectedOptions = new ArrayList<>();
+        String[] selectedIndexes = input.split(",");
+
+        boolean hasInvalidSelection = false;
+
+        for (String index : selectedIndexes) {
+            try {
+                int idx = Integer.parseInt(index.trim()) - 1;
+                if (idx >= 0 && idx < options.size()) {
+                    selectedOptions.add(options.get(idx));
+                } else {
+                    System.out.println("Invalid selection: " + index);
+                    hasInvalidSelection = true;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input: " + index);
+                hasInvalidSelection = true;
+            }
+        }
+
+        return hasInvalidSelection ? new ArrayList<>() : selectedOptions;
+    }
+
+
+
+    private boolean getGenerateProjectStructureOption(Scanner scanner) {
+        while (true) {
+            String input = getNonEmptyInput(scanner, "Do you want to generate the full project structure? (y/n)");
+            if (input.equalsIgnoreCase("y")) {
+                return true;
+            } else if (input.equalsIgnoreCase("n")) {
+                return false;
+            } else {
+                System.out.println("Invalid input. Please enter 'y' or 'n'.");
+            }
         }
     }
 
 
-    private void handleGeneratedScript(Scanner scanner, Connection connection) {
-        String description = getNonEmptyInput(scanner, "Enter a description of the tables or modifications to create");
-        String scriptContent = GroqApiClient.generateSQL(description);
+    private List<String> getGenerationOptions(Scanner scanner) {
+        System.out.println("Choose the components to generate:");
+        System.out.println("1) " + COMPONENT_MODEL + " only");
+        System.out.println("2) " + COMPONENT_MODEL + " + " + COMPONENT_DAO);
+        System.out.println("3) " + COMPONENT_MODEL + " + " + COMPONENT_DAO + " + " + COMPONENT_SERVICE);
+        System.out.println("4) Full stack (" + COMPONENT_MODEL + " + " + COMPONENT_DAO + " + " + COMPONENT_SERVICE + " + " + COMPONENT_CONTROLLER + ")");
 
-        // Demander le chemin pour enregistrer le fichier SQL
-        System.out.println("Enter the path where the SQL file should be saved");
-        String sqlFilePath = FolderSelectorCombo.selectDestinationFolder(scanner);
-
-        // Créer le fichier SQL
-        if (!createSQLFile(sqlFilePath, scriptContent)) {
-            return; // Si le fichier n'est pas créé, on quitte
+        while (true) {
+            System.out.print("Enter your choice (1-4): ");
+            String input = scanner.nextLine().trim();
+            switch (input) {
+                case "1":
+                    return List.of(COMPONENT_MODEL);
+                case "2":
+                    return List.of(COMPONENT_MODEL, COMPONENT_DAO);
+                case "3":
+                    return List.of(COMPONENT_MODEL, COMPONENT_DAO, COMPONENT_SERVICE);
+                case "4":
+                    return List.of(COMPONENT_MODEL, COMPONENT_DAO, COMPONENT_SERVICE, COMPONENT_CONTROLLER);
+                default:
+                    System.out.println("Invalid input. Please enter a number between 1 and 4.");
+            }
         }
-
-        String input = getNonEmptyInput(scanner, "Confirm execution of the generated script? (y/n)");
-        if (!input.equalsIgnoreCase("y")) {
-            System.out.println("Skipping script execution.");
-            return;
-        }
-
-        executeSQLScript(connection, scriptContent);
     }
 
 
-    private void handleExistingScript(Scanner scanner, Connection connection) {
-        String scriptPath = getNonEmptyInput(scanner, "Enter the path of the SQL script to execute");
+    private void handleScriptExecution(Scanner scanner, Database database, Connection connection) throws IOException {
+        String input;
+        while (true) {
+            input = getNonEmptyInput(scanner, "Would you like to execute a script in the database? (y/n)");
+            if (input.equalsIgnoreCase("y")) {
+                break;
+            } else if (input.equalsIgnoreCase("n")) {
+                System.out.println("Skipping script execution.");
+                return;
+            } else {
+                System.out.println("Invalid input. Please enter 'y' or 'n'.");
+            }
+        }
 
-        String scriptContent;
+        while (true) {
+            input = getNonEmptyInput(scanner, "Would you like to generate the script? (y/n)");
+            if (input.equalsIgnoreCase("y")) {
+                handleGeneratedScript(scanner, database, connection);
+                break;
+            } else if (input.equalsIgnoreCase("n")) {
+                handleExistingScript(scanner, connection);
+                break;
+            } else {
+                System.out.println("Invalid input. Please enter 'y' or 'n'.");
+            }
+        }
+    }
+
+
+    private void handleGeneratedScript(Scanner scanner, Database database, Connection connection) throws IOException {
+        String description, scriptContent = "", sqlFilePath = "";
+        String scriptFilePath = null;
+        while (true) {
+            description = getNonEmptyInput(scanner, "Enter a description of the tables or modifications to create");
+            try {
+                scriptContent = GroqApiClient.generateSQL(database, description);
+            }
+            catch (Exception e) {
+                System.out.println("\nAn error occurred during script generation: \n" + e.getMessage());
+                String userInput = getNonEmptyInput(scanner, "Would you like to try again? (y/n)");
+                if (userInput.equalsIgnoreCase("n")) {
+                    break;
+                } else {
+                    continue;
+                }
+            }
+
+            System.out.println("Enter the path where the SQL file should be saved");
+            sqlFilePath = FolderSelectorCombo.selectDestinationFolder(scanner);
+
+            scriptFilePath = createSQLFile(sqlFilePath, scriptContent);
+
+            String regenerateInput = getNonEmptyInput(scanner, "Regenerate the script? (y/n)");
+            if (regenerateInput.equalsIgnoreCase("y")) {
+                assert scriptFilePath != null;
+                Files.deleteIfExists(Path.of(scriptFilePath));
+            }
+
+            if (regenerateInput.equalsIgnoreCase("n")) {
+                break; // Sort de la boucle si l'utilisateur ne veut pas régénérer
+            }
+            // Si l'utilisateur veut régénérer, la boucle continue
+        }
+
+        if (scriptFilePath != null) {
+            while (true) {
+                String confirmInput = getNonEmptyInput(scanner, "Confirm execution of the generated script? (y/n)");
+                if (confirmInput.equalsIgnoreCase("y")) {
+                    executeSQLScript(connection, scriptFilePath, scanner);
+                    break;
+                } else if (confirmInput.equalsIgnoreCase("n")) {
+                    System.out.println("Skipping script execution.");
+                    break;
+                } else {
+                    System.out.println("Invalid input. Please enter 'y' or 'n'.");
+                }
+            }
+        }
+    }
+
+
+
+    private void handleExistingScript(Scanner scanner, Connection connection) throws FileNotFoundException {
+        String scriptPath = FolderSelectorCombo.selectDestinationFolder(scanner);
+
+        while (true) {
+            System.out.println("Script content to be executed:");
+            System.out.println(FileUtils.getFileContentSQL(scriptPath));
+
+            String input = getNonEmptyInput(scanner, "Confirm execution of the script? (y/n)");
+            if (input.equalsIgnoreCase("y")) {
+                executeSQLScript(connection, scriptPath, scanner);
+                break;
+            } else if (input.equalsIgnoreCase("n")) {
+                System.out.println("Skipping script execution.");
+                break;
+            } else {
+                System.out.println("Invalid input. Please enter 'y' or 'n'.");
+            }
+        }
+    }
+
+    private String createSQLFile(String sqlFilePath, String scriptContent) {
         try {
-            scriptContent = FileUtils.getFileContent(scriptPath);
-        } catch (FileNotFoundException e) {
-            System.out.println("SQL script file not found: " + e.getMessage());
-            return;
-        }
+            String filename = "generated_script_" + LocalDateTime.now();
+            String fullFilePath = sqlFilePath + "/" + filename + ".sql";
 
-        String input = getNonEmptyInput(scanner, "Confirm execution of the script? (y/n)");
-        if (!input.equalsIgnoreCase("y")) {
-            System.out.println("Skipping script execution.");
-            return;
-        }
-
-        executeSQLScript(connection, scriptContent);
-    }
-
-
-    private boolean createSQLFile(String sqlFilePath, String scriptContent) {
-        try {
-            String filename = "generated_script_"+ LocalDateTime.now();
             FileUtils.createSimpleFile(sqlFilePath, filename, "sql", scriptContent);
-            System.out.println("SQL file created at: " + sqlFilePath + "/"+filename+".sql");
-            return true;
+            System.out.println("SQL file created or updated at: " + fullFilePath);
+            return fullFilePath;
         } catch (IOException e) {
-            System.out.println("Error creating SQL file: " + e.getMessage());
-            return false;
+            System.out.println("Error creating SQL file: \n" + e.getMessage());
+            return null;
         }
     }
 
 
-    private void executeSQLScript(Connection connection, String scriptContent) {
-        try {
-            SQLRunner.execute(connection, scriptContent);
-            System.out.println("Script executed successfully.");
-        } catch (Exception e) {
-            System.out.println("Error executing script: " + e.getMessage());
+    private void executeSQLScript(Connection connection, String scriptPath, Scanner scanner) {
+        while (true) {
+            try {
+                String scriptContent = FileUtils.getFileContentSQL(scriptPath);
+                SQLRunner.execute(connection, scriptContent);
+                System.out.println("Script executed successfully. 🛠");
+                break;
+            } catch (Exception e) {
+                System.out.println("Error executing script: \n" + e.getMessage());
+                String retryInput = getNonEmptyInput(scanner, "Would you like to retry executing the script? (y/n)");
+                if (!retryInput.equalsIgnoreCase("y")) {
+                    System.out.println("Skipping script execution.");
+                    break;
+                }
+            }
         }
     }
-
-
 
 
 
@@ -227,29 +429,13 @@ public class ProjectGeneratorHandler {
         return allTableNames;
     }
 
-    /*
-    Avant de demander le choix des entités, on demande à l'utilisateur s'il veut exécuter un script dans la base de données,
-    si OUI :
-           on demande s'il veut générer le script:
-                     si oui, on demande une description textuelle des tables ou modifications à créer,
-                     (on appelle une fonction generateSQL(String description))
-                    si non, on skip
-                    on demande le path du fichier SQL
-                    et on va créer un fichier SQL à partir de generateSQL (utilise les méthodes dans FileUtils)
-                    confirmer (y/n)
-           sinon
-                on demande juste le path du script à exécuter (pour l'exécution de script utilise SQL Runner)
-    sinon on skip et on demande les entités à choisir
-     */
-
     private List<String> handleEntitySelection(Scanner scanner, List<String> allTableNames) {
         if (allTableNames.isEmpty()) {
             return new ArrayList<>();
         }
 
         while (true) {
-            System.out.println("\nEnter the numbers of the entities you want to use, separated by commas (e.g., 1,3,5) or enter * to select all:");
-            String input = scanner.nextLine().trim();
+            String input = getNonEmptyInput(scanner, "\nEnter the numbers of the entities you want to use, \nseparated by commas (e.g., 1,3,5) or enter * to select all");
 
             if (input.equals("*")) {
                 System.out.println("All entities selected.");
@@ -259,7 +445,7 @@ public class ProjectGeneratorHandler {
             List<String> selectedEntities = validateEntitySelection(input, allTableNames);
 
             if (!selectedEntities.isEmpty()) {
-                System.out.println("Selected entities: " + String.join(", ", selectedEntities)+"\n\n");
+                System.out.println("Selected entities: " + String.join(", ", selectedEntities) + "\n\n");
                 return selectedEntities;
             }
 
@@ -293,17 +479,15 @@ public class ProjectGeneratorHandler {
     }
 
 
-
-
     private Connection configureCredentials(Scanner scanner, Database database) {
         configureCommonCredentials(scanner, database);
         configureDatabaseSpecificCredentials(scanner, database);
 
-        System.out.println("\nTesting database connection...");
+        System.out.println("Testing database connection...");
         Connection connection = testDatabaseConnection(database);
 
         if (connection != null) {
-            System.out.println("Connection successful 🎉\n");
+            System.out.println("\nConnection successful 🎉\n");
         } else {
             connection = handleConnectionFailure(scanner, database);
         }
@@ -328,7 +512,6 @@ public class ProjectGeneratorHandler {
                 configureOracleCredentials(scanner, database);
                 break;
             case "PostgreSQL":
-                // No specific configuration needed
                 break;
             case "SQL Server":
                 configureSQLServerCredentials(scanner);
@@ -567,7 +750,7 @@ public class ProjectGeneratorHandler {
             System.out.println("No valid frameworks found for the selected base framework.");
             return -1;
         }
-        return getSelectionId(scanner, validFrameworkNames, "Type of project");
+        return getSelectionId(scanner, validFrameworkNames, "Project type options");
     }
 
 
@@ -593,7 +776,7 @@ public class ProjectGeneratorHandler {
         Collections.sort(keys);
 
         while (true) {
-            System.out.println(optionType+" options :");
+            System.out.println(optionType + " options :");
             for (int i = 0; i < keys.size(); i++) {
                 System.out.println((i + 1) + ") " + options.get(keys.get(i)));
             }
@@ -614,23 +797,23 @@ public class ProjectGeneratorHandler {
         }
     }
 
-    private HashMap<String, String> configureFramework(Scanner scanner, Framework framework) {
+    private HashMap<String, Object> configureFramework(Scanner scanner, Framework framework) {
         return configureOptions(scanner, framework.getConfigurations());
     }
 
-    private HashMap<String, String> configureFrameworkWithEureka(Scanner scanner, Framework framework) {
-        HashMap<String, String> config = configureOptions(scanner, framework.getEurekaClientConfigurations());
+    private HashMap<String, Object> configureFrameworkWithEureka(Scanner scanner, Framework framework) {
+        HashMap<String, Object> config = configureOptions(scanner, framework.getEurekaClientConfigurations());
         framework.setUseCloud(true);
         framework.setUseEurekaServer(true);
         return config;
     }
 
-    private HashMap<String, String> configureLangage(Scanner scanner, Language language) {
+    private HashMap<String, Object> configureLangage(Scanner scanner, Language language) {
         return configureOptions(scanner, language.getConfigurations());
     }
 
-    private HashMap<String, String> configureOptions(Scanner scanner, List<ConfigurationMetadata> configurations) {
-        HashMap<String, String> configMap = new HashMap<>();
+    private HashMap<String, Object> configureOptions(Scanner scanner, List<ConfigurationMetadata> configurations) {
+        HashMap<String, Object> configMap = new HashMap<>();
         for (ConfigurationMetadata config : configurations) {
             String option = getUserInput(scanner, config);
             configMap.put(config.getVariableName(), option);
