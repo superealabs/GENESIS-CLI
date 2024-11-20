@@ -5,7 +5,7 @@ using WebApiNet.Repositories.Interface;
 
 namespace WebApiNet.Repositories.Implementation;
 
-public class HouseRepository : Repository<House, long>, IHouseRepository
+public class HouseRepository : Repository<House, int>, IHouseRepository
 {
 	public HouseRepository(WebApiNetContext context) : base(context)
 	{

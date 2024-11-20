@@ -5,35 +5,35 @@ using WebApiNet.Services.Interface;
 
 namespace WebApiNet.Services.Implementation;
 
-public class HouseService : IHouseService
+public class OwnerService : IOwnerService
 {
-	private readonly IHouseRepository _repository;
+	private readonly IOwnerRepository _repository;
 
-	public HouseService(IHouseRepository repository)
+	public OwnerService(IOwnerRepository repository)
 	{
 		_repository = repository;
 	}
 
-	public async Task<IEnumerable<House>> GetAllAsync(
-	params Expression<Func<House, object?>>[]? includeProperties)
+	public async Task<IEnumerable<Owner>> GetAllAsync(
+	params Expression<Func<Owner, object?>>[]? includeProperties)
 	{
 		return await _repository.GetAllWithIncludes(includeProperties);
 	}
 
-	public async Task<House?> GetByIdAsync(int id,
-	params Expression<Func<House, object?>>[]? includeProperties)
+	public async Task<Owner?> GetByIdAsync(int id,
+	params Expression<Func<Owner, object?>>[]? includeProperties)
 	{
 		return await _repository.GetByIdAsync(id, includeProperties);
 	}
 
-	public async Task AddAsync(House house)
+	public async Task AddAsync(Owner owner)
 	{
-		await _repository.AddAsync(house);
+		await _repository.AddAsync(owner);
 	}
 
-	public async Task UpdateAsync(House house)
+	public async Task UpdateAsync(Owner owner)
 	{
-		await _repository.UpdateAsync(house);
+		await _repository.UpdateAsync(owner);
 	}
 
 	public async Task DeleteAsync(int id)

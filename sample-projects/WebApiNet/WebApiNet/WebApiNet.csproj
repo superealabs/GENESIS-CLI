@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <RootNamespace>WebApiNet</RootNamespace>
-        <Description>TestProject</Description>
+        <Description>Web Api NET</Description>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,7 +13,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0"/>
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0"/>
         <PackageReference Include="Steeltoe.Discovery.Eureka" Version="3.2.0"/>
         <PackageReference Include="Steeltoe.Management.Endpoint.Info" Version="1.1.0" />

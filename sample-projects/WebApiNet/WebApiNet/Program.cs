@@ -24,7 +24,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "WebApiNet",               
         Version = "v1",                       
-        Description = "TestProject"
+        Description = "Web Api NET"
     });
     if (!string.IsNullOrEmpty(pathBase))
     {
@@ -49,8 +49,8 @@ string localIpAddress = NetworkInterface
 // Configure Kestrel to listen on both the machine's IP address and localhost
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.Listen(IPAddress.Parse(localIpAddress), 9090);
-    options.Listen(IPAddress.Loopback, 9090);
+    options.Listen(IPAddress.Parse(localIpAddress), 9080);
+    options.Listen(IPAddress.Loopback, 9080);
 });
 
 // Set the IP address in configuration for Eureka registration
@@ -61,15 +61,18 @@ builder.Services.AddDiscoveryClient(builder.Configuration);
 
 // Add services to the container.
 builder.Services.AddDbContext<WebApiNetContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        new MySqlServerVersion(new Version(8, 4, 2))
+    ));
 
 // Adding repositories ...
 builder.Services.AddScoped<IHouseRepository, HouseRepository>();
-builder.Services.AddScoped<ITestingRepository, TestingRepository>();
+builder.Services.AddScoped<IOwnerRepository, OwnerRepository>();
 
 // Adding services ...
 builder.Services.AddScoped<IHouseService, HouseService>();
-builder.Services.AddScoped<ITestingService, TestingService>();
+builder.Services.AddScoped<IOwnerService, OwnerService>();
 
 // Adding controllers ...
 builder.Services.AddControllers();

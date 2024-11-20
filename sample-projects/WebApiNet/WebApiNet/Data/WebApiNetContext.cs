@@ -9,6 +9,6 @@ public class WebApiNetContext : DbContext
     {
     }
     public DbSet<House> Houses { get; set; }
-    public DbSet<Testing> Testings { get; set; }
+    public DbSet<Owner> Owners { get; set; }
     
 }

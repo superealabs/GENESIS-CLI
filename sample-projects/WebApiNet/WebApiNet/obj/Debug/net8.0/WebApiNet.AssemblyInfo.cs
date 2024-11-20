@@ -12,9 +12,9 @@ using System.Reflection;
 
 [assembly: System.Reflection.AssemblyCompanyAttribute("WebApiNet")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
-[assembly: System.Reflection.AssemblyDescriptionAttribute("TestProject")]
+[assembly: System.Reflection.AssemblyDescriptionAttribute("Web Api NET")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aef374710b1a8b0916d2b2d9b2cd72e0117fc17a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d22cbece5fd42269ae616d9191ff7cc0e31ba1a9")]
 [assembly: System.Reflection.AssemblyProductAttribute("WebApiNet")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WebApiNet")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

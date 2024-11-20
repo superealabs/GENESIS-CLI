@@ -5,9 +5,9 @@ using WebApiNet.Repositories.Interface;
 
 namespace WebApiNet.Repositories.Implementation;
 
-public class TestingRepository : Repository<Testing, long>, ITestingRepository
+public class OwnerRepository : Repository<Owner, int>, IOwnerRepository
 {
-	public TestingRepository(WebApiNetContext context) : base(context)
+	public OwnerRepository(WebApiNetContext context) : base(context)
 	{
 	}
 }

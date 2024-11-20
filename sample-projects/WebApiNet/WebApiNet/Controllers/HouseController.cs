@@ -23,7 +23,7 @@ public class HouseController  : ControllerBase
 	}
 
 	[HttpGet("{id}")]
-	public async Task<ActionResult<House>> GetHouse(long id)
+	public async Task<ActionResult<House>> GetHouse(int id)
 	{
 		var house = await _service.GetByIdAsync(id);
 		return house == null ? NotFound() : Ok(house);
@@ -33,13 +33,13 @@ public class HouseController  : ControllerBase
 	public async Task<ActionResult<House>> Post(House house)
 	{
 		await _service.AddAsync(house);
-		return CreatedAtAction(nameof(GetHouse), new { id = house.HouseId }, house);
+		return CreatedAtAction(nameof(GetHouse), new { id = house.Houseid }, house);
 	}
 
 	[HttpPut("{id}")]
-	public async Task<ActionResult<House>> PutHouse(long id, House house)
+	public async Task<ActionResult<House>> PutHouse(int id, House house)
 	{
-		if (id != house.HouseId)
+		if (id != house.Houseid)
 			return BadRequest();
 
 		var exists = await _service.ExistsAsync(id);
@@ -50,7 +50,7 @@ public class HouseController  : ControllerBase
 	}
 
 	[HttpDelete("{id}")]
-	public async Task<ActionResult> DeleteHouse(long id)
+	public async Task<ActionResult> DeleteHouse(int id)
 	{
 
 		var exists = await _service.ExistsAsync(id);

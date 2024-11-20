@@ -1,10 +1,10 @@
-@TestDbCRUD_HostAddress = http://localhost:9090
+@TestDbCRUD_HostAddress = http://localhost:9080
 
 GET {{TestDbCRUD_HostAddress}}/Houses
 Accept: application/json
 
 ###
-GET {{TestDbCRUD_HostAddress}}/Testings
+GET {{TestDbCRUD_HostAddress}}/Owners
 Accept: application/json
 
 ###

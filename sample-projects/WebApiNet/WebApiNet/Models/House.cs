@@ -3,40 +3,37 @@ namespace WebApiNet.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-[Table("houses")]
+[Table("Houses")]
 public class House  
 {
 	[Key]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-	[Column("house_id")]
-	public long HouseId { get; set; }
+	[Column("HouseId")]
+	public int Houseid { get; set; }
 
-	[Column("address")]
+	[Column("Address")]
 	public string Address { get; set; }
 
-	[Column("city")]
+	[Column("City")]
 	public string City { get; set; }
 
-	[Column("state")]
+	[Column("State")]
 	public string State { get; set; }
 
-	[Column("zip_code")]
-	public string ZipCode { get; set; }
+	[Column("ZipCode")]
+	public string Zipcode { get; set; }
 
-	[Column("num_bedrooms")]
-	public int NumBedrooms { get; set; }
+	[Column("PurchasePrice")]
+	public double Purchaseprice { get; set; }
 
-	[Column("num_bathrooms")]
-	public int NumBathrooms { get; set; }
+	[Column("SellPrice")]
+	public double Sellprice { get; set; }
 
-	[Column("square_footage")]
-	public int SquareFootage { get; set; }
+	[Column("YearBuilt")]
+	public int Yearbuilt { get; set; }
 
-	[Column("price")]
-	public double Price { get; set; }
-
-	[Column("year_built")]
-	public int YearBuilt { get; set; }
+	[Column("BuildingType")]
+	public string Buildingtype { get; set; }
 	
 
 }
