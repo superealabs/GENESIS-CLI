@@ -1,5 +1,6 @@
 package genesis.engine;
 
+import org.jetbrains.annotations.NotNull;
 import utils.FileUtils;
 
 import java.util.HashMap;
@@ -7,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public class TemplateEngine {
+public class GenesisTemplateEngine {
 
     private static final String LOOP_START = "{{#each ";
     private static final String LOOP_INDEX = "@index";
@@ -179,8 +180,23 @@ public class TemplateEngine {
     }
 
     private LoopInfo extractLoopInfo(StringBuilder template, int start) throws Exception {
-        int loopEndIdx = template.indexOf(LOOP_END, start);
+        int loopEndIdx = -1;
+        int nestedCount = 0;
+
+        for (int i = start; i < template.length(); i++) {
+            if (template.substring(i).startsWith(LOOP_START)) {
+                nestedCount++;
+            } else if (template.substring(i).startsWith(LOOP_END)) {
+                nestedCount--;
+                if (nestedCount == 0) {
+                    loopEndIdx = i;
+                    break;
+                }
+            }
+        }
+
         if (loopEndIdx == -1) {
+            System.out.println("Template: " + template.toString());
             throw new Exception("Loop end tag not found.");
         }
 
@@ -196,40 +212,74 @@ public class TemplateEngine {
         return new LoopInfo(loopVarName, loopContent, start);
     }
 
-    @SuppressWarnings("unchecked")
+
     private void processLoopContent(StringBuilder template, LoopInfo loopInfo, Map<String, Object> variables) throws Exception {
         String loopVarName = loopInfo.loopVarName();
         String loopContent = loopInfo.loopContent();
         int start = loopInfo.start();
 
-        List<?> loopVar = (List<?>) variables.get(loopVarName);
-        if (loopVar == null) {
-            return;
+        Object loopVar = variables.get(loopVarName);
+        if (!(loopVar instanceof List<?> loopList)) {
+            return; // Ignore if loop variable is not a List
         }
 
         StringBuilder loopResult = new StringBuilder();
-        for (int i = 0; i < loopVar.size(); i++) {
-            Object item = loopVar.get(i);
+
+        for (int i = 0; i < loopList.size(); i++) {
+            Object item = loopList.get(i);
             Map<String, Object> loopVariables = new HashMap<>(variables);
 
+            // Ajouter directement l'élément actuel sous `this`
+            loopVariables.put(LOOP_ITEM, item);
+
+            // Ne stocker que les valeurs sous 'this' et pas toute la structure de l'objet
             if (item instanceof Map) {
                 Map<String, Object> itemMap = (Map<String, Object>) item;
                 for (Map.Entry<String, Object> entry : itemMap.entrySet()) {
                     loopVariables.put(LOOP_ITEM + "." + entry.getKey(), entry.getValue());
                 }
-            } else {
-                loopVariables.put(LOOP_ITEM, item);
             }
 
             loopVariables.put(LOOP_INDEX, i);
             loopVariables.put(IS_LOOP_FIRST_INDEX, (i == 0));
-            loopVariables.put(IS_LOOP_LAST_INDEX, (i == loopVar.size() - 1));
+            loopVariables.put(IS_LOOP_LAST_INDEX, (i == loopList.size() - 1));
 
+            // Recursive rendering for nested structures
             String renderedContent = render(loopContent, loopVariables).stripLeading();
             loopResult.append(renderedContent);
         }
 
         template.insert(start, loopResult);
+    }
+
+
+
+    @SuppressWarnings("unchecked")
+    private static @NotNull Map<String, Object> getLoopMap(Map<String, Object> variables, List<?> loopList, int i) {
+        Object item = loopList.get(i);
+        Map<String, Object> loopVariables = new HashMap<>(variables);
+
+        if (item instanceof Map) {
+            Map<String, Object> itemMap = (Map<String, Object>) item;
+
+            for (Map.Entry<String, Object> entry : itemMap.entrySet()) {
+                Object value = entry.getValue();
+
+                if (value instanceof List) {
+                    // Support imbriqué
+                    loopVariables.put(entry.getKey(), value);
+                } else {
+                    loopVariables.put(LOOP_ITEM + "." + entry.getKey(), value);
+                }
+            }
+        } else {
+            loopVariables.put(LOOP_ITEM, item);
+        }
+
+        loopVariables.put(LOOP_INDEX, i);
+        loopVariables.put(IS_LOOP_FIRST_INDEX, (i == 0));
+        loopVariables.put(IS_LOOP_LAST_INDEX, (i == loopList.size() - 1));
+        return loopVariables;
     }
 
 
@@ -378,19 +428,6 @@ public class TemplateEngine {
         int start;
         while ((start = template.indexOf(placeholder)) != -1) {
             template.replace(start, start + placeholder.length(), value);
-        }
-    }
-
-    private void checkUndefinedVariables(StringBuilder template) throws Exception {
-        int start;
-        while ((start = template.indexOf(VARIABLE_PLACEHOLDER_PREFIX)) != -1) {
-            int end = template.indexOf(VARIABLE_PLACEHOLDER_SUFFIX, start);
-            if (end != -1) {
-                String undefinedVariable = template.substring(start, end + 1);
-                throw new Exception("Undefined variable found: " + undefinedVariable);
-            } else {
-                break;
-            }
         }
     }
 

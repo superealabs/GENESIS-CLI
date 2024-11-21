@@ -6,7 +6,7 @@ import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.connexion.model.ColumnMetadata;
 import genesis.connexion.model.TableMetadata;
-import genesis.engine.TemplateEngine;
+import genesis.engine.GenesisTemplateEngine;
 import org.jetbrains.annotations.NotNull;
 import utils.FileUtils;
 
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 public class FrameworkMetadataProvider {
-    private static final TemplateEngine engine = new TemplateEngine();
+    private static final GenesisTemplateEngine engine = new GenesisTemplateEngine();
 
     public static @NotNull Map<String, Object> getCredentialsHashMap(Database database) {
         Credentials credentials = database.getCredentials();

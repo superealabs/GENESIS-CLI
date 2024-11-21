@@ -5,51 +5,9 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
-        <option value="$PROJECT_DIR$/TestProject/pom.xml" />
-        <option value="$PROJECT_DIR$/Begin/pom.xml" />
-        <option value="$PROJECT_DIR$/ProjectDEMO/pom.xml" />
-        <option value="$PROJECT_DIR$/TestDADA/pom.xml" />
-        <option value="$PROJECT_DIR$/TestREST/pom.xml" />
-        <option value="$PROJECT_DIR$/TestCLI/pom.xml" />
-        <option value="$PROJECT_DIR$/generated/Test2Cli/pom.xml" />
-        <option value="$PROJECT_DIR$/generated/TestREST/pom.xml" />
-        <option value="$PROJECT_DIR$/generated/Fana/ProjetIrai/pom.xml" />
-        <option value="$PROJECT_DIR$/generated/discovery/TestEurekaServer/pom.xml" />
-        <option value="$PROJECT_DIR$/generated/service/TestRest/pom.xml" />
-        <option value="$PROJECT_DIR$/generated/TestEureka/pom.xml" />
-        <option value="$PROJECT_DIR$/generated/TestRestApi/pom.xml" />
-        <option value="$PROJECT_DIR$/generated/api-gateway/pom.xml" />
-        <option value="$PROJECT_DIR$/generated/api-gateway-mvc/pom.xml" />
-        <option value="$PROJECT_DIR$/generated/api-gateway-reactive/pom.xml" />
-        <option value="$PROJECT_DIR$/generated/service/service2/pom.xml" />
-        <option value="$PROJECT_DIR$/generated/my-app/pom.xml" />
-        <option value="$PROJECT_DIR$/generated/service/WebApiSpring/pom.xml" />
-        <option value="$PROJECT_DIR$/generated/discovery/TestEurekaServerPeer/pom.xml" />
-        <option value="$PROJECT_DIR$/sample-projects/WebApiSpring/pom.xml" />
-        <option value="$PROJECT_DIR$/sample-projects/TestEurekaServer/pom.xml" />
-        <option value="$PROJECT_DIR$/sample-projects/TestEurekaServerPeer/pom.xml" />
         <option value="$PROJECT_DIR$/sample-projects/ApiGateway/pom.xml" />
       </list>
     </option>
-    <option name="ignoredFiles">
-      <set>
-        <option value="$PROJECT_DIR$/Begin/pom.xml" />
-        <option value="$PROJECT_DIR$/TestCLI/pom.xml" />
-        <option value="$PROJECT_DIR$/TestDADA/pom.xml" />
-        <option value="$PROJECT_DIR$/TestProject/pom.xml" />
-        <option value="$PROJECT_DIR$/TestREST/pom.xml" />
-        <option value="$PROJECT_DIR$/generated/Test2CLI/pom.xml" />
-        <option value="$PROJECT_DIR$/generated/Test2Cli/pom.xml" />
-        <option value="$PROJECT_DIR$/generated/service/WebApiSpring/pom.xml" />
-        <option value="$PROJECT_DIR$/sample-projects/TestEurekaServer/pom.xml" />
-        <option value="$PROJECT_DIR$/sample-projects/TestEurekaServerPeer/pom.xml" />
-      </set>
-    </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" project-jdk-name="21" project-jdk-type="JavaSDK">
-    <output url="file://$PROJECT_DIR$/out" />
-  </component>
-  <component name="ProjectType">
-    <option name="id" value="jpab" />
-  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_23" default="true" project-jdk-name="openjdk-23" project-jdk-type="JavaSDK" />
 </project>
