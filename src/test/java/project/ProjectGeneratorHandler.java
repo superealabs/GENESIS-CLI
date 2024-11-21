@@ -1,9 +1,6 @@
 package project;
 
-import genesis.config.langage.Editor;
-import genesis.config.langage.Framework;
-import genesis.config.langage.Language;
-import genesis.config.langage.Project;
+import genesis.config.langage.*;
 import genesis.config.langage.generator.project.ProjectGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
@@ -14,10 +11,12 @@ public class ProjectGeneratorHandler {
 
     Credentials credentials;
     ProjectGenerator projectGenerator;
+    DatabaseConfiguration databaseConfiguration;
 
     public ProjectGeneratorHandler() {
         this.credentials = new Credentials();
         projectGenerator = new ProjectGenerator();
+        databaseConfiguration = new DatabaseConfiguration();
     }
 
     void generateProject() {
@@ -31,7 +30,7 @@ public class ProjectGeneratorHandler {
             String projectName = getProjectName(scanner);
             String projectPort = getProjectPort(scanner);
             int databaseId = getDatabaseId(scanner);
-            configureCredentials(scanner);
+            configureCredentials(scanner,databaseConfiguration);
             int projectId = getProjectId(scanner);
             int editorId = getEditorId(scanner);
             String logLevel = getLogLevel(scanner);
@@ -48,12 +47,12 @@ public class ProjectGeneratorHandler {
         }
     }
 
-    private void configureCredentials(Scanner scanner) {
-        credentials.setHost(askForInput(scanner, "Enter the database host", "localhost"));
-        credentials.setDatabaseName(askForInput(scanner, "Enter the database name", "test_db"));
-        credentials.setUser(askForInput(scanner, "Enter the database user", "postgres"));
-        credentials.setPwd(askForInput(scanner, "Enter the database password", "root"));
-        credentials.setPort(askForInput(scanner, "Enter the database port", "5432"));
+    private void configureCredentials(Scanner scanner, DatabaseConfiguration databaseConfiguration) {
+        credentials.setHost(askForInput(scanner, "Enter the database host", databaseConfiguration.getHost()));
+        credentials.setDatabaseName(askForInput(scanner, "Enter the database name", databaseConfiguration.getName()));
+        credentials.setUser(askForInput(scanner, "Enter the database user", databaseConfiguration.getUser()));
+        credentials.setPwd(askForInput(scanner, "Enter the database password", databaseConfiguration.getPassword()));
+        credentials.setPort(askForInput(scanner, "Enter the database port", databaseConfiguration.getPort()));
         System.out.println();
     }
 

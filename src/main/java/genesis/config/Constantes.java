@@ -9,4 +9,5 @@ public class Constantes {
     public static final String EDITOR_YAML = "data_genesis/yaml/editor.yaml";
     public static final String PROJECT_YAML = "data_genesis/yaml/project.yaml";
     public static final String FRAMEWORK_YAML = "data_genesis/yaml/framework.yaml";
+    public static final String DATABASE_CONFIGURATION_JSON = "src/main/resources/Database.conf.json";
 }

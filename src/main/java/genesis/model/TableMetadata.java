@@ -105,11 +105,12 @@ public class TableMetadata {
             String columnName = columns.getString("COLUMN_NAME");
             String columnType = columns.getString("TYPE_NAME");
 
-            column.setName(toCamelCase(columnName.toLowerCase()));
-            column.setReferencedColumn(columnName);
-            column.setType(language.getTypes().get(database.getTypes().get(columnType)));
-            column.setColumnType(columnType);
             listeCols.add(column);
+            column.setColumnType(columnType);
+            column.setReferencedColumn(columnName);
+            column.setName(toCamelCase(columnName.toLowerCase()));
+            column.setPrimaryType(database.getTypes().get(columnType));
+            column.setType(language.getTypes().get(database.getTypes().get(columnType)));
         }
 
         return listeCols;

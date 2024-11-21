@@ -14,9 +14,9 @@ public class ProjectGeneratorCLI {
     void generateProject() {
         var credentials = new Credentials()
                 .setHost("localhost")
-                .setDatabaseName("test_db")
-                .setUser("nomena")
-                .setPwd("root")
+                .setDatabaseName("post_db")
+                .setUser("postgres")
+                .setPwd("nikami")
                 .setPort("5432")
                 .setTrustCertificate(true)
                 .setUseSSL(true)

@@ -10,7 +10,8 @@ public class ColumnMetadata {
     private String type;
     private boolean primary;
     private boolean foreign;
-    private String referencedTable;
     private String columnType;
+    private String primaryType;
+    private String referencedTable;
     private String referencedColumn;
 }

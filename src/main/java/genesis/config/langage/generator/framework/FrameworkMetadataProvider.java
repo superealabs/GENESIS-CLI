@@ -47,13 +47,25 @@ public class FrameworkMetadataProvider {
         return metadata;
     }
 
-    public static List<String> getClassNameHashMap(TableMetadata[] tableMetadata) throws Exception {
+    public static List<String> getClassNameHashMap(TableMetadata[] tableMetadata) {
         List<String> fields = new ArrayList<>();
         for (TableMetadata tableMetadatum : tableMetadata) {
             fields.add(tableMetadatum.getClassName());
         }
 
         return fields;
+    }
+
+    public static List<String> getInputsList(TableMetadata tableMetadata,Editor editor) {
+        List<String> inputContents = new ArrayList<>();
+        Map<String, Object> updates = editor.getUpdate().getInput();
+        ColumnMetadata[] columnMetadata = tableMetadata.getColumns();
+
+        for (ColumnMetadata columnMetadatum : columnMetadata) {
+            inputContents.add(updates.get(columnMetadatum.getPrimaryType()).toString());
+        }
+
+        return inputContents;
     }
 
     public static HashMap<String, Object> getPrimaryModelHashMap(Framework framework, TableMetadata tableMetadata) {
@@ -285,6 +297,7 @@ public class FrameworkMetadataProvider {
     public static HashMap<String, Object> getAllListViewHashMap(Framework framework, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
         HashMap<String, Object> metadata = new HashMap<>();
 
+        List<String> updatesInput = getInputsList(tableMetadata, editor);
         HashMap<String, Object> fieldsMap = getPrimaryModelDaoHashMap(framework, tableMetadata);
         HashMap<String, Object> languageMetadata = getHashMapIntermediaire(tableMetadata, projectName, groupLink);
         HashMap<String, Object> primaryListViewHashMap = getListViewHashMap(editor, tableMetadata, projectName, groupLink);
@@ -292,6 +305,7 @@ public class FrameworkMetadataProvider {
         metadata.putAll(fieldsMap);
         metadata.putAll(languageMetadata);
         metadata.putAll(primaryListViewHashMap);
+        metadata.put("inputContents", updatesInput);
 
         return metadata;
     }

@@ -1,10 +1,7 @@
 package genesis.config.langage.generator.project;
 
 import genesis.config.Constantes;
-import genesis.config.langage.Editor;
-import genesis.config.langage.Framework;
-import genesis.config.langage.Language;
-import genesis.config.langage.Project;
+import genesis.config.langage.*;
 import genesis.config.langage.generator.framework.GenesisGenerator;
 import genesis.config.langage.generator.framework.MVCGenerator;
 import genesis.connexion.Credentials;

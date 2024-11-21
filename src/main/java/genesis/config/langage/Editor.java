@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -104,22 +105,16 @@ public class Editor {
     @Setter
     @ToString
     public static class Insert {
-        private List<Input> input;
+        private Map<String, Object> input;
+        private String select;
     }
 
     @Getter
     @Setter
     @ToString
     public static class Update {
-        private List<Input> input;
-    }
-
-    @Getter
-    @Setter
-    @ToString
-    public static class Input {
-        private String inputType;
-        private String inputContent;
+        private Map<String, Object> input;
+        private String select;
     }
 
 }
