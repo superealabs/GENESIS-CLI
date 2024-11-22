@@ -41,7 +41,7 @@ public class ProjectGeneratorHandler {
         System.out.println("\n** Welcome to the GENESIS-CLI ** \n\n Let's get started 🚀\n");
 
         try (Scanner scanner = new Scanner(System.in)) {
-            // INITIALISATION
+            // INITIALISATION ////////
             String projectName = getNonEmptyInput(scanner, "Enter the project name");
             int languageId = getLanguageSelection(scanner);
             Language language = ProjectGenerator.languages.get(languageId);
@@ -56,6 +56,8 @@ public class ProjectGeneratorHandler {
             // TYPE DE PROJET
             int frameworkId = getFrameworkSelection(scanner, language, baseFramework);
             Framework framework = ProjectGenerator.frameworks.get(frameworkId);
+
+            /////////////////////////
 
             // CONFIGURATION DE LA BASE DE DONNÉES
             int databaseId;
@@ -86,7 +88,9 @@ public class ProjectGeneratorHandler {
                 // OPTION POUR GÉNÉRER LA STRUCTURE DU PROJET OU PAS
                 generateProjectStructure = getGenerateProjectStructureOption(scanner);
             }
+            /////////////////////////
 
+            // CONFIGURATION PERSONNALISÉES
             String projectPort = null;
             String projectDescription = null;
             HashMap<String, Object> frameworkConfiguration = new HashMap<>();
@@ -97,7 +101,6 @@ public class ProjectGeneratorHandler {
                     groupLink = getNonEmptyInput(scanner, "Enter the group link");
 
 
-                // CONFIGURATION PERSONNALISÉES
                 projectPort = getValidPort(scanner);
                 projectDescription = getNonEmptyInput(scanner, "Enter the project description");
 
@@ -115,6 +118,8 @@ public class ProjectGeneratorHandler {
                 if (useEurekaServer)
                     frameworkConfiguration.putAll(configureFrameworkWithEureka(scanner, framework));
             }
+            /////////////////////////
+
 
             // FIN PARCOURS
             projectGenerator.generateProject(
