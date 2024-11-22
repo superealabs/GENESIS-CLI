@@ -2,13 +2,6 @@
   langageId: 1
   name: "Spring MVC"
   template: "Template"
-  projectNameTags:
-    - "[projectNameMaj]/settings.gradle"
-    - "[projectNameMaj]/src/main/resources/templates/layout/layout.html"
-    - "[projectNameMaj]/src/main/resources/templates/login.html"
-    - "[projectNameMaj]/src/main/resources/application.properties"
-    - "[projectNameMaj]/src/main/java/com/controllers/LoginController.java"
-    - "[projectNameMaj]/src/main/java/com/controllers/HelloController.java"
   additionalFiles: [ ]
   dependencies:
     - groupId: "org.springframework.boot"
@@ -179,13 +172,6 @@
       {{tab}}    return "#{lowerCase(classNameLink)}/create-#{lowerCase(className)}";
       {{tab}}}
       
-      {{tab}}@GetMapping("/{id}")
-      {{tab}}public String get#{majStart(className)}ById(@PathVariable #{pkColumnType} id, Model model) {
-      {{tab}}    #{majStart(className)} #{lowerCase(className)} = #{lowerCase(className)}Service.get#{majStart(className)}ById(id);
-      {{tab}}    model.addAttribute("#{lowerCase(className)}", #{lowerCase(className)});
-      {{tab}}    return "#{lowerCase(classNameLink)}/view-list-#{lowerCase(className)}";
-      {{tab}}}
-      
       {{tab}}@PostMapping
       {{tab}}public String create#{majStart(className)}(@RequestBody #{majStart(className)} #{lowerCase(className)}, Model model) {
       {{tab}}    #{majStart(className)} new#{majStart(className)} = #{lowerCase(className)}Service.create#{majStart(className)}(#{lowerCase(className)});
@@ -193,14 +179,14 @@
       {{tab}}    return "#{lowerCase(classNameLink)}/list-#{lowerCase(className)}";
       {{tab}}}
       
-      {{tab}}@PutMapping("/{id}")
+      {{tab}}@PostMapping("/{id}")
       {{tab}}public String update#{majStart(className)}(@PathVariable #{pkColumnType} id, @RequestBody #{majStart(className)} #{lowerCase(className)}, Model model) {
       {{tab}}    #{majStart(className)} update#{majStart(className)} = #{lowerCase(className)}Service.update#{majStart(className)}(id, #{lowerCase(className)});
       {{tab}}    model.addAttribute("update#{majStart(className)}", update#{majStart(className)});
       {{tab}}    return "#{lowerCase(classNameLink)}/list-#{lowerCase(className)}";
       {{tab}}}
       
-      {{tab}}@DeleteMapping("/{id}")
+      {{tab}}@PostMapping("/{id}/delete")
       {{tab}}public String delete#{majStart(className)}ById(@PathVariable #{pkColumnType} id, Model model) {
       {{tab}}    #{lowerCase(className)}Service.delete#{majStart(className)}(id);
       {{tab}}    model.addAttribute("message", "#{majStart(className)} deleted successfully");

@@ -104,6 +104,9 @@
       dataCancelValidationButton: "th:id=\"'cancel_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
       dataDeleteEventButton: "th:id=\"'deleteEvent_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
       dataValidateValidationButton: "th:id=\"'confirm_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
+      #
+      formUpdateLink: "th:action=\"@{/#{lowerCase(classNameLink)}/{id} (id=${#{lowerCase(className)}.#{pkColumnName}})}\""
+      formDeleteLink: "th:action=\"@{/#{lowerCase(classNameLink)}/{id}/delete (id=${#{lowerCase(className)}.#{pkColumnName}})}\""
   insert:
     input:
       date: |

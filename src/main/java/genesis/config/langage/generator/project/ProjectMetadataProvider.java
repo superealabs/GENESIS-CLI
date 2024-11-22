@@ -167,6 +167,9 @@ public class ProjectMetadataProvider {
         altMap.put("dataCancelValidationButton", editor.getLayout().getTableLoop().getDataModificationTitleModal());
         altMap.put("dataValidateValidationButton", editor.getLayout().getTableLoop().getDataModificationTitleModal());
 
+        altMap.put("formUpdateLink", editor.getLayout().getTableLoop().getFormUpdateLink());
+        altMap.put("formDeleteLink", editor.getLayout().getTableLoop().getFormDeleteLink());
+
         return altMap;
     }
 }

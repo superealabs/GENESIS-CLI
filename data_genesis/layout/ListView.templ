@@ -65,7 +65,7 @@
                                                         </div>
                                                         <div class="modal-body">
                                                             <!-- Select entity modification form -->
-                                                            <form th:action="'/update#{majStart(className)}?indice_actu='+${indice_actu}" method="post">
+                                                            <form $[formUpdateLink] method="post">
                                                             <div class="row">
                                                                 <div class="log-lg-3 col-md-6 order-0">
                                                                     {{#each inputContents}}
@@ -73,98 +73,64 @@
                                                                     {{/each}}{{removeLine}}
                                                                     {{removeLine}}
                                                                 </div>
-                                                                <div class="log-lg-3 col-md-6 order-1">
-                                                                    <div class="mt-0">
-                                                                       <!-- Button trigger modal -->
-                                                                       <button
-                                                                           type="button"
-                                                                           class="btn btn-success"
-                                                                           data-bs-toggle="modal"
-                                                                           $[dataValidationButton]
-                                                                       >
-                                                                           <i class="bx bx-check"></i> Confirm
-                                                                       </button>
-
-                                                                       <!-- Modal -->
-                                                                       <div class="modal fade" $[dataValidationId]
-                                                                            tabindex="-1"
-                                                                            aria-hidden="true">
-                                                                           <div class="modal-dialog modal-dialog-centered modal-lg"
-                                                                                role="document">
-                                                                               <div class="modal-content">
-                                                                                   <div class="modal-header">
-                                                                                       <h3 class="modal-title" $[dataValidationTitleModal]>
-                                                                                           Confirm</h3>
-                                                                                       <button
-                                                                                               type="button"
-                                                                                               class="btn-close"
-                                                                                               data-bs-dismiss="modal"
-                                                                                               aria-label="close"
-                                                                                       ></button>
-                                                                                   </div>
-                                                                                   <div class="modal-body">
-                                                                                       <p>Do you want to validate the changes to this element?</p>
-                                                                                       <button type="button" $[dataCancelValidationButton]
-                                                                                               class="btn btn-secondary">Cancel
-                                                                                       </button>
-                                                                                       <button type="button" $[dataValidateValidationButton]
-                                                                                               class="btn btn-success">Confirm
-                                                                                       </button>
-                                                                                   </div>
-                                                                               </div>
-                                                                           </div>
-                                                                       </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-lg-3 offset-1 col-md-2 order-2">
-                                                                    <div class="mt-0">
-                                                                       <!-- Button trigger modal -->
-                                                                       <button
-                                                                               type="button"
-                                                                               class="btn btn-danger"
-                                                                               data-bs-toggle="modal"
-                                                                               $[dataCancelButton]
-                                                                       >
-                                                                           <i class="bx bx-trash"></i> Cancel
-                                                                       </button>
-
-                                                                       <!-- Modal -->
-                                                                       <div class="modal fade" $[dataCancelId]
-                                                                            tabindex="-1"
-                                                                            aria-hidden="true">
-                                                                           <div class="modal-dialog modal-dialog-centered modal-lg"
-                                                                                role="document">
-                                                                               <div class="modal-content">
-                                                                                   <div class="modal-header">
-                                                                                       <h3 class="modal-title" $[dataCancelTitleModal]>
-                                                                                           Cancellation</h3>
-                                                                                       <button
-                                                                                               type="button"
-                                                                                               class="btn-close"
-                                                                                               data-bs-dismiss="modal"
-                                                                                               aria-label="close"
-                                                                                       ></button>
-                                                                                   </div>
-                                                                                   <div class="modal-body">
-                                                                                       <p>Do you want to undo the changes made to this element?</p>
-                                                                                       <button type="button" $[dataEditEventButton]
-                                                                                               class="btn btn-secondary">Keep the changes
-                                                                                       </button>
-                                                                                       <button type="button" $[dataDeleteEventButton]
-                                                                                               class="btn btn-danger">Cancel
-                                                                                       </button>
-                                                                                   </div>
-                                                                               </div>
-                                                                           </div>
-                                                                       </div>
-                                                                    </div>
-                                                                </div>
+                                                                <button type="submit" class="btn btn-primary">Confirm
+                                                                </button>
                                                             </div>
                                                             </form>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="align-middle">
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-2 order-0">
+                                        <div class="mt-0">
+                                           <!-- Button trigger modal -->
+                                           <button
+                                                   type="button"
+                                                   class="btn btn-danger"
+                                                   data-bs-toggle="modal"
+                                                   $[dataCancelButton]
+                                           >
+                                               <i class="bx bx-trash"></i> Delete
+                                           </button>
+
+                                           <!-- Modal -->
+                                           <div class="modal fade" $[dataCancelId]
+                                                tabindex="-1"
+                                                aria-hidden="true">
+                                               <div class="modal-dialog modal-dialog-centered modal-lg"
+                                                    role="document">
+                                                   <div class="modal-content">
+                                                       <div class="modal-header">
+                                                           <h3 class="modal-title" $[dataCancelTitleModal]>
+                                                               Cancellation</h3>
+                                                           <button
+                                                                   type="button"
+                                                                   class="btn-close"
+                                                                   data-bs-dismiss="modal"
+                                                                   aria-label="close"
+                                                           ></button>
+                                                       </div>
+                                                       <div class="modal-body">
+                                                           <!-- Select entity modification form -->
+                                                           <form $[formDeleteLink] method="post">
+                                                           <div class="row">
+                                                               <div class="log-lg-3 col-md-6 order-0">
+                                                                    <p>Do you want to undo the changes made to this element?</p>
+                                                               </div>
+                                                               <button type="submit" class="btn btn-danger">Delete
+                                                               </button>
+                                                           </div>
+                                                           </form>
+                                                       </div>
+                                                   </div>
+                                               </div>
+                                           </div>
                                         </div>
                                     </div>
                                 </div>

@@ -89,6 +89,9 @@ public class Editor {
         private String dataDeleteEventButton;
         private String dataCancelValidationButton;
         private String dataValidateValidationButton;
+
+        private String formUpdateLink;
+        private String formDeleteLink;
     }
 
     @Getter
