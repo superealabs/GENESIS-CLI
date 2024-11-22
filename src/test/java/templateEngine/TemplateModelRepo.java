@@ -648,41 +648,12 @@ public class TemplateModelRepo {
                                \s
                       {{tab}}@GetMapping
                       {{tab}}public String getAll#{majStart(classNameLink)}(Model model) #{bracketStart}
-                      {{tab}}    List<#{majStart(className)}> #{lowerCase(classNameLink)} = #{lowerCase(className)}Service.getAll#{majStart(className)}();
+                      {{tab 4}}List<#{majStart(className)}> #{lowerCase(classNameLink)} = #{lowerCase(className)}Service.getAll#{majStart(className)}();
                       {{tab}}    model.addAttribute("#{lowerCase(classNameLink)}", #{lowerCase(classNameLink)});
                       {{tab}}    return "#{lowerCase(classNameLink)}/list-#{lowerCase(className)}";
                       {{tab}}#{bracketEnd}
                                \s
-                      {{tab}}@GetMapping("/{id}")
-                      {{tab}}public String get#{majStart(className)}ById(#{pathVariableKeyword} Long id, Model model) #{bracketStart}
-                      {{tab}}     #{majStart(className)} #{lowerCase(className)} = #{lowerCase(className)}Service.get#{majStart(className)}ById(id);
-                      {{tab}}     model.addAttribute("#{lowerCase(className)}", #{lowerCase(className)});
-                      {{tab}}     return "#{lowerCase(classNameLink)}/view-list-#{lowerCase(className)}";
-                      {{tab}}#{bracketEnd}
-                               \s
-                      {{tab}}@PostMapping
-                      {{tab}}public String create#{majStart(className)}(#{modelAttributeKeyword} #{majStart(className)} #{lowerCase(className)}, Model model) #{bracketStart}
-                      {{tab}}     #{majStart(className)} new#{majStart(className)} = #{lowerCase(className)}Service.create#{majStart(className)}(#{lowerCase(className)});
-                      {{tab}}     model.addAttribute("new#{majStart(className)}", new#{majStart(className)});
-                      {{tab}}     return "#{lowerCase(classNameLink)}/create-list-#{lowerCase(className)}";
-                      {{tab}}#{bracketEnd}
-                            \s
-                      {{tab}}@PutMapping("/{id}")
-                      {{tab}}public String update#{majStart(className)}(#{pathVariableKeyword} Long id, #{modelAttributeKeyword} #{majStart(className)} #{lowerCase(className)}, Model model) #{bracketStart}
-                      {{tab}}     #{majStart(className)} update#{majStart(className)} = #{lowerCase(className)}Service.update#{majStart(className)}(id, #{lowerCase(className)});
-                      {{tab}}     model.addAttribute("update#{majStart(className)}", update#{majStart(className)});
-                      {{tab}}     return "#{lowerCase(classNameLink)}/update-list-#{lowerCase(className)}";
-                      {{tab}}#{bracketEnd}
-                               \s
-                      {{tab}}@DeleteMapping("/{id}")
-                      {{tab}}public String delete#{majStart(className)}ById(#{pathVariableKeyword} Long id, Model model) #{bracketStart}
-                      {{tab}}     #{lowerCase(className)}Service.delete#{majStart(className)}(id);
-                      {{tab}}     model.addAttribute("message", "#{majStart(className)} deleted successfully");
-                      {{tab}}     return "redirect:/#{lowerCase(classNameLink)}";
-                      {{tab}}#{bracketEnd}
-                               \s
-                      #{bracketEnd}
-                      #{namespaceEnd}
+                   
                 \s""";
 
         HashMap<String, Object> metadata = getHashMapController();

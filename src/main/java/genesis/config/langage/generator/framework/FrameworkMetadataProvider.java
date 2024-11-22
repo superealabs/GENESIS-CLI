@@ -56,13 +56,16 @@ public class FrameworkMetadataProvider {
         return fields;
     }
 
-    public static List<String> getInputsList(TableMetadata tableMetadata,Editor editor) {
+    public static List<String> getUpdateInputsList(TableMetadata tableMetadata,Editor editor) throws Exception {
         List<String> inputContents = new ArrayList<>();
         Map<String, Object> updates = editor.getUpdate().getInput();
         ColumnMetadata[] columnMetadata = tableMetadata.getColumns();
 
         for (ColumnMetadata columnMetadatum : columnMetadata) {
-            inputContents.add(updates.get(columnMetadatum.getPrimaryType()).toString());
+            if (!columnMetadatum.isPrimary()) {
+                String updatesInput = engine.render(updates.get(columnMetadatum.getPrimaryType()).toString(), Map.of("fieldName", columnMetadatum.getName()));
+                inputContents.add(updatesInput);
+            }
         }
 
         return inputContents;
@@ -297,7 +300,7 @@ public class FrameworkMetadataProvider {
     public static HashMap<String, Object> getAllListViewHashMap(Framework framework, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
         HashMap<String, Object> metadata = new HashMap<>();
 
-        List<String> updatesInput = getInputsList(tableMetadata, editor);
+        List<String> updatesInput = getUpdateInputsList(tableMetadata, editor);
         HashMap<String, Object> fieldsMap = getPrimaryModelDaoHashMap(framework, tableMetadata);
         HashMap<String, Object> languageMetadata = getHashMapIntermediaire(tableMetadata, projectName, groupLink);
         HashMap<String, Object> primaryListViewHashMap = getListViewHashMap(editor, tableMetadata, projectName, groupLink);

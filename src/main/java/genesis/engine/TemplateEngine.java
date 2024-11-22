@@ -26,6 +26,7 @@ public class TemplateEngine {
     private static final String VARIABLE_PLACEHOLDER_SUFFIX_ALT = "]";
 
     private static final String TAB_TAG = "{{tab}}";
+    private static final String START_TAB_TAG = "{{tab";
     private static final String NEWLINE_TAG = "{{newline}}";
     private static final String REMOVE_LINE_TAG = "{{removeLine}}";
     private static final String START_COMMENTARY_TAG = "<#";
@@ -48,10 +49,6 @@ public class TemplateEngine {
     }
 
     public String simpleRender(String template, Map<String, Object> variables) {
-        return getSimpleRenderedTemplate(template, VARIABLE_PLACEHOLDER_PREFIX, VARIABLE_PLACEHOLDER_SUFFIX, variables);
-    }
-
-    private @NotNull String getSimpleRenderedTemplate(String template, String variablePlaceholderPrefix, String variablePlaceholderSuffix, Map<String, Object> variables) {
         if (template == null || template.isEmpty()) {
             throw new IllegalArgumentException("The template must not be empty.");
         }
@@ -59,8 +56,8 @@ public class TemplateEngine {
         StringBuilder result = new StringBuilder(template);
 
         int start = 0;
-        while ((start = result.indexOf(variablePlaceholderPrefix, start)) != -1) {
-            int end = result.indexOf(variablePlaceholderSuffix, start);
+        while ((start = result.indexOf(VARIABLE_PLACEHOLDER_PREFIX, start)) != -1) {
+            int end = result.indexOf(VARIABLE_PLACEHOLDER_SUFFIX, start);
             if (end == -1) break;
 
             String placeholder = result.substring(start + VARIABLE_PLACEHOLDER_PREFIX.length(), end).trim();
@@ -74,8 +71,27 @@ public class TemplateEngine {
     }
 
     public String altSimpleRender(String template, Map<String, Object> variables) {
-        return getSimpleRenderedTemplate(template, VARIABLE_PLACEHOLDER_PREFIX_ALT, VARIABLE_PLACEHOLDER_SUFFIX_ALT, variables);
+        if (template == null || template.isEmpty()) {
+            throw new IllegalArgumentException("The template must not be empty.");
+        }
+
+        StringBuilder result = new StringBuilder(template);
+
+        int start = 0;
+        while ((start = result.indexOf(VARIABLE_PLACEHOLDER_PREFIX_ALT, start)) != -1) {
+            int end = result.indexOf(VARIABLE_PLACEHOLDER_SUFFIX_ALT, start);
+            if (end == -1) break;
+
+            String placeholder = result.substring(start + VARIABLE_PLACEHOLDER_PREFIX_ALT.length(), end).trim();
+            String value = evaluatePlaceholderSimple(placeholder, variables);
+            result.replace(start, end + VARIABLE_PLACEHOLDER_SUFFIX_ALT.length(), value);
+
+            start += value.length();
+        }
+
+        return result.toString();
     }
+
 
     private String evaluatePlaceholderSimple(String placeholder, Map<String, Object> variables) {
         int funcStart = placeholder.indexOf(FUNCTION_OPEN_PARENTHESIS);
@@ -120,6 +136,7 @@ public class TemplateEngine {
         processSpecialTags(result);
 
         restoreComments(result);
+        dropCommentary(result);
 
         return result.toString();
     }
@@ -139,6 +156,11 @@ public class TemplateEngine {
             template.replace(startIndex, endIndex, marker);
             startIndex += marker.length();
         }
+    }
+
+    public void dropCommentary(StringBuilder template) {
+        replaceAllOccurrences(template, START_COMMENTARY_TAG, "");
+        replaceAllOccurrences(template, END_COMMENTARY_TAG, "");
     }
 
     private void restoreComments(StringBuilder template) {
@@ -167,8 +189,23 @@ public class TemplateEngine {
     }
 
     private LoopInfo extractLoopInfo(StringBuilder template, int start) throws Exception {
-        int loopEndIdx = template.indexOf(LOOP_END, start);
+        int loopEndIdx = -1;
+        int nestedCount = 0;
+
+        for (int i = start; i < template.length(); i++) {
+            if (template.substring(i).startsWith(LOOP_START)) {
+                nestedCount++;
+            } else if (template.substring(i).startsWith(LOOP_END)) {
+                nestedCount--;
+                if (nestedCount == 0) {
+                    loopEndIdx = i;
+                    break;
+                }
+            }
+        }
+
         if (loopEndIdx == -1) {
+            System.out.println("Template: " + template.toString());
             throw new Exception("Loop end tag not found.");
         }
 
@@ -184,40 +221,74 @@ public class TemplateEngine {
         return new LoopInfo(loopVarName, loopContent, start);
     }
 
-    @SuppressWarnings("unchecked")
+
     private void processLoopContent(StringBuilder template, LoopInfo loopInfo, Map<String, Object> variables) throws Exception {
         String loopVarName = loopInfo.loopVarName();
         String loopContent = loopInfo.loopContent();
         int start = loopInfo.start();
 
-        List<?> loopVar = (List<?>) variables.get(loopVarName);
-        if (loopVar == null) {
-            return;
+        Object loopVar = variables.get(loopVarName);
+        if (!(loopVar instanceof List<?> loopList)) {
+            return; // Ignore if loop variable is not a List
         }
 
         StringBuilder loopResult = new StringBuilder();
-        for (int i = 0; i < loopVar.size(); i++) {
-            Object item = loopVar.get(i);
+
+        for (int i = 0; i < loopList.size(); i++) {
+            Object item = loopList.get(i);
             Map<String, Object> loopVariables = new HashMap<>(variables);
 
+            // Ajouter directement l'élément actuel sous `this`
+            loopVariables.put(LOOP_ITEM, item);
+
+            // Ne stocker que les valeurs sous 'this' et pas toute la structure de l'objet
             if (item instanceof Map) {
                 Map<String, Object> itemMap = (Map<String, Object>) item;
                 for (Map.Entry<String, Object> entry : itemMap.entrySet()) {
                     loopVariables.put(LOOP_ITEM + "." + entry.getKey(), entry.getValue());
                 }
-            } else {
-                loopVariables.put(LOOP_ITEM, item);
             }
 
             loopVariables.put(LOOP_INDEX, i);
             loopVariables.put(IS_LOOP_FIRST_INDEX, (i == 0));
-            loopVariables.put(IS_LOOP_LAST_INDEX, (i == loopVar.size() - 1));
+            loopVariables.put(IS_LOOP_LAST_INDEX, (i == loopList.size() - 1));
 
+            // Recursive rendering for nested structures
             String renderedContent = render(loopContent, loopVariables).stripLeading();
             loopResult.append(renderedContent);
         }
 
         template.insert(start, loopResult);
+    }
+
+
+
+    @SuppressWarnings("unchecked")
+    private static @NotNull Map<String, Object> getLoopMap(Map<String, Object> variables, List<?> loopList, int i) {
+        Object item = loopList.get(i);
+        Map<String, Object> loopVariables = new HashMap<>(variables);
+
+        if (item instanceof Map) {
+            Map<String, Object> itemMap = (Map<String, Object>) item;
+
+            for (Map.Entry<String, Object> entry : itemMap.entrySet()) {
+                Object value = entry.getValue();
+
+                if (value instanceof List) {
+                    // Support imbriqué
+                    loopVariables.put(entry.getKey(), value);
+                } else {
+                    loopVariables.put(LOOP_ITEM + "." + entry.getKey(), value);
+                }
+            }
+        } else {
+            loopVariables.put(LOOP_ITEM, item);
+        }
+
+        loopVariables.put(LOOP_INDEX, i);
+        loopVariables.put(IS_LOOP_FIRST_INDEX, (i == 0));
+        loopVariables.put(IS_LOOP_LAST_INDEX, (i == loopList.size() - 1));
+        return loopVariables;
     }
 
 
@@ -228,7 +299,6 @@ public class TemplateEngine {
             if (ifEndIdx == -1) break;
 
             String condition = extractCondition(template, start);
-
             int contentStartIdx = findContentStartIdx(template, start);
 
             StringBuilder resultContent = new StringBuilder();
@@ -371,12 +441,15 @@ public class TemplateEngine {
     }
 
     private boolean evaluateCondition(String condition, Map<String, Object> variables) throws Exception {
+
         condition = condition.trim();
+
 
         if (condition.startsWith("!")) {
             String innerCondition = condition.substring(1).trim();
             return !evaluateCondition(innerCondition, variables);
         }
+
 
         return evaluateCompositeCondition(condition, variables);
     }
@@ -405,6 +478,7 @@ public class TemplateEngine {
 
 
     private boolean evaluateSimpleCondition(String condition, Map<String, Object> variables) throws Exception {
+
         if ("true".equalsIgnoreCase(condition)) {
             return true;
         }
@@ -419,33 +493,44 @@ public class TemplateEngine {
             } else {
                 throw new Exception("Variable '@last' is not a boolean.");
             }
-        }
-
-        if (condition.contains("=")) {
-            String[] parts = condition.split("=");
-            if (parts.length != 2) {
-                throw new Exception("Invalid condition format: " + condition);
+        } else {
+            Object conditionValue = variables.get(condition);
+            if (conditionValue == null) {
+                return false;
             }
-
-            String leftVar = parts[0].trim();
-            String rightVar = parts[1].trim();
-
-            Object leftValue = variables.get(leftVar);
-            Object rightValue = variables.get(rightVar);
-
-            return (leftValue == null && rightValue == null) || (leftValue != null && leftValue.equals(rightValue));
+            return conditionValue instanceof Boolean && (Boolean) conditionValue;
         }
-
-        Object conditionValue = variables.get(condition);
-        if (conditionValue == null) {
-            return false;
-        }
-        return conditionValue instanceof Boolean && (Boolean) conditionValue;
     }
 
     private void processSpecialTags(StringBuilder template) {
         replaceAllOccurrences(template, NEWLINE_TAG, "\n");
         replaceAllOccurrences(template, TAB_TAG, "\t");
+
+        int tabTagIndex;
+        while ((tabTagIndex = template.indexOf(START_TAB_TAG)) != -1) {
+            int start = tabTagIndex + START_TAB_TAG.length();
+            int end = template.indexOf(BLOCK_END, start);
+
+            if (end != -1) {
+                String tabCountString = template.substring(start, end).trim();
+
+                try {
+                    // Convertir la valeur en entier
+                    int tabCount = Integer.parseInt(tabCountString);
+
+                    // Générer les tabulations
+                    String tabs = "\t".repeat(Math.max(0, tabCount));
+
+                    // Remplacer le tag entier par les tabulations générées
+                    template.replace(tabTagIndex, end + BLOCK_END.length(), tabs);
+                } catch (NumberFormatException e) {
+                    // Si la conversion échoue, ignorer et supprimer le tag
+                    template.replace(tabTagIndex, end + BLOCK_END.length(), "");
+                }
+            } else {
+                break; // Tag mal formé, sortir de la boucle
+            }
+        }
 
         // Supprimer les lignes contenant le tag {{removeLine}}
         int start;
@@ -465,11 +550,6 @@ public class TemplateEngine {
 
             template.delete(lineStart, lineEnd + 1);
         }
-    }
-
-    public void dropCommentary(StringBuilder template) {
-        replaceAllOccurrences(template, START_COMMENTARY_TAG, "");
-        replaceAllOccurrences(template, END_COMMENTARY_TAG, "");
     }
 
     private record LoopInfo(String loopVarName, String loopContent, int start) {
