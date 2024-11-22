@@ -4,7 +4,7 @@ import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
-import genesis.engine.TemplateEngine;
+import genesis.engine.GenesisTemplateEngine;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TemplateModelRepo {
-    final TemplateEngine engine = new TemplateEngine();
+    final GenesisTemplateEngine engine = new GenesisTemplateEngine();
     final String templatePrimary = FileUtils.getFileContent("data_genesis/Template.templ");
 
     public TemplateModelRepo() throws FileNotFoundException {
@@ -650,7 +650,7 @@ public class TemplateModelRepo {
 
     @Test
     void elseIf() throws Exception {
-        TemplateEngine engine = new TemplateEngine();
+        GenesisTemplateEngine engine = new GenesisTemplateEngine();
 
         String template = """
                 {{#if isAdult}}
@@ -675,7 +675,7 @@ public class TemplateModelRepo {
 
     @Test
     void dbContext() throws Exception {
-        TemplateEngine engine = new TemplateEngine();
+        GenesisTemplateEngine engine = new GenesisTemplateEngine();
 
         String template = """
                 using Microsoft.EntityFrameworkCore;
@@ -711,7 +711,7 @@ public class TemplateModelRepo {
 
     @Test
     void loopTest() throws Exception {
-        TemplateEngine engine = new TemplateEngine();
+        GenesisTemplateEngine engine = new GenesisTemplateEngine();
         String template = "Liste des éléments :\n{{#each items}}\n- ${this}\n{{/each}}";
 
         Map<String, Object> variables = new HashMap<>();

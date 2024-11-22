@@ -4,7 +4,7 @@ import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
-import genesis.engine.TemplateEngine;
+import genesis.engine.GenesisTemplateEngine;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ProjectMetadataProvider {
-    private static final TemplateEngine engine = new TemplateEngine();
+    private static final GenesisTemplateEngine engine = new GenesisTemplateEngine();
 
     static HashMap<String, Object> getInitialHashMap(String destinationFolder, String projectName, String groupLink) {
         HashMap<String, Object> metadata = new HashMap<>();

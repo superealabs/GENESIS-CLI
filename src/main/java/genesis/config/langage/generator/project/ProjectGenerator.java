@@ -10,7 +10,7 @@ import genesis.config.langage.generator.framework.GenesisGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.connexion.model.TableMetadata;
-import genesis.engine.TemplateEngine;
+import genesis.engine.GenesisTemplateEngine;
 import utils.FileUtils;
 
 import java.io.IOException;
@@ -32,11 +32,11 @@ public class ProjectGenerator {
     public static final Map<Integer, Database> databases;
     public static final Map<Integer, Language> languages;
     public static final Map<Integer, Framework> frameworks;
-    public static final TemplateEngine engine;
+    public static final GenesisTemplateEngine engine;
 
     static {
         try {
-            engine = new TemplateEngine();
+            engine = new GenesisTemplateEngine();
 
             databases = Arrays.stream(FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON)))
                     .collect(Collectors.toMap(Database::getId, database -> database));

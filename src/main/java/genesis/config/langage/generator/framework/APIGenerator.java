@@ -5,7 +5,7 @@ import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.config.langage.generator.project.ProjectGenerator;
 import genesis.connexion.model.TableMetadata;
-import genesis.engine.TemplateEngine;
+import genesis.engine.GenesisTemplateEngine;
 import utils.FileUtils;
 
 import java.io.IOException;
@@ -14,14 +14,14 @@ import java.util.HashMap;
 import static genesis.config.langage.generator.framework.FrameworkMetadataProvider.*;
 
 public class APIGenerator implements GenesisGenerator {
-    private final TemplateEngine engine;
+    private final GenesisTemplateEngine engine;
 
-    public APIGenerator(TemplateEngine engine) {
+    public APIGenerator(GenesisTemplateEngine engine) {
         this.engine = engine;
     }
 
     public APIGenerator() {
-        this.engine = new TemplateEngine();
+        this.engine = new GenesisTemplateEngine();
     }
 
 
