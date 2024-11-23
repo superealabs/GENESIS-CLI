@@ -8,7 +8,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@ToString
 public class Project {
     private int id;
     private String name;
@@ -17,6 +16,10 @@ public class Project {
     private List<ProjectFolders> projectFolders;
     private List<FilesEdit> projectFilesEdits;
 
+    @Override
+    public String toString() {
+        return this.name;
+    }
     @Getter
     @Setter
     @ToString

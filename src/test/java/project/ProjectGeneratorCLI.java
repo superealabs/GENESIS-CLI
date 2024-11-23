@@ -2,6 +2,7 @@ package project;
 
 import genesis.config.Constantes;
 import genesis.config.langage.generator.project.ProjectGenerator;
+import handler.ProjectGenerationContext;
 import handler.ProjectGeneratorHandler;
 import genesis.connexion.Credentials;
 import org.junit.jupiter.api.Test;
@@ -50,7 +51,7 @@ public class ProjectGeneratorCLI {
             String projectDescription = "Test Project";
             String frameworkVersion = "3.3.5";
             String languageVersion = "21";
-            String destinationFolder = "/Users/nomena/STAGE/GENESIS/sample-projects";
+            String destinationFolder = "/Users/nomena/STAGE/GENESIS/sample-projects/enfin";
 
             ProjectGenerator projectGenerator = new ProjectGenerator();
 
@@ -72,24 +73,24 @@ public class ProjectGeneratorCLI {
             List<String> generationOptions = List.of("Model", "DAO", "Service", "Controller");
             List<String> entityNames = new ArrayList<>();
 
-            projectGenerator.generateProject(
-                    database,
-                    language,
-                    framework,
-                    project,
-                    credentials,
-                    destinationFolder,
-                    projectName,
-                    groupLink,
-                    projectPort,
-                    projectDescription,
-                    languageConfiguration,
-                    frameworkConfiguration,
-                    entityNames,
-                    null,
-                    generationOptions,
-                    true
-            );
+            ProjectGenerationContext context = new ProjectGenerationContext();
+            context.setDatabase(database);
+            context.setLanguage(language);
+            context.setFramework(framework);
+            context.setProject(project);
+            context.setCredentials(credentials);
+            context.setDestinationFolder(destinationFolder);
+            context.setProjectName(projectName);
+            context.setGroupLink(groupLink);
+            context.setProjectPort(projectPort);
+            context.setProjectDescription(projectDescription);
+            context.setLanguageConfiguration(languageConfiguration);
+            context.setFrameworkConfiguration(frameworkConfiguration);
+            context.setEntityNames(entityNames);
+            context.setGenerationOptions(generationOptions);
+            context.setGenerateProjectStructure(true);
+
+            projectGenerator.generateProject(context);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -143,21 +144,22 @@ public class ProjectGeneratorCLI {
             HashMap<String, Object> languageConfiguration = new HashMap<>();
             frameworkConfiguration.put("languageVersion", languageVersion);
 
-            projectGenerator.generateProject(
-                    database,
-                    language,
-                    framework,
-                    project,
-                    credentials,
-                    destinationFolder,
-                    projectName,
-                    groupLink,
-                    projectPort,
-                    projectDescription,
-                    languageConfiguration,
-                    frameworkConfiguration,
-                    null
-            );
+            ProjectGenerationContext context = new ProjectGenerationContext();
+            context.setDatabase(database);
+            context.setLanguage(language);
+            context.setFramework(framework);
+            context.setProject(project);
+            context.setCredentials(credentials);
+            context.setDestinationFolder(destinationFolder);
+            context.setProjectName(projectName);
+            context.setGroupLink(groupLink);
+            context.setProjectPort(projectPort);
+            context.setProjectDescription(projectDescription);
+            context.setLanguageConfiguration(languageConfiguration);
+            context.setFrameworkConfiguration(frameworkConfiguration);
+
+            projectGenerator.generateProject(context);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -195,21 +197,20 @@ public class ProjectGeneratorCLI {
             HashMap<String, Object> languageConfiguration = new HashMap<>();
             languageConfiguration.put("languageVersion", languageVersion);
 
-            projectGenerator.generateProject(
-                    null,
-                    language,
-                    framework,
-                    project,
-                    null,
-                    destinationFolder,
-                    projectName,
-                    groupLink,
-                    projectPort,
-                    projectDescription,
-                    languageConfiguration,
-                    frameworkConfiguration,
-                    null
-            );
+            ProjectGenerationContext context = new ProjectGenerationContext();
+            context.setLanguage(language);
+            context.setFramework(framework);
+            context.setProject(project);
+            context.setDestinationFolder(destinationFolder);
+            context.setProjectName(projectName);
+            context.setGroupLink(groupLink);
+            context.setProjectPort(projectPort);
+            context.setProjectDescription(projectDescription);
+            context.setLanguageConfiguration(languageConfiguration);
+            context.setFrameworkConfiguration(frameworkConfiguration);
+
+            projectGenerator.generateProject(context);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -269,21 +270,20 @@ public class ProjectGeneratorCLI {
             HashMap<String, Object> languageConfiguration = new HashMap<>();
             languageConfiguration.put("languageVersion", languageVersion);
 
-            projectGenerator.generateProject(
-                    null,
-                    language,
-                    framework,
-                    project,
-                    null,
-                    destinationFolder,
-                    projectName,
-                    groupLink,
-                    projectPort,
-                    projectDescription,
-                    languageConfiguration,
-                    frameworkConfiguration,
-                    null
-            );
+            ProjectGenerationContext context = new ProjectGenerationContext();
+            context.setLanguage(language);
+            context.setFramework(framework);
+            context.setProject(project);
+            context.setDestinationFolder(destinationFolder);
+            context.setProjectName(projectName);
+            context.setGroupLink(groupLink);
+            context.setProjectPort(projectPort);
+            context.setProjectDescription(projectDescription);
+            context.setLanguageConfiguration(languageConfiguration);
+            context.setFrameworkConfiguration(frameworkConfiguration);
+
+            projectGenerator.generateProject(context);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

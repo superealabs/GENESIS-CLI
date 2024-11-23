@@ -8,7 +8,7 @@
     <artifactId>GENESIS</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>GENESIS</name>
-    <description>GENESIS Command Line Application</description>
+    <description>GENESIS API Command Line Application</description>
     <packaging>jar</packaging>
 
 
@@ -194,6 +194,18 @@
 
 
     <build>
+        <resources>
+            <!-- Include the default resources directory -->
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <!-- Include the data_genesis directory -->
+            <resource>
+                <directory>data_genesis</directory>
+                <targetPath>data_genesis</targetPath>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
         <plugins>
 
             <!-- Maven Compiler Plugin -->

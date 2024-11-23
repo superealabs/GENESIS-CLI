@@ -8,7 +8,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@ToString
 public class Framework {
     private int id;
     private int languageId;
@@ -28,6 +27,11 @@ public class Framework {
     private ModelDao modelDao;
     private Service service;
     private Controller controller;
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 
     @Getter
     @Setter

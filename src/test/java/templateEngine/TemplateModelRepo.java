@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +22,7 @@ public class TemplateModelRepo {
     final GenesisTemplateEngine engine = new GenesisTemplateEngine();
     final String templatePrimary = FileUtils.getFileContent("data_genesis/Template.templ");
 
-    public TemplateModelRepo() throws FileNotFoundException {
+    public TemplateModelRepo() throws IOException {
     }
 
     private static HashMap<String, Object> getHashMapPrimaire() {

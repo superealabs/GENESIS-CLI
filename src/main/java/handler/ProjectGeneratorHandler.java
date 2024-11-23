@@ -10,6 +10,7 @@ import genesis.config.langage.generator.project.ProjectGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.connexion.SQLRunner;
+import org.jetbrains.annotations.NotNull;
 import utils.FileUtils;
 
 import java.io.Console;
@@ -36,110 +37,29 @@ public class ProjectGeneratorHandler {
         this.credentials = new Credentials();
         projectGenerator = new ProjectGenerator();
     }
-
     public void generateProject() {
         System.out.println("\n** Welcome to the GENESIS-CLI ** \n\n Let's get started 🚀\n");
 
         try (Scanner scanner = new Scanner(System.in)) {
-            // INITIALISATION ////////
-            String projectName = getNonEmptyInput(scanner, "Enter the project name");
-            int languageId = getLanguageSelection(scanner);
-            Language language = ProjectGenerator.languages.get(languageId);
-            HashMap<String, Object> languageConfiguration = configureLangage(scanner, language);
+            // Création du contexte
+            ProjectGenerationContext context = new ProjectGenerationContext();
 
-            String baseFramework = getBaseFrameworkSelection(scanner, language);
+            // Étape 1 : Initialisation
+            initializeProject(context, scanner);
 
-            int projectId = getProjectId(scanner, baseFramework);
-            var project = ProjectGenerator.projects.get(projectId);
-            String destinationFolder = FolderSelectorCombo.selectDestinationFolder(scanner);
-
-            // TYPE DE PROJET
-            int frameworkId = getFrameworkSelection(scanner, language, baseFramework);
-            Framework framework = ProjectGenerator.frameworks.get(frameworkId);
-
-            /////////////////////////
-
-            // CONFIGURATION DE LA BASE DE DONNÉES
-            int databaseId;
-            Database database = null;
-            Connection connection = null;
-            List<String> entityNames = new ArrayList<>();
-            List<String> generationOptions = new ArrayList<>();
-            String groupLink = "";
-            boolean generateProjectStructure = true;
-
-            if (framework.getUseDB()) {
-                databaseId = getDatabaseId(scanner);
-                database = ProjectGenerator.databases.get(databaseId);
-
-                connection = configureCredentials(scanner, database);
-
-                handleScriptExecution(scanner, database, connection);
-
-                List<String> allTableNames = fetchEntityNames(database, connection);
-                entityNames = handleEntitySelection(scanner, allTableNames);
-
-                if (framework.getWithGroupId())
-                    groupLink = getNonEmptyInput(scanner, "Enter the group link");
-
-                // OPTIONS DE GÉNÉRATION
-                generationOptions = getGenerationOptions(scanner);
-
-                // OPTION POUR GÉNÉRER LA STRUCTURE DU PROJET OU PAS
-                generateProjectStructure = getGenerateProjectStructureOption(scanner);
+            // Étape 2 : Configuration de la base de données
+            if (context.getFramework().getUseDB()) {
+                configureDatabase(context, scanner);
             }
-            /////////////////////////
 
-            // CONFIGURATION PERSONNALISÉES
-            String projectPort = null;
-            String projectDescription = null;
-            HashMap<String, Object> frameworkConfiguration = new HashMap<>();
-            boolean useEurekaServer;
+            // Étape 3 : Options de génération pour les WEB API et configurations spécifiques
+            configureGenerationOptions(context, scanner);
 
-            if (generateProjectStructure) {
-                if (groupLink.isBlank() && framework.getWithGroupId())
-                    groupLink = getNonEmptyInput(scanner, "Enter the group link");
-
-
-                projectPort = getValidPort(scanner);
-                projectDescription = getNonEmptyInput(scanner, "Enter the project description");
-
-                frameworkConfiguration = configureFramework(scanner, framework);
-
-                // AJOUTER LA CONFIGURATION POUR L'API GATEWAY SI NÉCESSAIRE
-                if (framework.getIsGateway()) {
-                    configureApiGateway(scanner, frameworkConfiguration);
-                }
-
-                // ASSOCIATION EUREKA SERVER
-                String input = getNonEmptyInput(scanner, "Use an Eureka Server? (y/n)");
-                useEurekaServer = input.equalsIgnoreCase("y");
-
-                if (useEurekaServer)
-                    frameworkConfiguration.putAll(configureFrameworkWithEureka(scanner, framework));
-            }
-            /////////////////////////
-
+            // Étape 4 : Association avec le serveur Eureka
+            associateEurekaServer(context, scanner);
 
             // FIN PARCOURS
-            projectGenerator.generateProject(
-                    database,
-                    language,
-                    framework,
-                    project,
-                    credentials,
-                    destinationFolder,
-                    projectName,
-                    groupLink,
-                    projectPort,
-                    projectDescription,
-                    languageConfiguration,
-                    frameworkConfiguration,
-                    entityNames,
-                    connection,
-                    generationOptions,
-                    generateProjectStructure
-            );
+            projectGenerator.generateProject(context);
 
             System.out.println("\nProject generated successfully! 👨🏽‍💻\n\nSee you on the next project 👋🏼\n");
 
@@ -148,7 +68,119 @@ public class ProjectGeneratorHandler {
         }
     }
 
-    private void configureApiGateway(Scanner scanner, HashMap<String, Object> frameworkConfiguration) {
+    private void initializeProject(ProjectGenerationContext context, Scanner scanner) {
+        // INITIALISATION ////////
+        String projectName = getNonEmptyInput(scanner, "Enter the project name");
+        context.setProjectName(projectName);
+
+        int languageId = getLanguageSelection(scanner);
+        Language language = ProjectGenerator.languages.get(languageId);
+        context.setLanguage(language);
+
+        HashMap<String, Object> languageConfiguration = configureLangage(scanner, language);
+        context.setLanguageConfiguration(languageConfiguration);
+
+        String baseFramework = getBaseFrameworkSelection(scanner, language);
+
+        int projectId = getProjectId(scanner, baseFramework);
+        Project project = ProjectGenerator.projects.get(projectId);
+        context.setProject(project);
+
+        String destinationFolder = FolderSelectorCombo.selectDestinationFolder(scanner);
+        context.setDestinationFolder(destinationFolder);
+
+        // TYPE DE PROJET
+        int frameworkId = getFrameworkSelection(scanner, language, baseFramework);
+        Framework framework = ProjectGenerator.frameworks.get(frameworkId);
+        context.setFramework(framework);
+    }
+
+    private void configureDatabase(ProjectGenerationContext context, Scanner scanner) throws IOException {
+        Database database;
+        Connection connection;
+        List<String> entityNames;
+        String groupLink;
+
+        int databaseId = getDatabaseId(scanner);
+        database = ProjectGenerator.databases.get(databaseId);
+        context.setDatabase(database);
+
+        connection = configureCredentials(scanner, database);
+        context.setCredentials(credentials);
+        context.setConnection(connection);
+
+        handleScriptExecution(scanner, database, connection);
+
+        List<String> allTableNames = fetchEntityNames(database, connection);
+        entityNames = handleEntitySelection(scanner, allTableNames);
+        context.setEntityNames(entityNames);
+
+        if (context.getFramework().getWithGroupId()) {
+            groupLink = getNonEmptyInput(scanner, "Enter the group link");
+            context.setGroupLink(groupLink);
+        }
+    }
+
+    private void configureGenerationOptions(ProjectGenerationContext context, Scanner scanner) {
+        List<String> generationOptions;
+        boolean generateProjectStructure = true;
+        String groupLink = context.getGroupLink();
+        Framework framework = context.getFramework();
+
+        if (framework.getUseDB()) {
+            // OPTIONS DE GÉNÉRATION
+            generationOptions = getGenerationOptions(scanner);
+            context.setGenerationOptions(generationOptions);
+
+            // OPTION POUR GÉNÉRER LA STRUCTURE DU PROJET OU PAS
+            generateProjectStructure = getGenerateProjectStructureOption(scanner);
+            context.setGenerateProjectStructure(generateProjectStructure);
+        }
+
+        // CONFIGURATION PERSONNALISÉE
+        String projectPort;
+        String projectDescription;
+        HashMap<String, Object> frameworkConfiguration;
+
+        if (generateProjectStructure) {
+            if ((groupLink == null || groupLink.isBlank()) && framework.getWithGroupId()) {
+                groupLink = getNonEmptyInput(scanner, "Enter the group link");
+                context.setGroupLink(groupLink);
+            }
+
+            projectPort = getValidPort(scanner);
+            context.setProjectPort(projectPort);
+
+            projectDescription = getNonEmptyInput(scanner, "Enter the project description");
+            context.setProjectDescription(projectDescription);
+
+            frameworkConfiguration = configureFramework(scanner, framework);
+            context.setFrameworkConfiguration(frameworkConfiguration);
+
+            // AJOUTER LA CONFIGURATION POUR L'API GATEWAY SI NÉCESSAIRE
+            if (framework.getIsGateway()) {
+                configureApiGateway(scanner, frameworkConfiguration);
+            }
+        }
+    }
+
+    private void associateEurekaServer(ProjectGenerationContext context, Scanner scanner) {
+        Framework framework = context.getFramework();
+        Map<String, Object> frameworkConfiguration = context.getFrameworkConfiguration();
+
+        boolean useEurekaServer;
+        String input = getNonEmptyInput(scanner, "Use an Eureka Server? (y/n)");
+        useEurekaServer = input.equalsIgnoreCase("y");
+
+        if (useEurekaServer) {
+            frameworkConfiguration.putAll(configureFrameworkWithEureka(scanner, framework));
+            framework.setUseCloud(true);
+            framework.setUseEurekaServer(true);
+            context.setFrameworkConfiguration(frameworkConfiguration);
+        }
+    }
+
+    private void configureApiGateway(Scanner scanner, Map<String, Object> frameworkConfiguration) {
         List<Map<String, Object>> routes = new ArrayList<>();
         List<String> httpMethods = Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS", "TRACE", "CONNECT");
 
@@ -171,7 +203,7 @@ public class ProjectGeneratorHandler {
             route.put("method", String.join(",", selectedMethods)); // Combine les méthodes sélectionnées
 
             routes.add(route);
-
+            System.out.println();
             addMoreRoutes = getNonEmptyInput(scanner, "Do you want to add another route? (y/n)");
 
         } while (addMoreRoutes.equalsIgnoreCase("y"));
@@ -213,6 +245,11 @@ public class ProjectGeneratorHandler {
     }
 
     private List<String> validateSelection(String input, List<String> options) {
+        return getSelectedOptions(input, options);
+    }
+
+    @NotNull
+    private List<String> getSelectedOptions(String input, List<String> options) {
         List<String> selectedOptions = new ArrayList<>();
         String[] selectedIndexes = input.split(",");
 
@@ -237,8 +274,8 @@ public class ProjectGeneratorHandler {
     }
 
 
-
     private boolean getGenerateProjectStructureOption(Scanner scanner) {
+        System.out.println();
         while (true) {
             String input = getNonEmptyInput(scanner, "Do you want to generate the full project structure? (y/n)");
             if (input.equalsIgnoreCase("y")) {
@@ -308,14 +345,13 @@ public class ProjectGeneratorHandler {
 
 
     private void handleGeneratedScript(Scanner scanner, Database database, Connection connection) throws IOException {
-        String description, scriptContent = "", sqlFilePath = "";
+        String description, scriptContent, sqlFilePath;
         String scriptFilePath = null;
         while (true) {
             description = getNonEmptyInput(scanner, "Enter a description of the tables or modifications to create");
             try {
                 scriptContent = GroqApiClient.generateSQL(database, description);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.out.println("\nAn error occurred during script generation: \n" + e.getMessage());
                 String userInput = getNonEmptyInput(scanner, "Would you like to try again? (y/n)");
                 if (userInput.equalsIgnoreCase("n")) {
@@ -357,7 +393,6 @@ public class ProjectGeneratorHandler {
             }
         }
     }
-
 
 
     private void handleExistingScript(Scanner scanner, Connection connection) throws FileNotFoundException {
@@ -414,7 +449,6 @@ public class ProjectGeneratorHandler {
     }
 
 
-
     private List<String> fetchEntityNames(Database database, Connection connection) {
         List<String> allTableNames = new ArrayList<>();
         try {
@@ -450,7 +484,7 @@ public class ProjectGeneratorHandler {
             List<String> selectedEntities = validateEntitySelection(input, allTableNames);
 
             if (!selectedEntities.isEmpty()) {
-                System.out.println("Selected entities: " + String.join(", ", selectedEntities) + "\n\n");
+                System.out.println("Selected entities: " + String.join(", ", selectedEntities) + "\n");
                 return selectedEntities;
             }
 
@@ -460,27 +494,7 @@ public class ProjectGeneratorHandler {
 
 
     private List<String> validateEntitySelection(String input, List<String> allTableNames) {
-        List<String> selectedEntities = new ArrayList<>();
-        String[] selectedIndexes = input.split(",");
-
-        boolean hasInvalidSelection = false;
-
-        for (String index : selectedIndexes) {
-            try {
-                int idx = Integer.parseInt(index.trim()) - 1;
-                if (idx >= 0 && idx < allTableNames.size()) {
-                    selectedEntities.add(allTableNames.get(idx));
-                } else {
-                    System.out.println("Invalid selection: " + index);
-                    hasInvalidSelection = true;
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input: " + index);
-                hasInvalidSelection = true;
-            }
-        }
-
-        return hasInvalidSelection ? new ArrayList<>() : selectedEntities;
+        return getSelectedOptions(input, allTableNames);
     }
 
 
@@ -619,21 +633,15 @@ public class ProjectGeneratorHandler {
         if (console != null) {
             char[] passwordChars = console.readPassword(prompt + ": ");
             password = new String(passwordChars).trim();
-            if (password.isEmpty()) {
-                System.out.println("Using default password.\n");
-                password = defaultValue;
-            } else {
-                System.out.println("Password entered.\n");
-            }
         } else {
             System.out.print(prompt + " (default: " + (defaultValue.isEmpty() ? "<empty>" : "<hidden>") + "): ");
             password = scanner.nextLine().trim();
-            if (password.isEmpty()) {
-                System.out.println("Using default password.\n");
-                password = defaultValue;
-            } else {
-                System.out.println("Password entered.\n");
-            }
+        }
+        if (password.isEmpty()) {
+            System.out.println("Using default password.\n");
+            password = defaultValue;
+        } else {
+            System.out.println("Password entered.\n");
         }
 
         return password;
@@ -755,7 +763,7 @@ public class ProjectGeneratorHandler {
             System.out.println("No valid frameworks found for the selected base framework.");
             return -1;
         }
-        return getSelectionId(scanner, validFrameworkNames, "Project type options");
+        return getSelectionId(scanner, validFrameworkNames, "Project type");
     }
 
 

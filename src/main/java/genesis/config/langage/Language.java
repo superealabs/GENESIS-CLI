@@ -9,7 +9,6 @@ import java.util.Map;
 
 @Getter
 @Setter
-@ToString
 public class Language {
     private int id;
     private String name;
@@ -17,4 +16,9 @@ public class Language {
     private List<ConfigurationMetadata> configurations;
     private Map<String, String> syntax;
     private Map<String, String> types;
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

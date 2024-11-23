@@ -11,6 +11,7 @@ import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.connexion.model.TableMetadata;
 import genesis.engine.GenesisTemplateEngine;
+import handler.ProjectGenerationContext;
 import utils.FileUtils;
 
 import java.io.IOException;
@@ -38,16 +39,16 @@ public class ProjectGenerator {
         try {
             engine = new GenesisTemplateEngine();
 
-            databases = Arrays.stream(FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON)))
+            databases = Arrays.stream(FileUtils.fromJson(Database[].class, Constantes.DATABASE_JSON))
                     .collect(Collectors.toMap(Database::getId, database -> database));
 
-            languages = Arrays.stream(FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON)))
+            languages = Arrays.stream(FileUtils.fromJson(Language[].class,Constantes.LANGUAGE_JSON))
                     .collect(Collectors.toMap(Language::getId, language -> language));
 
-            projects = Arrays.stream(FileUtils.fromYaml(Project[].class, FileUtils.getFileContent(Constantes.PROJECT_YAML)))
+            projects = Arrays.stream(FileUtils.fromYaml(Project[].class, Constantes.PROJECT_YAML))
                     .collect(Collectors.toMap(Project::getId, project -> project));
 
-            frameworks = Arrays.stream(FileUtils.fromYaml(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_YAML)))
+            frameworks = Arrays.stream(FileUtils.fromYaml(Framework[].class, Constantes.FRAMEWORK_YAML))
                     .collect(Collectors.toMap(Framework::getId, framework -> framework));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -113,46 +114,53 @@ public class ProjectGenerator {
             System.out.println("File edited and created successfully: " + fileName + "\n");
         }
     }
+    private void generateProjectFiles(ProjectGenerationContext context, List<TableMetadata> entities) throws Exception {
+        HashMap<String, Object> initializeHashMap = getInitialHashMap(
+                context.getDestinationFolder(),
+                context.getProjectName(),
+                context.getGroupLink()
+        );
 
-    private static void generateProjectFiles(List<TableMetadata> entities, Credentials credentials, String destinationFolder, String projectName, String groupLink, String projectPort, String projectDescription, HashMap<String, Object> langageConfiguration, HashMap<String, Object> frameworkConfiguration, Database database, Language language, Framework framework, Project project) throws Exception {
-        HashMap<String, Object> initializeHashMap = getInitialHashMap(destinationFolder, projectName, groupLink);
         HashMap<String, Object> projectFilesEditsHashMap = getProjectFilesEditsHashMap(
-                destinationFolder,
-                projectName,
-                groupLink,
-                projectPort,
-                database,
-                credentials,
-                language,
-                projectDescription,
-                langageConfiguration,
-                framework,
-                frameworkConfiguration);
+                context.getDestinationFolder(),
+                context.getProjectName(),
+                context.getGroupLink(),
+                context.getProjectPort(),
+                context.getDatabase(),
+                context.getCredentials(),
+                context.getLanguage(),
+                context.getProjectDescription(),
+                context.getLanguageConfiguration(),
+                context.getFramework(),
+                context.getFrameworkConfiguration()
+        );
 
-        if (framework.getUseDB())
-            projectFilesEditsHashMap.putAll(getHashMapDaoGlobal(framework, entities, projectName));
+        if (context.getFramework().getUseDB())
+            projectFilesEditsHashMap.putAll(getHashMapDaoGlobal(context.getFramework(), entities, context.getProjectName()));
 
-        renderAndCopyFiles(project.getProjectFiles(), initializeHashMap);
-        renderAndCopyFolders(project.getProjectFolders(), initializeHashMap);
-        renderFilesEdits(project.getProjectFilesEdits(), projectFilesEditsHashMap);
-        renderFilesEdits(framework.getAdditionalFiles(), projectFilesEditsHashMap);
+        renderAndCopyFiles(context.getProject().getProjectFiles(), initializeHashMap);
+        renderAndCopyFolders(context.getProject().getProjectFolders(), initializeHashMap);
+        renderFilesEdits(context.getProject().getProjectFilesEdits(), projectFilesEditsHashMap);
+        renderFilesEdits(context.getFramework().getAdditionalFiles(), projectFilesEditsHashMap);
     }
 
-    public void generateBackendComponents(GenesisGenerator genesisGenerator,
-                                          Framework framework,
-                                          Language language,
+    public void generateBackendComponents(ProjectGenerationContext context,
+                                          GenesisGenerator genesisGenerator,
                                           TableMetadata tableMetadata,
-                                          String destinationFolder,
-                                          String projectName,
-                                          String groupLink,
-                                          List<String> generationOptions,
                                           boolean generateComponentOnly) throws Exception {
-        String renderedDestinationFolder = engine.simpleRender(destinationFolder, Map.of("projectName", projectName));
-        System.out.println("Generating backend components for project: " + projectName + " at rendered destination: " + renderedDestinationFolder);
-        System.out.println("The entity: "+tableMetadata.getTableName()+"\n");
 
-        // Ensure the destination directory exists
+        String renderedDestinationFolder = engine.simpleRender(context.getDestinationFolder(), Map.of("projectName", context.getProjectName()));
+        System.out.println("Generating backend components for project: " + context.getProjectName() + " at rendered destination: " + renderedDestinationFolder);
+        System.out.println("The entity: " + tableMetadata.getTableName() + "\n");
+
+        // S'assurer que le répertoire de destination existe
         FileUtils.createDirectory(renderedDestinationFolder);
+
+        List<String> generationOptions = context.getGenerationOptions();
+        Framework framework = context.getFramework();
+        Language language = context.getLanguage();
+        String projectName = context.getProjectName();
+        String groupLink = context.getGroupLink();
 
         if (generationOptions.contains(COMPONENT_MODEL) && framework.getModel().getToGenerate()) {
             System.out.println("Generating " + COMPONENT_MODEL + " component...");
@@ -160,7 +168,7 @@ public class ProjectGenerator {
         }
 
         if (generationOptions.contains(COMPONENT_DAO) && framework.getModelDao().getToGenerate()) {
-            System.out.println("Generating " + COMPONENT_DAO + " component..."+tableMetadata.getClassName());
+            System.out.println("Generating " + COMPONENT_DAO + " component..." + tableMetadata.getClassName());
             genesisGenerator.generateDao(framework, language, tableMetadata, renderedDestinationFolder, projectName, groupLink, generateComponentOnly);
         }
 
@@ -177,182 +185,70 @@ public class ProjectGenerator {
         System.out.println("Backend component generation completed for project: " + projectName);
     }
 
-
-
-    public void generateProject(Database database,
-                                Language language,
-                                Framework framework,
-                                Project project,
-                                Credentials credentials,
-                                String destinationFolder,
-                                String projectName,
-                                String groupLink,
-                                String projectPort,
-                                String projectDescription,
-                                HashMap<String, Object> languageConfiguration,
-                                HashMap<String, Object> frameworkConfiguration,
-                                List<String> entityNames,
-                                Connection connection,
-                                List<String> generationOptions,
-                                boolean generateProjectStructure) throws Exception {
-
-        if (generateProjectStructure) {
-            // Existing logic for generating the full project
-            generateFullProject(
-                    database,
-                    language,
-                    framework,
-                    project,
-                    credentials,
-                    destinationFolder,
-                    projectName,
-                    groupLink,
-                    projectPort,
-                    projectDescription,
-                    languageConfiguration,
-                    frameworkConfiguration,
-                    entityNames,
-                    connection,
-                    generationOptions
-            );
+    public void generateProject(ProjectGenerationContext context) throws Exception {
+        if (context.isGenerateProjectStructure()) {
+            // Générer le projet complet
+            generateFullProject(context);
         } else {
-            // Generate only the components
-            generateComponentsOnly(
-                    database,
-                    language,
-                    framework,
-                    credentials,
-                    destinationFolder,
-                    projectName,
-                    groupLink,
-                    entityNames,
-                    connection,
-                    generationOptions
-            );
+            // Générer uniquement les composants
+            generateComponentsOnly(context);
         }
     }
 
-    private void generateFullProject(Database database,
-                                     Language language,
-                                     Framework framework,
-                                     Project project,
-                                     Credentials credentials,
-                                     String destinationFolder,
-                                     String projectName,
-                                     String groupLink,
-                                     String projectPort,
-                                     String projectDescription,
-                                     HashMap<String, Object> languageConfiguration,
-                                     HashMap<String, Object> frameworkConfiguration,
-                                     List<String> entityNames,
-                                     Connection connection,
-                                     List<String> generationOptions) throws Exception {
+    private void generateFullProject(ProjectGenerationContext context) throws Exception {
+        Database database = context.getDatabase();
+        Framework framework = context.getFramework();
+        Credentials credentials = context.getCredentials();
+        Connection connection = context.getConnection();
+        Language language = context.getLanguage();
+
         if (framework.getUseDB()) {
             try (Connection connex = (connection != null) ? connection : database.getConnection(credentials)) {
-                List<TableMetadata> entities = database.getEntitiesByNames(entityNames, connex, credentials, language);
+                List<TableMetadata> entities = database.getEntitiesByNames(context.getEntityNames(), connex, credentials, language);
                 GenesisGenerator genesisGenerator = new APIGenerator(ProjectGenerator.engine);
 
                 for (TableMetadata tableMetadata : entities) {
                     generateBackendComponents(
+                            context,
                             genesisGenerator,
-                            framework,
-                            language,
                             tableMetadata,
-                            destinationFolder,
-                            projectName,
-                            groupLink,
-                            generationOptions,
                             false
                     );
                 }
 
-                generateProjectFiles(entities, credentials, destinationFolder, projectName, groupLink, projectPort,
-                        projectDescription, languageConfiguration, frameworkConfiguration, database, language, framework, project);
+                generateProjectFiles(context, entities);
 
             } catch (Exception e) {
                 throw new RuntimeException(e.getLocalizedMessage());
             }
         } else {
-            generateProjectFiles(null, credentials, destinationFolder, projectName, groupLink, projectPort,
-                    projectDescription, languageConfiguration, frameworkConfiguration, database, language, framework, project);
+            generateProjectFiles(context, null);
         }
     }
 
-    private void generateComponentsOnly(Database database,
-                                        Language language,
-                                        Framework framework,
-                                        Credentials credentials,
-                                        String destinationFolder,
-                                        String projectName,
-                                        String groupLink,
-                                        List<String> entityNames,
-                                        Connection connection,
-                                        List<String> generationOptions) {
+    private void generateComponentsOnly(ProjectGenerationContext context) {
+        Database database = context.getDatabase();
+        Framework framework = context.getFramework();
+        Credentials credentials = context.getCredentials();
+        Connection connection = context.getConnection();
+        Language language = context.getLanguage();
+
         if (framework.getUseDB()) {
             try (Connection connex = (connection != null) ? connection : database.getConnection(credentials)) {
-                List<TableMetadata> entities = database.getEntitiesByNames(entityNames, connex, credentials, language);
+                List<TableMetadata> entities = database.getEntitiesByNames(context.getEntityNames(), connex, credentials, language);
                 GenesisGenerator genesisGenerator = new APIGenerator(ProjectGenerator.engine);
 
                 for (TableMetadata tableMetadata : entities) {
                     generateBackendComponents(
+                            context,
                             genesisGenerator,
-                            framework,
-                            language,
                             tableMetadata,
-                            destinationFolder,
-                            projectName,
-                            groupLink,
-                            generationOptions,
                             true
                     );
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e.getLocalizedMessage());
             }
-        }
-    }
-
-
-    public void generateProject(Database database,
-                                Language language,
-                                Framework framework,
-                                Project project,
-                                Credentials credentials,
-                                String destinationFolder,
-                                String projectName,
-                                String groupLink,
-                                String projectPort,
-                                String projectDescription,
-                                HashMap<String, Object> langageConfiguration,
-                                HashMap<String, Object> frameworkConfiguration,
-                                Connection connection) throws Exception {
-
-        if (framework.getUseDB()) {
-            try (Connection connex = (connection != null) ? connection : database.getConnection(credentials)) {
-                List<TableMetadata> entities = database.getEntities(connex, credentials, language);
-                GenesisGenerator genesisGenerator = new APIGenerator(ProjectGenerator.engine);
-
-                for (TableMetadata tableMetadata : entities) {
-                    generateBackendComponents(
-                            genesisGenerator,
-                            framework,
-                            language,
-                            tableMetadata,
-                            destinationFolder,
-                            projectName,
-                            groupLink,
-                            Arrays.asList(frameworkConfiguration.get("generationOptions").toString().split(",")),
-                            false
-                    );
-                }
-
-                generateProjectFiles(entities, credentials, destinationFolder, projectName, groupLink, projectPort, projectDescription, langageConfiguration, frameworkConfiguration, database, language, framework, project);
-
-            } catch (Exception e) {
-                throw new RuntimeException(e.getLocalizedMessage());
-            }
-        } else {
-            generateProjectFiles(null, credentials, destinationFolder, projectName, groupLink, projectPort, projectDescription, langageConfiguration, frameworkConfiguration, database, language, framework, project);
         }
     }
 }

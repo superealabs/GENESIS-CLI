@@ -24,7 +24,7 @@ public class ProjectMetadataProvider {
         return metadata;
     }
 
-    static HashMap<String, Object> getConfigFileHashMap(String projectPort, Database database, Credentials credentials, Language language, Framework framework, HashMap<String, Object> frameworkOptions) throws Exception {
+    static HashMap<String, Object> getConfigFileHashMap(String projectPort, Database database, Credentials credentials, Language language, Framework framework, Map<String, Object> frameworkOptions) throws Exception {
         HashMap<String, Object> configFile = new HashMap<>();
         configFile.put("projectPort", projectPort);
 
@@ -44,7 +44,7 @@ public class ProjectMetadataProvider {
         return configFile;
     }
 
-    static HashMap<String, Object> getDependencyFileHashMap(String projectDescription, Database database, Language language, Framework framework, HashMap<String, Object> langageConfiguration, HashMap<String, Object> frameworkConfiguration) {
+    static HashMap<String, Object> getDependencyFileHashMap(String projectDescription, Database database, Language language, Framework framework, Map<String, Object> langageConfiguration, Map<String, Object> frameworkConfiguration) {
         HashMap<String, Object> dependencyFileMap = new HashMap<>();
         dependencyFileMap.putAll(langageConfiguration);
         dependencyFileMap.putAll(frameworkConfiguration);
@@ -89,7 +89,7 @@ public class ProjectMetadataProvider {
         return dependencies;
     }
 
-    static HashMap<String, Object> getProjectFilesEditsHashMap(String destinationFolder, String projectName, String groupLink, String projectPort, Database database, Credentials credentials, @NotNull Language language, String projectDescription, HashMap<String, Object> langageConfiguration, Framework framework, HashMap<String, Object> frameworkOptions) throws Exception {
+    static HashMap<String, Object> getProjectFilesEditsHashMap(String destinationFolder, String projectName, String groupLink, String projectPort, Database database, Credentials credentials, @NotNull Language language, String projectDescription, Map<String, Object> langageConfiguration, Framework framework, Map<String, Object> frameworkOptions) throws Exception {
         HashMap<String, Object> combinedMap = new HashMap<>();
 
         combinedMap.putAll(getConfigFileHashMap(projectPort, database, credentials, language, framework, frameworkOptions));

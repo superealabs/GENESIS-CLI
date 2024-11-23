@@ -7,24 +7,40 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.GsonBuilder;
 import genesis.connexion.Database;
 import genesis.connexion.adapter.DatabaseDeserializer;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Scanner;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
 public class FileUtils {
 
-    public static String getFileContent(String filePath) throws FileNotFoundException {
+    public static String getFileContent(String resourcePath) throws IOException {
         StringBuilder content = new StringBuilder();
-        File file = new File(filePath);
 
-        try (Scanner reader = new Scanner(file)) {
-            while (reader.hasNextLine()) {
-                content.append(reader.nextLine()).append("\n");
+        // Utilisation du class loader pour charger la ressource
+        try (InputStream inputStream = FileUtils.class.getClassLoader().getResourceAsStream(resourcePath)) {
+            if (inputStream == null) {
+                throw new FileNotFoundException("Resource not found: " + resourcePath);
+            }
+            try (Scanner reader = new Scanner(inputStream)) {
+                while (reader.hasNextLine()) {
+                    content.append(reader.nextLine()).append("\n");
+                }
             }
         }
 
@@ -55,15 +71,6 @@ public class FileUtils {
 
         return finalContent.replaceAll("\\s+", " ").replaceAll(";\\s*", ";");
     }
-
-
-    public static String lowerCase(String input) {
-        if (input == null || input.isEmpty()) {
-            return input; // Renvoie null ou chaîne vide
-        }
-        return input.toLowerCase();
-    }
-
 
     public static String removeLastS(String input) {
         if (input == null || input.isEmpty()) {
@@ -171,12 +178,14 @@ public class FileUtils {
     public static void copyFile(String sourceFilePath, String destinationFilePath, String fileName) throws IOException {
         Path destinationPath = Paths.get(destinationFilePath + fileName);
 
-        try (InputStream inputStream = new FileInputStream(sourceFilePath)) {
+        try (InputStream inputStream = FileUtils.class.getClassLoader().getResourceAsStream(sourceFilePath)) {
+            assert inputStream != null;
             Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (NoSuchFileException e) {
             System.out.println("Warning : " + e.getMessage() + "\n" + "Generated the missing file ...\n");
             createFileStructure(destinationPath.toString());
-            try (InputStream inputStream = new FileInputStream(sourceFilePath)) {
+            try (InputStream inputStream = FileUtils.class.getClassLoader().getResourceAsStream(sourceFilePath)) {
+                assert inputStream != null;
                 Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
             }
             System.out.println("Generated : " + destinationPath + "\n");
@@ -186,9 +195,44 @@ public class FileUtils {
     }
 
     public static void copyDirectory(String sourceDir, String destDir) throws IOException {
-        Path srcPath = Paths.get(sourceDir);
-        Path destPath = Paths.get(destDir);
+        URI resourceUri = getResourceUri(sourceDir);
 
+        // Vérifier si la ressource est dans un JAR ou dans le système de fichiers
+        Path destPath = Paths.get(destDir);
+        if (resourceUri.getScheme().equals("jar")) {
+            // La ressource est dans un JAR
+            try (FileSystem fileSystem = FileSystems.newFileSystem(resourceUri, Collections.emptyMap())) {
+                Path jarPath = fileSystem.getPath(sourceDir);
+                copyDirectoryFromPath(jarPath, destPath);
+            }
+        } else {
+            // La ressource est dans le système de fichiers
+            Path srcPath = Paths.get(resourceUri);
+            copyDirectoryFromPath(srcPath, destPath);
+        }
+    }
+
+    private static @NotNull URI getResourceUri(String sourceDir) throws IOException {
+        // Obtenir le class loader actuel
+        ClassLoader classLoader = FileUtils.class.getClassLoader();
+
+        // Obtenir l'URL du répertoire source dans les ressources
+        URL resourceUrl = classLoader.getResource(sourceDir);
+        if (resourceUrl == null) {
+            throw new FileNotFoundException("Source directory not found : " + sourceDir);
+        }
+
+        // Convertir l'URL en URI
+        URI resourceUri;
+        try {
+            resourceUri = resourceUrl.toURI();
+        } catch (URISyntaxException e) {
+            throw new IOException("Error during conversion from URL to URI : " + resourceUrl, e);
+        }
+        return resourceUri;
+    }
+
+    private static void copyDirectoryFromPath(Path srcPath, Path destPath) throws IOException {
         if (!Files.exists(destPath)) {
             Files.createDirectories(destPath);
         }
@@ -198,16 +242,22 @@ public class FileUtils {
                 Path destination = destPath.resolve(srcPath.relativize(path));
                 try {
                     if (Files.isDirectory(path)) {
-                        Files.createDirectories(destination);
+                        if (!Files.exists(destination)) {
+                            Files.createDirectories(destination);
+                        }
                     } else {
-                        copyFile(path.toString(), destination.toString(), "");
+                        try (InputStream inputStream = Files.newInputStream(path)) {
+                            Files.copy(inputStream, destination, StandardCopyOption.REPLACE_EXISTING);
+                        }
                     }
                 } catch (IOException e) {
-                    System.err.println(e.getMessage());
+                    System.err.println("Erreur lors de la copie du fichier : " + path + " -> " + e.getMessage());
                 }
             });
         }
     }
+
+
 
     public static void createDirectory(String filePath) {
         String filename = "";
@@ -228,7 +278,7 @@ public class FileUtils {
         file.mkdir();
     }
 
-    public static <T> T fromJson(Class<T> clazz, String json) throws IOException {
+    public static <T> T fromJson(Class<T> clazz, String resourcePath) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
@@ -236,18 +286,33 @@ public class FileUtils {
         module.addDeserializer(Database.class, new DatabaseDeserializer());
         objectMapper.registerModule(module);
 
-        return objectMapper.readValue(json, clazz);
+        // Charger le fichier depuis le classpath
+        InputStream inputStream = FileUtils.class.getClassLoader().getResourceAsStream(resourcePath);
+        if (inputStream == null) {
+            throw new FileNotFoundException("File not found : " + resourcePath);
+        }
+
+        return objectMapper.readValue(inputStream, clazz);
     }
+
 
     public static <T> T fromYamlFile(Class<T> clazz, String yamlFilePath) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
         return objectMapper.readValue(new File(yamlFilePath), clazz);
     }
 
-    public static <T> T fromYaml(Class<T> clazz, String yamlContent) throws IOException {
+    public static <T> T fromYaml(Class<T> clazz, String resourcePath) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
-        return objectMapper.readValue(new StringReader(yamlContent), clazz);
+
+        // Charger le fichier depuis le classpath
+        InputStream inputStream = FileUtils.class.getClassLoader().getResourceAsStream(resourcePath);
+        if (inputStream == null) {
+            throw new FileNotFoundException("File not found : " + resourcePath);
+        }
+
+        return objectMapper.readValue(inputStream, clazz);
     }
+
 
     public static String toJson(Object source) {
         GsonBuilder builder = (new GsonBuilder()).registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter());
@@ -256,11 +321,6 @@ public class FileUtils {
         return builder.create().toJson(source);
     }
 
-    /*
-        public static String majStart(String string) {
-            return string.transform(s -> s.replaceFirst(String.valueOf(s.charAt(0)), String.valueOf(s.charAt(0)).toUpperCase()));
-        }
-    */
     public static String majStart(String input) {
         if (input == null || input.isEmpty()) {
             return input; // Renvoie null ou chaîne vide pour éviter NullPointerException
