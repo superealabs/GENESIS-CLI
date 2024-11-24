@@ -11,7 +11,7 @@ import java.util.List;
 public class Project {
     private int id;
     private String name;
-    private List<String> baseFrameworks;
+    private List<String> coreFrameworks;
     private List<ProjectFiles> projectFiles;
     private List<ProjectFolders> projectFolders;
     private List<FilesEdit> projectFilesEdits;

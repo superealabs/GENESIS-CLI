@@ -11,7 +11,7 @@ import java.util.List;
 public class Framework {
     private int id;
     private int languageId;
-    private String baseFramework;
+    private String coreFramework;
     private String name;
     private String template;
     private Boolean useDB;

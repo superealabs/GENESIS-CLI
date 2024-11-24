@@ -80,9 +80,9 @@ public class ProjectGeneratorHandler {
         HashMap<String, Object> languageConfiguration = configureLangage(scanner, language);
         context.setLanguageConfiguration(languageConfiguration);
 
-        String baseFramework = getBaseFrameworkSelection(scanner, language);
+        String coreFramework = getCoreFrameworkSelection(scanner, language);
 
-        int projectId = getProjectId(scanner, baseFramework);
+        int projectId = getProjectId(scanner, coreFramework);
         Project project = ProjectGenerator.projects.get(projectId);
         context.setProject(project);
 
@@ -90,7 +90,7 @@ public class ProjectGeneratorHandler {
         context.setDestinationFolder(destinationFolder);
 
         // TYPE DE PROJET
-        int frameworkId = getFrameworkSelection(scanner, language, baseFramework);
+        int frameworkId = getFrameworkSelection(scanner, language, coreFramework);
         Framework framework = ProjectGenerator.frameworks.get(frameworkId);
         context.setFramework(framework);
     }
@@ -709,13 +709,13 @@ public class ProjectGeneratorHandler {
         return getSelectionId(scanner, languageNames, "Language");
     }
 
-    private String getBaseFrameworkSelection(Scanner scanner, Language language) {
+    private String getCoreFrameworkSelection(Scanner scanner, Language language) {
         Map<String, String> baseFrameworks = ProjectGenerator.frameworks.values().stream()
                 .filter(framework -> framework.getLanguageId() == language.getId())
                 .collect(Collectors.toMap(
-                        Framework::getBaseFramework,
-                        Framework::getBaseFramework,
-                        (existing, replacement) -> existing // To handle duplicates
+                        Framework::getCoreFramework,
+                        Framework::getCoreFramework,
+                        (existing, replacement) -> existing
                 ));
 
         return getSelectionStr(scanner, baseFrameworks, "Framework");
@@ -753,7 +753,7 @@ public class ProjectGeneratorHandler {
 
         Map<Integer, String> validFrameworkNames = frameworks.entrySet().stream()
                 .filter(entry -> entry.getValue().getLanguageId() == language.getId() &&
-                        entry.getValue().getBaseFramework().equalsIgnoreCase(baseFramework))
+                        entry.getValue().getCoreFramework().equalsIgnoreCase(baseFramework))
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         entry -> entry.getValue().getName()
@@ -770,7 +770,7 @@ public class ProjectGeneratorHandler {
     private int getProjectId(Scanner scanner, String baseframework) {
         Map<Integer, Project> projects = ProjectGenerator.projects;
         Map<Integer, String> languageNames = projects.entrySet().stream()
-                .filter(entry -> entry.getValue().getBaseFrameworks().contains(baseframework))
+                .filter(entry -> entry.getValue().getCoreFrameworks().contains(baseframework))
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         entry -> entry.getValue().getName()
