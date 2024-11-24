@@ -23,7 +23,7 @@ public abstract class Database {
     private String driverVersion;
     private String name;
     private String driverType;
-    private String serviceName;
+    private String SID;
     private Map<Integer, String> connectionString;
     private Map<Integer, String> daoName;
     private String driver;
@@ -103,7 +103,7 @@ public abstract class Database {
         databaseMetadata.put("useSSL", String.valueOf(credentials.isUseSSL()));
         databaseMetadata.put("allowPublicKeyRetrieval", String.valueOf(credentials.isAllowPublicKeyRetrieval()));
         databaseMetadata.put("driverType", driverType);
-        databaseMetadata.put("serviceName", serviceName);
+        databaseMetadata.put("SID", SID);
 
         return databaseMetadata;
     }

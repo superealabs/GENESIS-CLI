@@ -37,6 +37,6 @@ public class OracleDatabase extends Database {
                 getDriverType(),
                 credentials.getHost(),
                 port,
-                credentials.getServiceName());
+                credentials.getSID());
     }
 }

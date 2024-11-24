@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Credentials {
-    private String databaseName, schemaName, user, pwd, host, port, driverType, serviceName;
+    private String databaseName, schemaName, user, pwd, host, port, driverType, SID;
     private boolean useSSL, allowPublicKeyRetrieval, trustCertificate;
 
     public Credentials setDatabaseName(String databaseName) {
@@ -58,8 +58,8 @@ public class Credentials {
         return this;
     }
 
-    public Credentials setServiceName(String serviceName) {
-        this.serviceName = serviceName;
+    public Credentials setSID(String SID) {
+        this.SID = SID;
         return this;
     }
 

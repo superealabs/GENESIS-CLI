@@ -30,7 +30,7 @@ public class FrameworkMetadataProvider {
                         "username", credentials.getUser(),
                         "password", credentials.getPwd(),
                         "driverType", database.getDriverType(),
-                        "serviceName", database.getServiceName()
+                        "SID", database.getSID()
                 )
         );
     }
@@ -87,7 +87,7 @@ public class FrameworkMetadataProvider {
 
         metadata.put("className", tableMetadata.getClassName());
         metadata.put("pkColumn", tableMetadata.getPrimaryColumn().getName());
-        metadata.put("entityName", framework.getService().getServiceName());
+        metadata.put("entityName", framework.getService().getSID());
         metadata.put("package", framework.getService().getServicePackage());
         metadata.put("imports", framework.getService().getServiceImports());
         metadata.put("extends", framework.getService().getServiceExtends());

@@ -17,7 +17,7 @@ public class OracleTest {
         this.credentials = new Credentials()
                 .setHost("localhost")
                 .setPort("1521")
-                .setServiceName("ORCLCDB")
+                .setSID("ORCLCDB")
                 .setUser("C##TEST_DB")
                 .setDatabaseName("C##TEST_DB")
                 .setSchemaName("C##TEST_DB")
