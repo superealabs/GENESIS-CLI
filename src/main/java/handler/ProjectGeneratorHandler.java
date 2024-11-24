@@ -555,8 +555,8 @@ public class ProjectGeneratorHandler {
     }
 
     private void configureOracleCredentials(Scanner scanner, Database database) {
-        credentials.setSID(getDefaultInput(scanner, "Enter the SID for Oracle",
-                database.getSID() != null ? database.getSID() : "ORCLCDB"));
+        credentials.setSID(getDefaultInput(scanner, "Enter the sid for Oracle",
+                database.getSid() != null ? database.getSid() : "ORCLCDB"));
         credentials.setTrustCertificate(Boolean.parseBoolean(
                 getDefaultInput(scanner, "Enable trust certificate for Oracle (true/false)", "true")
         ));

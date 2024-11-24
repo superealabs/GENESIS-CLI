@@ -13,7 +13,7 @@
       }
     },
     "driverType": "",
-    "SID": "",
+    "sid": "",
     "connectionString": {
       "1": "jdbc:mysql://${host}:${port}/${database}?useSSL=${useSSL}",
       "2": "Server=${host};Port=${port};Database=${database};User Id=${username};Password=${password};"
@@ -55,7 +55,7 @@
       }
     },
     "driverType": "",
-    "SID": "",
+    "sid": "",
     "connectionString": {
       "1": "jdbc:postgresql://${host}:${port}/${database}",
       "2": "Host=${host};Port=${port};Database=${database};Username=${username};Password=${password};"
@@ -112,7 +112,7 @@
       }
     },
     "driverType": "",
-    "SID": "",
+    "sid": "",
     "connectionString": {
       "1": "jdbc:sqlserver://${host}:${port};databaseName=${database}",
       "2": "Server=${host};Database=${database};User Id=${username};Password=${password};"
@@ -154,9 +154,9 @@
       }
     },
     "driverType": "thin",
-    "SID": "ORCLCDB",
+    "sid": "ORCLCDB",
     "connectionString": {
-      "1": "jdbc:oracle:${driverType}:@//${host}:${port}/${SID}",
+      "1": "jdbc:oracle:${driverType}:@//${host}:${port}/${sid}",
       "2": "User Id=${username};Password=${password};Data Source=${host}:${port}/${database}"
     },
     "daoName": {

@@ -241,7 +241,7 @@ public class TemplateModelRepo {
         HashMap<String, Object> metadata = new HashMap<>();
         metadata.put("projectName", "animalerie");
         metadata.put("className", "animal");
-        metadata.put("SID", "${majStart(className)}Service");
+        metadata.put("sid", "${majStart(className)}Service");
 
         metadata.put("namespace", "package");
         metadata.put("package", "com.${lowerCase(projectName)}.services");
@@ -799,7 +799,7 @@ public class TemplateModelRepo {
                  import org.springframework.beans.factory.annotation.Autowired;
                                 \s
                  ${serviceAnnotations}
-                 ${classKeyword} ${SID} ${extends}${bracketStart}
+                 ${classKeyword} ${sid} ${extends}${bracketStart}
                                 \s
                  {{tab}}@Autowired
                  {{tab}}private ${majStart(className)}Repository ${lowerCase(className)}Repository;

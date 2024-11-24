@@ -251,7 +251,7 @@
       @Service
     serviceClassKeyword: "public class"
     serviceExtends: ""
-    SID: "${majStart(className)}Service"
+    serviceName: "${majStart(className)}Service"
     serviceFieldContent: |
       {{tab}}private final ${majStart(className)}Repository ${minStart(className)}Repository;
     serviceConstructors: |
@@ -494,7 +494,7 @@
     serviceAnnotations: ""
     serviceClassKeyword: "public interface"
     serviceExtends: ": IService<${majStart(className)}, ${pkColumnType}>"
-    SID: "I${majStart(className)}Service"
+    serviceName: "I${majStart(className)}Service"
     serviceFieldContent: "{{removeLine}}"
     serviceMethodContent: "{{removeLine}}"
     serviceConstructors: "{{removeLine}}"

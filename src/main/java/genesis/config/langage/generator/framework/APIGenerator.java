@@ -158,7 +158,7 @@ public class APIGenerator implements GenesisGenerator {
         if (generateComponentOnly) {
             fileName = tableMetadata.getClassName() + "Service";
         } else {
-            fileName = framework.getService().getSID();
+            fileName = framework.getService().getServiceName();
             fileName = engine.simpleRender(fileName, metadataFinally);
         }
 

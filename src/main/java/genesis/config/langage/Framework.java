@@ -86,7 +86,7 @@ public class Framework {
         private String serviceClassKeyword;
         private String serviceAnnotations;
         private String serviceExtends;
-        private String SID;
+        private String serviceName;
         private String serviceFieldContent;
         private String serviceConstructors;
         private String serviceMethodContent;
