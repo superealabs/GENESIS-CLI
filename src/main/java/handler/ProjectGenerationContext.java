@@ -28,7 +28,7 @@ public class ProjectGenerationContext {
     private List<String> entityNames;
     private Connection connection;
     private List<String> generationOptions;
-    private boolean generateProjectStructure;
+    private boolean generateProjectStructure = true;
 
     public ProjectGenerationContext setDatabase(Database database) {
         this.database = database;

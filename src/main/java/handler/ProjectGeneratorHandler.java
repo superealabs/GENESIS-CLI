@@ -37,6 +37,7 @@ public class ProjectGeneratorHandler {
         this.credentials = new Credentials();
         projectGenerator = new ProjectGenerator();
     }
+
     public void generateProject() {
         System.out.println("\n** Welcome to the GENESIS-CLI ** \n\n Let's get started 🚀\n");
 
@@ -142,7 +143,7 @@ public class ProjectGeneratorHandler {
         String projectDescription;
         HashMap<String, Object> frameworkConfiguration;
 
-        if (generateProjectStructure) {
+        if (context.isGenerateProjectStructure()) {
             if ((groupLink == null || groupLink.isBlank()) && framework.getWithGroupId()) {
                 groupLink = getNonEmptyInput(scanner, "Enter the group link");
                 context.setGroupLink(groupLink);
