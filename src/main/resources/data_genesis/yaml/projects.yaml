@@ -46,7 +46,7 @@
                     <artifactId>${this.artifactId}</artifactId>
                     <version>${this.version}</version>
                     <scope>${this.scope}</scope>
-                </dependency>{{#if !@last}}{{newline}}        {{/if}}
+                </dependency>{{#if !@last}}{{newline}}{{/if}}
                 {{/each}}
                 {{#if useDB}}<dependency>
                     <groupId>${DBgroupId}</groupId>

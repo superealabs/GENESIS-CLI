@@ -13,10 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("CommentedOutCode")
 @Setter
 @Getter
-@ToString
 public abstract class Database {
     private int id;
     private String driverName;
@@ -106,5 +104,10 @@ public abstract class Database {
         databaseMetadata.put("sid", sid);
 
         return databaseMetadata;
+    }
+
+    @Override
+    public String toString() {
+       return name;
     }
 }

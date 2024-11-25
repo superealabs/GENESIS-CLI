@@ -1,10 +1,14 @@
 package genesis.connexion.adapter;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import genesis.connexion.Database;
-import genesis.connexion.providers.*;
+import genesis.connexion.providers.MySQLDatabase;
+import genesis.connexion.providers.OracleDatabase;
+import genesis.connexion.providers.PostgreSQLDatabase;
+import genesis.connexion.providers.SQLServerDatabase;
 
 import java.io.IOException;
 

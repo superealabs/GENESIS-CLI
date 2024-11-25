@@ -30,10 +30,10 @@ public class SecurityConfig {
     @Bean
     public MapReactiveUserDetailsService userDetailsService() {
         UserDetails user = User.builder()
-            .username(username)
-            .password(passwordEncoder().encode(password))
-            .roles(role)
-            .build();
+                .username(username)
+                .password(passwordEncoder().encode(password))
+                .roles(role)
+                .build();
 
         return new MapReactiveUserDetailsService(user);
     }
@@ -46,9 +46,9 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http.authorizeExchange(exchanges -> exchanges
-            .anyExchange().authenticated()
+                .anyExchange().authenticated()
         ).httpBasic(Customizer.withDefaults());
 
-      return http.build();
+        return http.build();
     }
 }

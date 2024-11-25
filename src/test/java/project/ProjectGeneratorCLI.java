@@ -2,9 +2,9 @@ package project;
 
 import genesis.config.Constantes;
 import genesis.config.langage.generator.project.ProjectGenerator;
+import genesis.connexion.Credentials;
 import handler.ProjectGenerationContext;
 import handler.ProjectGeneratorHandler;
-import genesis.connexion.Credentials;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -16,6 +16,17 @@ public class ProjectGeneratorCLI {
     public static void main(String[] args) {
         ProjectGeneratorHandler projectGeneratorHandler = new ProjectGeneratorHandler();
         projectGeneratorHandler.generateProject();
+    }
+
+    private static Map<String, Object> createRoute(String id, String uri, String path, String method) {
+        Map<String, Object> route = new HashMap<>();
+        route.put("id", id);
+        route.put("uri", uri);
+
+        route.put("path", path);
+        route.put("method", method);
+
+        return route;
     }
 
     @Test
@@ -97,7 +108,6 @@ public class ProjectGeneratorCLI {
         }
     }
 
-
     @Test
     void generateProjectNET() {
         var credentials = new Credentials()
@@ -164,7 +174,6 @@ public class ProjectGeneratorCLI {
             throw new RuntimeException(e);
         }
     }
-
 
     @Test
     void generateProjectSpringEurekaServer() {
@@ -287,16 +296,5 @@ public class ProjectGeneratorCLI {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private static Map<String, Object> createRoute(String id, String uri, String path, String method) {
-        Map<String, Object> route = new HashMap<>();
-        route.put("id", id);
-        route.put("uri", uri);
-
-        route.put("path", path);
-        route.put("method", method);
-
-        return route;
     }
 }

@@ -8,8 +8,8 @@ eureka:
     fetch-registry: true
 
   instance:
-      prefer-ip-address: true
-      ip-address: ${spring.cloud.client.ip-address}
+    prefer-ip-address: true
+    ip-address: ${spring.cloud.client.ip-address}
 
 management:
   endpoints:

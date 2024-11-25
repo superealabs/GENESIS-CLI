@@ -1,12 +1,13 @@
 package genesis.config.langage.generator.project;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import genesis.connexion.Database;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.HashMap;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import genesis.connexion.Database;
 
 public class GroqApiClient {
 
@@ -21,7 +22,7 @@ public class GroqApiClient {
             HttpResponse<String> response = sendHttpRequest(request);
             return parseResponse(response);
         } catch (Exception e) {
-            System.err.println("ERROR when generating the SQL script :\n"+e.getMessage());
+            System.err.println("ERROR when generating the SQL script :\n" + e.getMessage());
             return "-- Failed to generate SQL script. Error: " + e.getMessage();
         }
     }
@@ -32,19 +33,19 @@ public class GroqApiClient {
         HashMap<String, String> message = new HashMap<>();
         message.put("role", "user");
         message.put("content", String.format("""
-        Instructions:
-        - Provide the output in plain text format (not markdown).
-        - Do not include any comments or explanations in the output.
-        - We only need the SQL and it must be well formatted.
-        - All tables must have an unique primary key.
-        - Use the : "if not exists" when creating database objects.
-
-        Database Details:
-        - The database being used is: %s
-        - You can only use these database types: %s
-
-        Task Description:
-        """, database.getName(), database.getTypes().entrySet())+description);
+                Instructions:
+                - Provide the output in plain text format (not markdown).
+                - Do not include any comments or explanations in the output.
+                - We only need the SQL and it must be well formatted.
+                - All tables must have an unique primary key.
+                - Use the : "if not exists" when creating database objects.
+                
+                Database Details:
+                - The database being used is: %s
+                - You can only use these database types: %s
+                
+                Task Description:
+                """, database.getName(), database.getTypes().entrySet()) + description);
 
         payload.put("messages", new HashMap[]{message});
         payload.put("model", DEFAULT_MODEL);
@@ -85,7 +86,7 @@ public class GroqApiClient {
             }
             throw new RuntimeException("Invalid response format: choices array is empty or malformed");
         } else {
-            throw new RuntimeException("API call failed with status code: " + response.statusCode()+"\nError message : "+response.body());
+            throw new RuntimeException("API call failed with status code: " + response.statusCode() + "\nError message : " + response.body());
         }
     }
 

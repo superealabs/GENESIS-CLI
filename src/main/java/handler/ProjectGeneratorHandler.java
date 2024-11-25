@@ -65,8 +65,10 @@ public class ProjectGeneratorHandler {
             System.out.println("\nProject generated successfully! 👨🏽‍💻\n\nSee you on the next project 👋🏼\n");
 
         } catch (Exception e) {
-            System.err.println("\nAn error occurred during project generation: \n" + e.getMessage());
+            System.err.println("\nAn error occurred during project generation:");
+            e.printStackTrace();
         }
+
     }
 
     private void initializeProject(ProjectGenerationContext context, Scanner scanner) {
@@ -124,7 +126,7 @@ public class ProjectGeneratorHandler {
 
     private void configureGenerationOptions(ProjectGenerationContext context, Scanner scanner) {
         List<String> generationOptions;
-        boolean generateProjectStructure = true;
+        boolean generateProjectStructure;
         String groupLink = context.getGroupLink();
         Framework framework = context.getFramework();
 

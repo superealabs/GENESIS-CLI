@@ -16,19 +16,19 @@ spring:
   cloud:
     gateway:
       routes:
-      - id: WEB-API-SPRING
-        uri: lb://WEB-API-SPRING
-        predicates:
-          - Path=/web-api-spring/**
-          - Method=GET,POST,PUT,DELETE
+        - id: WEB-API-SPRING
+          uri: lb://WEB-API-SPRING
+          predicates:
+            - Path=/web-api-spring/**
+            - Method=GET,POST,PUT,DELETE
 
-      - id: WEB-API-NET
-        uri: lb://WEBAPINET
-        predicates:
-          - Path=/web-api-net/**
-          - Method=GET,POST,PUT,DELETE
+        - id: WEB-API-NET
+          uri: lb://WEBAPINET
+          predicates:
+            - Path=/web-api-net/**
+            - Method=GET,POST,PUT,DELETE
 
-      
+
 
 eureka:
   client:

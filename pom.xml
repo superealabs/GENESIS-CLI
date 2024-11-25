@@ -206,6 +206,8 @@
                 <filtering>false</filtering>
             </resource>
         </resources>
+
+
         <plugins>
 
             <!-- Maven Compiler Plugin -->

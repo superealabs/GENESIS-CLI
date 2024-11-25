@@ -11,9 +11,9 @@ import utils.FileUtils;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static utils.FileUtils.*;
 import java.util.stream.Stream;
+
+import static utils.FileUtils.toCamelCase;
 
 @Setter
 @Getter

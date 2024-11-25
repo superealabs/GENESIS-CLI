@@ -5,7 +5,6 @@ import genesis.config.langage.generator.project.GroqApiClient;
 import genesis.connexion.Database;
 import utils.FileUtils;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,7 +17,7 @@ public class Main {
         }*/
         Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
 
-        String sql = GroqApiClient.generateSQL(databases[1],"A table for customers in a resto");
+        String sql = GroqApiClient.generateSQL(databases[1], "A table for customers in a resto");
         System.out.println(sql);
     }
 

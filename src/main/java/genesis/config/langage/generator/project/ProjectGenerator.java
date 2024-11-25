@@ -23,9 +23,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static genesis.config.langage.generator.framework.FrameworkMetadataProvider.getHashMapDaoGlobal;
-import static handler.ProjectGeneratorHandler.*;
 import static genesis.config.langage.generator.project.ProjectMetadataProvider.getInitialHashMap;
 import static genesis.config.langage.generator.project.ProjectMetadataProvider.getProjectFilesEditsHashMap;
+import static handler.ProjectGeneratorHandler.*;
 
 public class ProjectGenerator {
 
@@ -42,7 +42,7 @@ public class ProjectGenerator {
             databases = Arrays.stream(FileUtils.fromJson(Database[].class, Constantes.DATABASE_JSON))
                     .collect(Collectors.toMap(Database::getId, database -> database));
 
-            languages = Arrays.stream(FileUtils.fromJson(Language[].class,Constantes.LANGUAGE_JSON))
+            languages = Arrays.stream(FileUtils.fromJson(Language[].class, Constantes.LANGUAGE_JSON))
                     .collect(Collectors.toMap(Language::getId, language -> language));
 
             projects = Arrays.stream(FileUtils.fromYaml(Project[].class, Constantes.PROJECT_YAML))
@@ -114,6 +114,7 @@ public class ProjectGenerator {
             System.out.println("File edited and created successfully: " + fileName + "\n");
         }
     }
+
     private void generateProjectFiles(ProjectGenerationContext context, List<TableMetadata> entities) throws Exception {
         HashMap<String, Object> initializeHashMap = getInitialHashMap(
                 context.getDestinationFolder(),
@@ -219,7 +220,7 @@ public class ProjectGenerator {
                 generateProjectFiles(context, entities);
 
             } catch (Exception e) {
-                throw new RuntimeException(e.getLocalizedMessage());
+                throw new RuntimeException("Exception in generateFullProject : \n", e);
             }
         } else {
             generateProjectFiles(context, null);

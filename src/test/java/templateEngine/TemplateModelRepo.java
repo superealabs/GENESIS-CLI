@@ -10,7 +10,6 @@ import org.apache.velocity.app.VelocityEngine;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -450,50 +449,50 @@ public class TemplateModelRepo {
 
         // Template Velocity
         String template = """
-            package com.${projectName}.models;
-
-            import jakarta.persistence.*;
-
-            @Entity
-            @Table(name="${tableName}")
-            public class ${className} {
-                #foreach ($field in $fields)
-                #if ($field.isPrimaryKey)
-                @Id
-                @GeneratedValue(strategy=GenerationType.IDENTITY)
-                @Column(name="$field.columnName")
-                #elseif ($field.isForeignKey)
-                @ManyToOne
-                @JoinColumn(name="$field.columnName")
-                #else
-                @Column(name="$field.columnName")
-                #end
-                private $field.type $field.name;
-            
-                #end
-
-                // Constructor
-                public ${className}(#foreach ($field in $fields)$field.type $field.name#if (!$foreach.last), #end#end) {
+                package com.${projectName}.models;
+                
+                import jakarta.persistence.*;
+                
+                @Entity
+                @Table(name="${tableName}")
+                public class ${className} {
                     #foreach ($field in $fields)
-                    this.$field.name = $field.name;
+                    #if ($field.isPrimaryKey)
+                    @Id
+                    @GeneratedValue(strategy=GenerationType.IDENTITY)
+                    @Column(name="$field.columnName")
+                    #elseif ($field.isForeignKey)
+                    @ManyToOne
+                    @JoinColumn(name="$field.columnName")
+                    #else
+                    @Column(name="$field.columnName")
                     #end
-                }
-
-                // Getters and Setters
-            #foreach ($field in $fields)
-                #if ($field.withGetters)
-                public $field.type get${$field.name}() {
-                    return $field.name;
-                }
+                    private $field.type $field.name;
+                
+                    #end
+                
+                    // Constructor
+                    public ${className}(#foreach ($field in $fields)$field.type $field.name#if (!$foreach.last), #end#end) {
+                        #foreach ($field in $fields)
+                        this.$field.name = $field.name;
+                        #end
+                    }
+                
+                    // Getters and Setters
+                #foreach ($field in $fields)
+                    #if ($field.withGetters)
+                    public $field.type get${$field.name}() {
+                        return $field.name;
+                    }
+                    #end
+                    #if ($field.withSetters)
+                    public void set${$field.name}($field.type $field.name) {
+                        this.$field.name = $field.name;
+                    }
+                    #end
                 #end
-                #if ($field.withSetters)
-                public void set${$field.name}($field.type $field.name) {
-                    this.$field.name = $field.name;
                 }
-                #end
-            #end
-            }
-            """;
+                """;
 
         // Données (via votre méthode)
         HashMap<String, Object> metadata = getHashMapIntermediaire();
