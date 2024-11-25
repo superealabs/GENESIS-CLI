@@ -1,4 +1,4 @@
-package project;
+package handler;
 
 import genesis.config.langage.*;
 import genesis.config.langage.generator.project.ProjectGenerator;
@@ -19,7 +19,7 @@ public class ProjectGeneratorHandler {
         databaseConfiguration = new DatabaseConfiguration();
     }
 
-    void generateProject() {
+    public void generateProject() {
         System.out.println("\n** Welcome to the GENESIS-CLI ** \n\n Let's get started 🚀\n");
 
         try (Scanner scanner = new Scanner(System.in)) {

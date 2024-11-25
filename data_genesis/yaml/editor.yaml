@@ -48,6 +48,10 @@
       listLink: "th:href=\"@{#{lowerCase(this)}s}\""
       createLink: "th:href=\"@{/#{lowerCase(classNameLink)}/create-#{lowerCase(className)}}\""
     content:
+      alertSuccess: "th:if=\"${success}\""
+      textSuccess: "th:text=\"${success}\""
+      alertFailed: "th:if=\"${error}\""
+      textFailed: "th:text=\"${error}\""
       callMenu: |
         <!-- MENU -->
         {{tab}}{{tab}}    <div th:replace="~{templs/menu :: layout-menu}"></div>

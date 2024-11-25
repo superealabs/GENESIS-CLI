@@ -323,9 +323,11 @@ public class FrameworkMetadataProvider {
 
         String createLink = engine.render(editor.getLayout().getMenu().getCreateLink(), getHashMapIntermediaire(tableMetadata, projectName, groupLink));
 
-
         metadata.put("createLink", createLink);
-
+        metadata.put("textFailed", editor.getLayout().getContent().getTextFailed());
+        metadata.put("alertFailed", editor.getLayout().getContent().getAlertFailed());
+        metadata.put("textSuccess", editor.getLayout().getContent().getTextSuccess());
+        metadata.put("alertSuccess", editor.getLayout().getContent().getAlertSuccess());
 
         return metadata;
     }
@@ -342,6 +344,7 @@ public class FrameworkMetadataProvider {
         metadata.putAll(languageMetadata);
         metadata.putAll(primaryListViewHashMap);
         metadata.put("inputContents", createInput);
+
 
         return metadata;
     }

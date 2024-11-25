@@ -62,7 +62,11 @@ public class Editor {
     @ToString
     public static class Content {
         private String callMenu;
+        private String textFailed;
         private String callContent;
+        private String alertFailed;
+        private String textSuccess;
+        private String alertSuccess;
     }
 
     @Getter

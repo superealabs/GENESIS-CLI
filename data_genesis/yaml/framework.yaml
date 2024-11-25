@@ -173,23 +173,49 @@
       {{tab}}}
       
       {{tab}}@PostMapping
-      {{tab}}public String create#{majStart(className)}(@ModelAttribute #{majStart(className)} #{lowerCase(className)}, Model model) {
-      {{tab}}    #{majStart(className)} new#{majStart(className)} = #{lowerCase(className)}Service.create#{majStart(className)}(#{lowerCase(className)});
-      {{tab}}    model.addAttribute("new#{majStart(className)}", new#{majStart(className)});
-      {{tab}}    return "#{lowerCase(classNameLink)}/list-#{lowerCase(className)}";
+      {{tab}}public String create#{majStart(className)}(@ModelAttribute #{majStart(className)} #{lowerCase(className)}, RedirectAttributes redirectAttributes, Model model) {
+      {{tab}}    try {
+      {{tab 2}}    #{majStart(className)} new#{majStart(className)} = #{lowerCase(className)}Service.create#{majStart(className)}(#{lowerCase(className)});
+      {{tab 2}}    model.addAttribute("new#{majStart(className)}", new#{majStart(className)});
+      
+      {{tab 2}}    redirectAttributes.addFlashAttribute("success", "#{lowerCase(className)} successfully completed");
+      {{tab}}    } catch (Exception e) {
+      {{tab 2}}    redirectAttributes.addFlashAttribute(
+      {{tab 2}}     "error",
+      {{tab 2}}     "An error has occurred during the creation of #{lowerCase(className)}");
+      {{tab}}    }
+      
+      {{tab}}    return "redirect:/#{lowerCase(classNameLink)}";
       {{tab}}}
       
       {{tab}}@PostMapping("/{id}")
-      {{tab}}public String update#{majStart(className)}(@PathVariable #{pkColumnType} id, @ModelAttribute #{majStart(className)} #{lowerCase(className)}, Model model) {
-      {{tab}}    #{majStart(className)} update#{majStart(className)} = #{lowerCase(className)}Service.update#{majStart(className)}(id, #{lowerCase(className)});
-      {{tab}}    model.addAttribute("update#{majStart(className)}", update#{majStart(className)});
-      {{tab}}    return "#{lowerCase(classNameLink)}/list-#{lowerCase(className)}";
+      {{tab}}public String update#{majStart(className)}(@PathVariable #{pkColumnType} id, @ModelAttribute #{majStart(className)} #{lowerCase(className)}, RedirectAttributes redirectAttributes, Model model) {
+      {{tab}}    try {
+      {{tab 2}}    #{majStart(className)} update#{majStart(className)} = #{lowerCase(className)}Service.update#{majStart(className)}(id, #{lowerCase(className)});
+      {{tab 2}}    model.addAttribute("update#{majStart(className)}", update#{majStart(className)});
+      
+      {{tab 2}}    redirectAttributes.addFlashAttribute("success", "#{lowerCase(className)} modify with success");
+      {{tab}}    } catch (Exception e) {
+      {{tab 2}}    redirectAttributes.addFlashAttribute(
+      {{tab 2}}     "error",
+      {{tab 2}}     "An error has occurred during the update of #{lowerCase(className)}");
+      {{tab}}    }
+      
+      {{tab}}    return "redirect:/#{lowerCase(classNameLink)}";
       {{tab}}}
       
       {{tab}}@PostMapping("/{id}/delete")
-      {{tab}}public String delete#{majStart(className)}ById(@PathVariable #{pkColumnType} id, Model model) {
-      {{tab}}    #{lowerCase(className)}Service.delete#{majStart(className)}(id);
-      {{tab}}    model.addAttribute("message", "#{majStart(className)} deleted successfully");
+      {{tab}}public String delete#{majStart(className)}ById(@PathVariable #{pkColumnType} id, RedirectAttributes redirectAttributes, Model model) {
+      {{tab}}    try {
+      {{tab 2}}     #{lowerCase(className)}Service.delete#{majStart(className)}(id);
+      
+      {{tab 2}}    redirectAttributes.addFlashAttribute("success", "#{lowerCase(className)} has been deleted ");
+      {{tab}}    } catch (Exception e) {
+      {{tab 2}}    redirectAttributes.addFlashAttribute(
+      {{tab 2}}     "error",
+      {{tab 2}}     "An error has occurred during the delete of #{lowerCase(className)}");
+      {{tab}}    }
+      
       {{tab}}    return "redirect:/#{lowerCase(classNameLink)}";
       {{tab}}}
     controllerSavePath: "#{majStart(projectName)}/src/main/java/#{groupLink}/#{lowerCase(projectName)}/controllers"
@@ -204,139 +230,3 @@
   navbarLinks:
     path: "[projectNameMaj]/src/main/resources/templates/layout/layout.html"
     link: "<a href=\"/tocrud[classNameMin].do\" class=\"nav-item nav-link\"><i class=\"fa fa-tachometer-alt me-2\"></i>[classNameformattedMaj]</a>"
-
-- id: 2
-  langageId: 2
-  name: ".NET MVC with EF"
-  template: "Template"
-  projectNameTags:
-    - "[projectNameMaj]/Controllers/HomeController.cs"
-    - "[projectNameMaj]/Models/ErrorViewModel.cs"
-    - "[projectNameMaj]/Views/Shared/_Layout.cshtml"
-    - "[projectNameMaj]/Views/_ViewImports.cshtml"
-    - "[projectNameMaj]/Program.cs"
-  additionalFiles:
-    - name: "[projectNameMaj].sln"
-      content: "csharp/data/solution.templ"
-    - name: "[projectNameMaj]/[projectNameMaj].csproj"
-      content: "csharp/data/csprojmysql.templ"
-  dependencies:
-    - groupId: "org.springframework.boot"
-      artifactId: "spring-boot-starter-data-jpa"
-    - groupId: "org.springframework.boot"
-      artifactId: "spring-boot-starter-web"
-    - groupId: "org.springframework.boot"
-      artifactId: "spring-boot-starter-thymeleaf"
-    - groupId: "org.springframework.boot"
-      artifactId: "spring-boot-starter-test"
-  model:
-    modelImports: |
-      using System.ComponentModel.DataAnnotations;
-      using System.ComponentModel.DataAnnotations.Schema;
-    modelExtends: ""
-    modelAnnotations: ""
-    modelFieldContent: |
-      {{tab}}{{#each fields}}{{#if this.isPrimaryKey}}
-      {{tab}}[Key]
-      {{tab}}[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-      {{tab}}[Column("#{this.columnName}")]
-      {{tab}}public #{this.type} #{majStart(this.name)} { get; set; }{{elseIf this.isForeignKey}}
-      {{tab}}
-      {{tab}}[ForeignKey("#{this.type}")]
-      {{tab}}[Column("#{this.columnName}")]
-      {{tab}}public #{this.columnType} #{majStart(this.columnName)} { get; set; }
-      {{tab}}
-      {{tab}}public virtual #{this.type} #{majStart(this.name)} { get; set; }
-      {{tab}}{{else}}
-      {{tab}}[Column("#{this.columnName}")]
-      {{tab}}public #{this.type} #{majStart(this.name)} { get; set; }{{/if}}{{#if !@last}}{{newline}}{{/if}}
-      {{tab}}{{/each}}
-    modelGetterSetter: ""
-    modelConstructors: |
-      {{tab}}public #{majStart(className)}({{#each fields}}#{this.type} #{this.name}{{#if !@last}}, {{/if}}{{/each}}) 
-      {{tab}}{
-      {{tab}}    {{#each fields}}
-      {{tab}}    #{majStart(this.name)} = #{this.name};{{#if !@last}}
-      {{tab}}    {{/if}}{{/each}}
-      {{tab}}}
-    modelSavePath: "[projectNameMaj]/Models"
-    modelForeignContextAttr: "public DbSet<[classNameMaj]> [classNameMaj] { get; set; }"
-    modelExtension: "cs"
-    modelPackage: "#{majStart(projectName)}.Models"
-  #    modelDao:
-  #      name: "#{majStart(className)}Repository.java"
-  #      packagePath: "#{majStart(projectName)}.Data"
-  #      isUnique: true
-  #      content: |
-  #
-  #
-  #        namespace #{packageValue};
-  #
-  #        public class #{projectName}Context : DbContext
-  #        {
-  #            {{#each entities}}
-  #            public DbSet<#{this}> #{this}s { get; set; }
-  #            {{/each}}
-  #            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-  #            {
-  #                optionsBuilder.Use#{DBType}(@"#{connectionString}");
-  #            }
-  #        }
-  modelDao:
-    isUnique: true
-    modelDaoImports: |
-      using Microsoft.EntityFrameworkCore;
-      using System.ComponentModel.DataAnnotations;
-      using #{projectName}.Models;
-    modelDaoAnnotations: ""
-    modelDaoExtends: "JpaRepository<#{majStart(className)}, #{pkColumnType}>"
-    modelDaoName: "interface #{majStart(className)}Repository"
-    modelDaoFieldContent: ""
-    modelDaoMethodContent: ""
-    modelDaoConstructors: ""
-    modelDaoSavePath: "#{majStart(projectName)}/src/main/java/#{groupLink}/#{lowerCase(projectName)}/repositories"
-    modelDaoExtension: "java"
-    modelDaoPackage: "#{group}.#{lowerCase(projectName)}.repositories;"
-  controller:
-    controllerImports: |
-      using Microsoft.AspNetCore.Mvc;
-      using Microsoft.EntityFrameworkCore;
-      using #{majStart(projectName)}.Models;
-    controllerAnnotations: ""
-    controllerExtends: " : Controller"
-    controllerName: "[classNameMaj]Controller"
-    controllerFieldContent: |
-    #      - controllerFieldAnnotations: ""
-    #        controllerFieldContent: "private readonly [classNameMaj]Context _context;"
-    controllerMethodContent: |
-    #      - controllerMethodAnnotations: |
-    #          ...
-    #        controllerMethodParameter: ""
-    #        controllerMethodContent: "csharp/controller/csharpControllerRead"
-    #      - controllerMethodAnnotations: |
-    #          [HttpPost]"
-    #        controllerMethodParameter: "string [fieldNameMin]"
-    #        controllerMethodContent: "csharp/controller/csharpControllerCreate"
-    #      - controllerMethodAnnotations: |
-    #          [HttpPost]"
-    #        controllerMethodParameter: "string [fieldNameMin]"
-    #        controllerMethodContent: "csharp/controller/csharpControllerEdit"
-    #      - controllerMethodAnnotations: |
-    #          [HttpPost]
-    #        controllerMethodParameter: ""
-    #        controllerMethodContent: "csharp/controller/csharpControllerDelete"
-    #      - controllerMethodAnnotations: |
-    #          ...
-    #        controllerMethodParameter: ""
-    #        controllerMethodContent: "csharp/controller/csharpControllerExists"
-    controllerSavePath: "[projectNameMaj]/Controllers"
-    controllerExtension: "cs"
-    controllerPackage: "[projectNameMaj].Controllers"
-  view:
-    viewExtension: ""
-    viewSavePath: ""
-    listViewName: ""
-    createViewName: ""
-  navbarLinks:
-    path: "[projectNameMaj]/Views/Shared/_Layout.cshtml"
-    link: "<a href=\"/[classNameMaj]\" class=\"nav-item nav-link\"><i class=\"fa fa-tachometer-alt me-2\"></i>[classNameformattedMaj]</a>"

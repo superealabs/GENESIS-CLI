@@ -3,6 +3,7 @@ package project;
 import genesis.config.langage.generator.project.ProjectGenerator;
 import genesis.connexion.Credentials;
 import org.junit.jupiter.api.Test;
+import handler.ProjectGeneratorHandler;
 
 public class ProjectGeneratorCLI {
     public static void main(String[] args) {
