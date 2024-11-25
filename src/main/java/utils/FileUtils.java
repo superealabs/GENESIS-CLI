@@ -196,28 +196,9 @@ public class FileUtils {
         file.mkdir();
     }
 
-    public static String formatReadable(String s) {
-        String newString = s;
-        newString = newString.replace("_", " ");
-        char[] characts = newString.toCharArray();
-        StringBuilder newWord = new StringBuilder();
-
-        for (char charact : characts) {
-            if (Character.isUpperCase(charact)) {
-                newWord.append(" ").append(Character.toLowerCase(charact));
-            } else {
-                newWord.append(charact);
-            }
-        }
-
-        newWord = new StringBuilder(majStart(newWord.toString()));
-        return newWord.toString();
-    }
 
     public static <T> T fromJson(Class<T> clazz, String json) {
-        GsonBuilder builder = (new GsonBuilder()).registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter());
-        builder.registerTypeAdapter(LocalTime.class, new LocalTimeTypeAdapter());
-        builder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter());
+        GsonBuilder builder = new GsonBuilder();
 
         builder.registerTypeAdapter(Database.class, new DatabaseTypeAdapter());
 
@@ -235,14 +216,5 @@ public class FileUtils {
         ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
         return objectMapper.readValue(new StringReader(yamlContent), clazz);
     }
-
-
-    public static String toJson(Object source) {
-        GsonBuilder builder = (new GsonBuilder()).registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter());
-        builder.registerTypeAdapter(LocalTime.class, new LocalTimeTypeAdapter());
-        builder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter());
-        return builder.create().toJson(source);
-    }
-
 
 }
