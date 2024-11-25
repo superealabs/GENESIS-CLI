@@ -270,36 +270,35 @@ public class FileUtils {
         module.addDeserializer(Database.class, new DatabaseDeserializer());
         objectMapper.registerModule(module);
 
-        // Charger le fichier depuis le classpath
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
-        if (inputStream == null) {
-            throw new FileNotFoundException("File not found : " + resourcePath);
+        // Load the file from the classpath
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath)) {
+            if (inputStream == null) {
+                throw new FileNotFoundException("File not found: " + resourcePath);
+            }
+            return objectMapper.readValue(inputStream, clazz);
         }
-
-        return objectMapper.readValue(inputStream, clazz);
     }
 
+    public static <T> T fromYaml(Class<T> clazz, String resourcePath) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+
+        // Load the file from the classpath
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath)) {
+            if (inputStream == null) {
+                throw new FileNotFoundException("File not found: " + resourcePath);
+            }
+            return objectMapper.readValue(inputStream, clazz);
+        }
+    }
 
     public static <T> T fromYamlFile(Class<T> clazz, String yamlFilePath) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
         return objectMapper.readValue(new File(yamlFilePath), clazz);
     }
 
-    public static <T> T fromYaml(Class<T> clazz, String resourcePath) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
-
-        // Charger le fichier depuis le classpath
-        InputStream inputStream = FileUtils.class.getClassLoader().getResourceAsStream(resourcePath);
-        if (inputStream == null) {
-            throw new FileNotFoundException("File not found : " + resourcePath);
-        }
-
-        return objectMapper.readValue(inputStream, clazz);
-    }
-
     public static String majStart(String input) {
         if (input == null || input.isEmpty()) {
-            return input; // Renvoie null ou chaîne vide pour éviter NullPointerException
+            return input;
         }
         return input.substring(0, 1).toUpperCase() + input.substring(1);
     }
