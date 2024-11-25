@@ -141,7 +141,7 @@ public class ProjectMetadataProvider {
         return combinedMap;
     }
 
-    public static HashMap<String, Object> getAltHashMap(Editor editor) {
+    public static HashMap<String, Object> getAltListViewHashMap(Editor editor) {
         HashMap<String, Object> altMap = new HashMap<>();
 
         altMap.put("listLink", editor.getLayout().getMenu().getListLink());
@@ -151,25 +151,29 @@ public class ProjectMetadataProvider {
         altMap.put("dataValues", editor.getLayout().getTableLoop().getDataValues());
 
         altMap.put("dataCancelId", editor.getLayout().getTableLoop().getDataCancelId());
-        altMap.put("dataValidationId", editor.getLayout().getTableLoop().getDataValidationId());
         altMap.put("dataModificationId", editor.getLayout().getTableLoop().getDataModificationId());
 
-        altMap.put("dataCancelButton", editor.getLayout().getTableLoop().getDataValidationButton());
-        altMap.put("dataValidationButton", editor.getLayout().getTableLoop().getDataValidationButton());
+        altMap.put("dataCancelButton", editor.getLayout().getTableLoop().getDataCancelButton());
         altMap.put("dataModificationButton", editor.getLayout().getTableLoop().getDataModificationButton());
 
         altMap.put("dataCancelTitleModal", editor.getLayout().getTableLoop().getDataCancelTitleModal());
-        altMap.put("dataValidationTitleModal", editor.getLayout().getTableLoop().getDataValidationTitleModal());
         altMap.put("dataModificationTitleModal", editor.getLayout().getTableLoop().getDataModificationTitleModal());
 
-        altMap.put("dataEditEventButton", editor.getLayout().getTableLoop().getDataModificationTitleModal());
-        altMap.put("dataDeleteEventButton", editor.getLayout().getTableLoop().getDataModificationTitleModal());
-        altMap.put("dataCancelValidationButton", editor.getLayout().getTableLoop().getDataModificationTitleModal());
-        altMap.put("dataValidateValidationButton", editor.getLayout().getTableLoop().getDataModificationTitleModal());
+        altMap.put("dataEditEventButton", editor.getLayout().getTableLoop().getDataEditEventButton());
+        altMap.put("dataDeleteEventButton", editor.getLayout().getTableLoop().getDataDeleteEventButton());
 
         altMap.put("formUpdateLink", editor.getLayout().getTableLoop().getFormUpdateLink());
         altMap.put("formDeleteLink", editor.getLayout().getTableLoop().getFormDeleteLink());
 
         return altMap;
     }
+
+    public static HashMap<String, Object> getAltCreateViewHashMap(Editor editor) {
+        HashMap<String, Object> altMap = new HashMap<>();
+
+        altMap.put("formCreateLink", editor.getLayout().getTableLoop().getFormCreateLink());
+
+        return altMap;
+    }
+
 }

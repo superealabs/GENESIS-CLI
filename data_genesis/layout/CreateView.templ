@@ -3,9 +3,26 @@
 
 <div layout:fragment="content" class="row">
 
-// boucle fields
-// condition type de fields field.type = editor.inputType
-// avoka
+    <!-- Page header -->
+    <div class="row align-items-center justify-content-between">
+        <div class="col-6 text-start">
+            <h2 class="fw-bold py-3 mb-3"><span class="text-muted fw-light">Create #{lowerCase(className)}</span></h2>
+        </div>
+    </div>
 
+    <div class="card">
+        <div class="card-body">
+            <form class="form" $[formCreateLink] method="post">
+                <div class="log-lg-3 col-md-6 order-0">
+                    {{#each inputContents}}
+                        #{this}
+                    {{/each}}{{removeLine}}
+                    {{removeLine}}
+                </div>
+                <button type="submit" class="btn btn-primary">Confirm
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
 </html>

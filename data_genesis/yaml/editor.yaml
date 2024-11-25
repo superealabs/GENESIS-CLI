@@ -90,21 +90,17 @@
       #
       dataCancelId: "th:id=\"'cancelModalCenter_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
       dataModificationId: "th:id=\"'updateModalCenter_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
-      dataValidationId: "th:id=\"'validateModalCenter_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
       #
       dataCancelTitleModal: "th:id=\"'cancelModalCenterTitle_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
-      dataValidationTitleModal: "th:id=\"'validateModalCenterTitle_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
       dataModificationTitleModal: "th:id=\"'updateModalCenterTitle_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
       #
       dataCancelButton: "th:attr=\"data-bs-target='#cancelModalCenter_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
       dataModificationButton: "th:attr=\"data-bs-target='#updateModalCenter_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
-      dataValidationButton: "th:attr=\"data-bs-target='#validateModalCenter_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
       #
       dataEditEventButton: "th:id=\"'editEvent_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
-      dataCancelValidationButton: "th:id=\"'cancel_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
       dataDeleteEventButton: "th:id=\"'deleteEvent_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
-      dataValidateValidationButton: "th:id=\"'confirm_' + ${ #{lowerCase(className)}.#{pkColumnName} }\""
       #
+      formCreateLink: "th:action=\"@{/#{lowerCase(classNameLink)}}\""
       formUpdateLink: "th:action=\"@{/#{lowerCase(classNameLink)}/{id} (id=${#{lowerCase(className)}.#{pkColumnName}})}\""
       formDeleteLink: "th:action=\"@{/#{lowerCase(classNameLink)}/{id}/delete (id=${#{lowerCase(className)}.#{pkColumnName}})}\""
   insert:
@@ -202,20 +198,20 @@
             {{tab 16}}</div>
     select: |
         <div class="form-floating mb-3">
-          <select class="form-select" id="#{lowerCase(fieldName)}Select" name="#{lowerCase(fieldName)}">
-            <span th:each="m:#{#{lowerCase(foreignName)}s}" th:switch="#{m.get#{majStart(foreignPrimaryName)}}">
-              <option th:case="#{e.get#{majStart(fieldName)}().get#{lowerCase(foreignPrimaryName)}()}" th:value="#{m.get#{majStart(foreignPrimaryName)}()}" selected>
-                <span th:text="#{m.label}"></span>
-              </option>
-              <option th:case="*" th:value="#{m.get#{majStart(foreignPrimaryName)}()}">
-                <span th:text="#{m.label}"></span>
-              </option>
-            </span>
-          </select>
-          <label for="#{lowerCase(fieldName)}Select">
-            #{majStart(foreignPrimaryName)}
-          </label>
-        </div>
+            {{tab 17}}<select class="form-select" id="#{lowerCase(fieldName)}Select" name="#{lowerCase(fieldName)}">
+            {{tab 17}}<span th:each="m:#{#{lowerCase(foreignName)}s}" th:switch="#{m.get#{majStart(foreignPrimaryName)}}">
+            {{tab 18}}  <option th:case="#{e.get#{majStart(fieldName)}().get#{lowerCase(foreignPrimaryName)}()}" th:value="#{m.get#{majStart(foreignPrimaryName)}()}" selected>
+            {{tab 19}}    <span th:text="#{m.label}"></span>
+            {{tab 18}}  </option>
+            {{tab 18}}  <option th:case="*" th:value="#{m.get#{majStart(foreignPrimaryName)}()}">
+            {{tab 19}}    <span th:text="#{m.label}"></span>
+            {{tab 18}}  </option>
+            {{tab 17}}</span>
+            {{tab 17}}</select>
+            {{tab 17}}<label for="#{lowerCase(fieldName)}Select">
+            {{tab 18}}#{majStart(foreignPrimaryName)}
+            {{tab 17}}</label>
+            {{tab 16}}</div>
 #- id: 2
 #  langageId: 2
 #  name: "ASP.NET MVC"

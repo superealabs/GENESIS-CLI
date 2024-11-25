@@ -146,7 +146,7 @@ public class TableMetadata {
         while (foreignKeys.next()) {
             String fkColumnName = foreignKeys.getString("FKCOLUMN_NAME");
             String pkTableName = foreignKeys.getString("PKTABLE_NAME");
-            //String pkColumnName = foreignKeys.getString("PKCOLUMN_NAME");
+//            String pkColumnName = foreignKeys.getString("PKCOLUMN_NAME");
 
             for (ColumnMetadata field : listeCols) {
                 if (field.getReferencedColumn().equalsIgnoreCase(fkColumnName)) {

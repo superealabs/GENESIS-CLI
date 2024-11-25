@@ -142,7 +142,7 @@ public class MVCGenerator implements GenesisGenerator {
         String templateContent = loadListViewTemplate(editor);
 
         // Render les attributs specifiques
-        HashMap<String, Object> altMap = ProjectMetadataProvider.getAltHashMap(editor);
+        HashMap<String, Object> altMap = ProjectMetadataProvider.getAltListViewHashMap(editor);
         String firstResult = engine.altSimpleRender(templateContent, altMap);
 
         // Render les attributs intermediaires
@@ -169,10 +169,20 @@ public class MVCGenerator implements GenesisGenerator {
 
         String templateContent = loadCreateViewTemplate(editor);
 
-        // Render le template final
-        HashMap<String, Object> metadataFinally = getAllListViewHashMap(framework, editor, tableMetadata, projectName, groupLink);
+        // Render les attributs specifiques
+        HashMap<String, Object> altCreateMap = ProjectMetadataProvider.getAltCreateViewHashMap(editor);
+        String firstResult = engine.altSimpleRender(templateContent, altCreateMap);
 
-        templateContent = engine.render(templateContent, metadataFinally);
+        // Render les attributs intermediaires
+        HashMap<String, Object> intermed = getHashMapIntermediaire(tableMetadata, projectName, groupLink);
+        String secondResult = engine.simpleRender(firstResult, intermed);
+
+        // Rendue final
+        HashMap<String, Object> metadataFinally = getAllCreateViewHashMap(framework, editor, tableMetadata, projectName, groupLink);
+        String result = engine.render(secondResult, metadataFinally);
+
+        StringBuilder resultCleaned = new StringBuilder(result);
+        engine.dropCommentary(resultCleaned);
 
         String fileName = framework.getView().getCreateViewName();
         String fileSavePath = framework.getView().getViewSavePath();

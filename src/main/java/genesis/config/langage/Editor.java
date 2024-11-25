@@ -74,22 +74,18 @@ public class Editor {
         private String dataValues;
 
         private String dataCancelId;
-        private String dataValidationId;
         private String dataModificationId;
 
         private String dataCancelButton;
-        private String dataValidationButton;
         private String dataModificationButton;
 
         private String dataCancelTitleModal;
-        private String dataValidationTitleModal;
         private String dataModificationTitleModal;
 
         private String dataEditEventButton;
         private String dataDeleteEventButton;
-        private String dataCancelValidationButton;
-        private String dataValidateValidationButton;
 
+        private String formCreateLink;
         private String formUpdateLink;
         private String formDeleteLink;
     }

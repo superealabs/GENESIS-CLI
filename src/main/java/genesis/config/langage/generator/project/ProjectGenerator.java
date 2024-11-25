@@ -121,7 +121,7 @@ public class ProjectGenerator {
 
             // Initialisation des HashMap pour les templates
             HashMap<String, Object> initializeHashMap = getInitialHashMap(projectName, groupLink);
-            HashMap<String, Object> altHashMap = ProjectMetadataProvider.getAltHashMap(editor);
+            HashMap<String, Object> altHashMap = ProjectMetadataProvider.getAltListViewHashMap(editor);
             HashMap<String, Object> projectFilesEditsHashMap = metadataProvider.getProjectFilesEditsHashMap(projectName,
                     groupLink,
                     projectPort,
