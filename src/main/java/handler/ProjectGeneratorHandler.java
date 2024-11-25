@@ -124,7 +124,7 @@ public class ProjectGeneratorHandler {
 
     private void configureGenerationOptions(ProjectGenerationContext context, Scanner scanner) {
         List<String> generationOptions;
-        boolean generateProjectStructure = true;
+        boolean generateProjectStructure;
         String groupLink = context.getGroupLink();
         Framework framework = context.getFramework();
 
@@ -148,6 +148,7 @@ public class ProjectGeneratorHandler {
                 groupLink = getNonEmptyInput(scanner, "Enter the group link");
                 context.setGroupLink(groupLink);
             }
+            else context.setGroupLink("");
 
             projectPort = getValidPort(scanner);
             context.setProjectPort(projectPort);
