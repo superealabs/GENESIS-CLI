@@ -219,7 +219,7 @@ public class ProjectGenerator {
                 generateProjectFiles(context, entities);
 
             } catch (Exception e) {
-                throw new RuntimeException(e.getLocalizedMessage());
+                throw new RuntimeException("\nError in generateFullProject : \n"+e);
             }
         } else {
             generateProjectFiles(context, null);
@@ -247,7 +247,7 @@ public class ProjectGenerator {
                     );
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e.getLocalizedMessage());
+                throw new RuntimeException("\nError in generateComponentsOnly : \n"+e);
             }
         }
     }

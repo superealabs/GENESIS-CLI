@@ -49,7 +49,7 @@ public class ProjectGeneratorCLI {
             String logLevel = "INFO";
             String hibernateDdlAuto = "none";
             String projectDescription = "Test Project";
-            String frameworkVersion = "3.3.5";
+            String frameworkVersion = "3.3.6";
             String languageVersion = "21";
             String destinationFolder = "/Users/nomena/STAGE/GENESIS/sample-projects/enfin";
 

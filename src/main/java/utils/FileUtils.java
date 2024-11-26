@@ -9,10 +9,7 @@ import genesis.connexion.Database;
 import genesis.connexion.adapter.DatabaseDeserializer;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -176,41 +173,66 @@ public class FileUtils {
     }
 
     public static void copyFile(String sourceFilePath, String destinationFilePath, String fileName) throws IOException {
-        Path destinationPath = Paths.get(destinationFilePath + fileName);
+        Path destinationPath = Paths.get(destinationFilePath, fileName);
 
         try (InputStream inputStream = FileUtils.class.getClassLoader().getResourceAsStream(sourceFilePath)) {
-            assert inputStream != null;
+            if (inputStream == null) {
+                throw new FileNotFoundException("Source file not found in JAR: " + sourceFilePath);
+            }
+
             Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (NoSuchFileException e) {
-            System.out.println("Warning : " + e.getMessage() + "\n" + "Generated the missing file ...\n");
+            System.out.println("Warning : " + e.getMessage() + "\nGenerated the missing file ...\n");
             createFileStructure(destinationPath.toString());
+
             try (InputStream inputStream = FileUtils.class.getClassLoader().getResourceAsStream(sourceFilePath)) {
-                assert inputStream != null;
+                if (inputStream == null) {
+                    throw new FileNotFoundException("Source file not found after retry: " + sourceFilePath);
+                }
+
                 Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
             }
+
             System.out.println("Generated : " + destinationPath + "\n");
         } catch (IOException e) {
             throw new IOException("Error when copying file: " + e.getMessage(), e);
         }
     }
 
+
     public static void copyDirectory(String sourceDir, String destDir) throws IOException {
         URI resourceUri = getResourceUri(sourceDir);
-
-        // Vérifier si la ressource est dans un JAR ou dans le système de fichiers
         Path destPath = Paths.get(destDir);
+
         if (resourceUri.getScheme().equals("jar")) {
-            // La ressource est dans un JAR
+            // Gérer les fichiers dans un JAR
             try (FileSystem fileSystem = FileSystems.newFileSystem(resourceUri, Collections.emptyMap())) {
                 Path jarPath = fileSystem.getPath(sourceDir);
-                copyDirectoryFromPath(jarPath, destPath);
+                copyDirectoryFromJar(jarPath, destPath);
             }
         } else {
-            // La ressource est dans le système de fichiers
+            // Gérer les fichiers dans le système de fichiers classique
             Path srcPath = Paths.get(resourceUri);
             copyDirectoryFromPath(srcPath, destPath);
         }
     }
+
+    private static void copyDirectoryFromJar(Path sourceJarPath, Path destinationPath) throws IOException {
+        Files.walk(sourceJarPath)
+                .forEach(path -> {
+                    Path resolvedDestPath = destinationPath.resolve(sourceJarPath.relativize(path).toString());
+                    try {
+                        if (Files.isDirectory(path)) {
+                            Files.createDirectories(resolvedDestPath);
+                        } else {
+                            Files.copy(path, resolvedDestPath, StandardCopyOption.REPLACE_EXISTING);
+                        }
+                    } catch (IOException e) {
+                        throw new UncheckedIOException("Error copying file from JAR: " + path, e);
+                    }
+                });
+    }
+
 
     private static @NotNull URI getResourceUri(String sourceDir) throws IOException {
         // Obtenir le class loader actuel

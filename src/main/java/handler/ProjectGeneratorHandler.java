@@ -66,6 +66,7 @@ public class ProjectGeneratorHandler {
 
         } catch (Exception e) {
             System.err.println("\nAn error occurred during project generation: \n" + e.getMessage());
+            e.printStackTrace();
         }
     }
 
