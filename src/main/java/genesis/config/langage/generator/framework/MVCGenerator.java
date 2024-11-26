@@ -187,7 +187,7 @@ public class MVCGenerator implements GenesisGenerator {
         String fileName = framework.getView().getCreateViewName();
         String fileSavePath = framework.getView().getViewSavePath();
         String fileExtension = framework.getView().getViewExtension();
-        FileUtils.createFile(engine.simpleRender(fileSavePath, metadataFinally), engine.simpleRender(fileName, metadataFinally), engine.simpleRender(fileExtension, metadataFinally), templateContent);
+        FileUtils.createFile(engine.simpleRender(fileSavePath, metadataFinally), engine.simpleRender(fileName, metadataFinally), engine.simpleRender(fileExtension, metadataFinally), result);
 
     }
 

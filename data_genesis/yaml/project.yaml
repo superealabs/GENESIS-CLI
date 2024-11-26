@@ -155,25 +155,6 @@
         </project>
       destinationPath: "#{majStart(projectName)}/"
 
-    - fileType: "home"
-      fileName: "HomeController"
-      extension: "java"
-      content: |
-        package #{groupLink}.#{lowerCase(projectName)}.controllers;
-
-        import org.springframework.stereotype.Controller;
-        import org.springframework.web.bind.annotation.GetMapping;
-        import org.springframework.beans.factory.annotation.Autowired;
-
-        @Controller
-        public class HomeController {
-
-        {{tab}}@GetMapping
-        {{tab}}public String index() {
-        {{tab}}    return "index";
-        {{tab}}}
-        }
-      destinationPath: "#{majStart(projectName)}/src/main/java/#{groupLink}/#{lowerCase(projectName)}/controllers/"
     - fileType: "menuHtml"
       fileName: "menu"
       extension: "html"
@@ -236,6 +217,69 @@
         
         </aside>
       destinationPath: "#{majStart(projectName)}/src/main/resources/templates/templs/"
+    - fileType: "HomeController"
+      fileName: "HomeController"
+      extension: "java"
+      content: |
+        package #{groupLink}.#{lowerCase(projectName)}.controllers;
+
+        import org.springframework.stereotype.Controller;
+        import org.springframework.web.bind.annotation.GetMapping;
+        import org.springframework.beans.factory.annotation.Autowired;
+
+        @Controller
+        public class HomeController {
+
+        {{tab}}@Autowired
+        {{tab}}public HomeController() {
+        {{tab}}}
+
+        {{tab}}@GetMapping
+        {{tab}}public String index() {
+        {{tab 2}}return "redirect:/index";
+        {{tab}}}
+        }
+      destinationPath: "#{majStart(projectName)}/src/main/java/#{groupLink}/#{lowerCase(projectName)}/controllers/"
+    - fileType: "layoutConfig"
+      fileName: "ThymeleafConfig"
+      extension: "java"
+      content: |
+        package #{groupLink}.#{lowerCase(projectName)}.config;
+
+        import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
+        import org.springframework.context.annotation.Bean;
+        import org.springframework.context.annotation.Configuration;
+        import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
+        import org.thymeleaf.spring6.SpringTemplateEngine;
+        import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
+        import org.thymeleaf.templatemode.TemplateMode;
+        import org.thymeleaf.templateresolver.ITemplateResolver;
+
+        @Configuration
+        public class ThymeleafConfig {
+        {{tab}}@Bean
+        {{tab}}public SpringTemplateEngine templateEngine() {
+        {{tab}}    SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        {{tab}}    // Configuration essentielle :
+        {{tab}}    templateEngine.setTemplateResolver(templateResolver());
+        {{tab}}    // Ajout du dialecte LayoutDialect pour la gestion des layouts :
+        {{tab}}    templateEngine.addDialect(new LayoutDialect());
+        {{tab}}    templateEngine.addDialect(new Java8TimeDialect());
+        {{tab}}    templateEngine.setEnableSpringELCompiler(true);  // Pour la compilation des expressions Spring EL
+        {{tab}}    return templateEngine;
+        {{tab}}}
+
+        {{tab}}@Bean
+        {{tab}}public ITemplateResolver templateResolver() {
+        {{tab}}    SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
+        {{tab}}    templateResolver.setPrefix("classpath:/templates/");
+        {{tab}}    templateResolver.setSuffix(".html");
+        {{tab}}    templateResolver.setCharacterEncoding("UTF-8");
+        {{tab}}    templateResolver.setTemplateMode(TemplateMode.HTML);
+        {{tab}}    return templateResolver;
+        {{tab}}}
+        }
+      destinationPath: "#{majStart(projectName)}/src/main/java/#{groupLink}/#{lowerCase(projectName)}/config/"
   projectFiles:
     - fileType: "GitIgnore"
       fileName: ".gitignore"
@@ -256,11 +300,6 @@
       fileName: "mvnw.cmd"
       sourcePath: "data_genesis/maven/"
       destinationPath: "#{majStart(projectName)}/"
-
-    - fileType: "HomeController"
-      fileName: "HomeController.java"
-      sourcePath: "data_genesis/layout/"
-      destinationPath: "#{majStart(projectName)}/src/main/java/#{groupLink}/#{lowerCase(projectName)}/controllers/"
 
     - fileType: "Index"
       fileName: "index.html"

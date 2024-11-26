@@ -51,24 +51,24 @@ public class FrameworkMetadataProvider {
         List<String> fields = new ArrayList<>();
 
         for (TableMetadata tableMetadatum : tableMetadata) {
-            fields.add(tableMetadatum.getClassName());
-        }
+                fields.add(tableMetadatum.getClassName());
+            }
 
         return fields;
     }
 
-//    public static HashMap<String, Object> getForeignInformation(ColumnMetadata columnMetadatum, TableMetadata tableMetadata, Editor editor){
-//        HashMap<String, Object> foreignInformation = new HashMap<>();
-//        ColumnMetadata[] columnMetadata = tableMetadata.getColumns();
-//        Map<String, Object> fieldHashMap = getFieldHashMap(columnMetadatum);
-//
-//        for (ColumnMetadata columnMetadata1 : columnMetadata) {
-//            foreignInformation.putAll(fieldHashMap);
-//            foreignInformation.put("fieldName", columnMetadata1.getName());
-//        }
-//
-//        return foreignInformation;
-//    }
+    public static HashMap<String, Object> getForeignInformation(ColumnMetadata columnMetadatum, TableMetadata tableMetadata, Editor editor){
+        HashMap<String, Object> foreignInformation = new HashMap<>();
+        ColumnMetadata[] columnMetadata = tableMetadata.getColumns();
+        Map<String, Object> fieldHashMap = getFieldHashMap(columnMetadatum);
+
+        for (ColumnMetadata columnMetadata1 : columnMetadata) {
+            foreignInformation.putAll(fieldHashMap);
+            foreignInformation.put("fieldName", columnMetadata1.getName());
+        }
+
+        return foreignInformation;
+    }
 
     public static List<String> getUpdateInputsList(TableMetadata tableMetadata,Editor editor) throws Exception {
         List<String> inputContents = new ArrayList<>();
@@ -81,7 +81,7 @@ public class FrameworkMetadataProvider {
                 inputContents.add(updatesInput);
             }
 //            else if (!columnMetadatum.isForeign()) {
-//                String foreignUpdateInput = engine.render(updates.get(columnMetadatum.getReferencedTable()).toString(), Map.of("fielName", columnMetadatum.getName()));
+//                String foreignUpdateInput = engine.render(updates.get(columnMetadatum.getReferencedTable()).toString(), Map.of("fieldName", columnMetadatum.getName()));
 //                inputContents.add(foreignUpdateInput);
 //            }
         }
@@ -248,6 +248,7 @@ public class FrameworkMetadataProvider {
         List<Map<String, Object>> fields = new ArrayList<>();
         for (ColumnMetadata field : tableMetadata.getColumns()) {
             Map<String, Object> fieldMap = getFieldHashMap(field);
+
             fields.add(fieldMap);
         }
         metadata.put("fields", fields);
@@ -275,6 +276,7 @@ public class FrameworkMetadataProvider {
         fieldMap.put("isForeignKey", field.isForeign());
         fieldMap.put("columnType", field.getColumnType());
         fieldMap.put("columnName", field.getReferencedColumn());
+        fieldMap.put("columnTable", field.getReferencedTable());
 
         return fieldMap;
     }

@@ -29,7 +29,7 @@
                         <thead class="thead-light">
                         <tr>
                             {{#each fields}}
-                            <th>#{this.name}</th>
+                            <th>{{#if this.isForeignKey}} #{this.columnTable.columnName} {{/if}} #{this.name}</th>
                             {{/each}}{{removeLine}}
                         </tr>
                         </thead>
