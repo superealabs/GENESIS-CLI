@@ -30,7 +30,7 @@
       @Entity
       @Table(name="#{tableName}")
     modelFieldContent: |
-      {{tab}}{{#each fields}}
+      {{tab}}{{#each fields}} 
       {{tab}}{{#if this.isPrimaryKey}}
       {{tab}}@Id
       {{tab}}@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -85,6 +85,13 @@
     modelDaoSavePath: "#{majStart(projectName)}/src/main/java/#{groupLink}/#{lowerCase(projectName)}/repositories"
     modelDaoExtension: "java"
     modelDaoPackage: "#{groupLink}.#{lowerCase(projectName)}.repositories;"
+    modelDaoAdditionalFiles:
+      - fileType: ""
+        fileName: ""
+        extension: ""
+        content: ""
+        destinationPath: ""
+
   service:
     serviceImports: |
       import #{groupLink}.#{lowerCase(projectName)}.models.#{majStart(className)};
@@ -108,7 +115,7 @@
     serviceMethodContent: |
       {{tab}}public List<#{majStart(className)}> getAll#{majStart(className)}() {
       {{tab}}    return #{minStart(className)}Repository.findAll();
-      {{tab}}}
+      {{tab}}}  
       
       {{tab}}public #{majStart(className)} get#{majStart(className)}ById(#{pkColumnType} id) {
       {{tab}}    Optional<#{majStart(className)}> #{minStart(className)} = #{minStart(className)}Repository.findById(id);
@@ -142,8 +149,8 @@
   controller:
     controllerImports: |
       import org.springframework.ui.Model;
-      import #{groupLink}.#{lowerCase(projectName)}.models.#{majStart(className)};
-      import #{groupLink}.#{lowerCase(projectName)}.services.#{majStart(className)}Service;
+      import #{groupLink}.#{lowerCase(projectName)}.models.*;
+      import #{groupLink}.#{lowerCase(projectName)}.services.*;
       import org.springframework.stereotype.Controller;
       import org.springframework.web.bind.annotation.*;
       
@@ -156,20 +163,44 @@
     controllerName: "#{majStart(className)}Controller"
     controllerFieldContent: |
       {{tab}}private final #{majStart(className)}Service #{lowerCase(className)}Service;
-    controllerConstructors: |
-      {{tab}}public #{majStart(className)}Controller(#{majStart(className)}Service #{lowerCase(className)}Service) {
+      {{tab}}{{#each fields}} 
+      {{tab}}{{#if this.isForeignKey}}
+      {{tab}}private final #{majStart(this.name)}Service #{lowerCase(this.name)}Service;
+      {{tab}}{{/if}}{{/each}}
+    controllerConstructors: |      
+      {{tab}}public #{majStart(className)}Controller({{#each fields}}{{#if this.isForeignKey}} #{majStart(this.name)}Service #{lowerCase(this.name)}Service,{{/if}}{{/each}} #{majStart(className)}Service #{lowerCase(className)}Service) {
       {{tab}}    this.#{lowerCase(className)}Service = #{lowerCase(className)}Service;
+      {{tab}}    {{#each fields}} 
+      {{tab}}    {{#if this.isForeignKey}}
+      {{tab}}    this.#{lowerCase(this.name)}Service = #{lowerCase(this.name)}Service;
+      {{tab}}    {{/if}}{{/each}}
       {{tab}}}
     controllerMethodContent: |
       {{tab}}@GetMapping
       {{tab}}public String getAll#{majStart(classNameLink)}(Model model) {
       {{tab}}    List<#{majStart(className)}> #{lowerCase(classNameLink)} = #{lowerCase(className)}Service.getAll#{majStart(className)}();
+      {{tab}}    {{#each fields}} 
+      {{tab}}    {{#if this.isForeignKey}}
+      {{tab}}    List<#{majStart(this.name)}> #{lowerCase(this.name)}s = #{lowerCase(this.name)}Service.getAll#{majStart(this.name)}();
+      {{tab}}    {{/if}}{{/each}}
       {{tab}}    model.addAttribute("#{lowerCase(classNameLink)}", #{lowerCase(classNameLink)});
+      {{tab}}    {{#each fields}} 
+      {{tab}}    {{#if this.isForeignKey}}
+      {{tab}}    model.addAttribute("#{this.name}s", #{this.name}s);
+      {{tab}}    {{/if}}{{/each}}
       {{tab}}    return "#{lowerCase(classNameLink)}/list-#{lowerCase(className)}";
       {{tab}}}
       
       {{tab}}@GetMapping("/create-#{lowerCase(className)}")
       {{tab}}public String return#{majStart(classNameLink)}(Model model) {
+      {{tab}}    {{#each fields}} 
+      {{tab}}    {{#if this.isForeignKey}}
+      {{tab}}    List<#{majStart(this.name)}> #{lowerCase(this.name)}s = #{lowerCase(this.name)}Service.getAll#{majStart(this.name)}();
+      {{tab}}    {{/if}}{{/each}}
+      {{tab}}    {{#each fields}} 
+      {{tab}}    {{#if this.isForeignKey}}
+      {{tab}}    model.addAttribute("#{this.name}s", #{this.name}s);
+      {{tab}}    {{/if}}{{/each}}
       {{tab}}    return "#{lowerCase(classNameLink)}/create-#{lowerCase(className)}";
       {{tab}}}
       

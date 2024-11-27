@@ -12,7 +12,7 @@ public class ProjectGeneratorCLI {
     }
 
     @Test
-    void generateProject() {
+    void generateSpringThymeleafProject() {
         var credentials = new Credentials()
                 .setHost("localhost")
                 .setDatabaseName("post_db")
@@ -41,7 +41,37 @@ public class ProjectGeneratorCLI {
 
         projectGenerator.generateProject(databaseId, languageId, frameworkId, projectId, editorId, credentials, projectName, groupLink, projectPort, logLevel, hibernateDdlAuto, frameworkVersion, projectDescription, languageVersion);
         System.out.println("\nProject generated successfully! 👨🏽‍💻");
+    }
 
+    @Test
+    void generateASPNETCoreProject() {
+        var credentials = new Credentials()
+                .setHost("localhost")
+                .setDatabaseName("post_db")
+                .setUser("postgres")
+                .setPwd("nikami")
+                .setPort("5432")
+                .setTrustCertificate(true)
+                .setUseSSL(true)
+                .setAllowPublicKeyRetrieval(true);
 
+        int editorId = 0;
+        int projectId = 1;
+        int databaseId = 1;
+        int languageId = 2;
+        int frameworkId = 2;
+        String projectName = "ApiNetMVC";
+        String groupLink = "";
+        String projectPort = "7230";
+        String logLevel = "INFO";
+        String hibernateDdlAuto = "none";
+        String frameworkVersion = "8.0";
+        String projectDescription = "An Asp.NET BEGIN Project";
+        String languageVersion = "";
+
+        var projectGenerator = new ProjectGenerator();
+
+        projectGenerator.generateProject(databaseId, languageId, frameworkId, projectId, editorId, credentials, projectName, groupLink, projectPort, logLevel, hibernateDdlAuto, frameworkVersion, projectDescription, languageVersion);
+        System.out.println("\nProject generated successfully! 👨🏽‍💻");
     }
 }

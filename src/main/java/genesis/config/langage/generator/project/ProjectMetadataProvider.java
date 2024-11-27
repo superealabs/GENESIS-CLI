@@ -149,6 +149,7 @@ public class ProjectMetadataProvider {
         altMap.put("dataLoop", editor.getLayout().getTableLoop().getDataLoop());
         altMap.put("dataKeys", editor.getLayout().getTableLoop().getDataKeys());
         altMap.put("dataValues", editor.getLayout().getTableLoop().getDataValues());
+        altMap.put("dataForeignValues", editor.getLayout().getTableLoop().getDataForeignValues());
 
         altMap.put("dataCancelId", editor.getLayout().getTableLoop().getDataCancelId());
         altMap.put("dataModificationId", editor.getLayout().getTableLoop().getDataModificationId());
@@ -176,4 +177,13 @@ public class ProjectMetadataProvider {
         return altMap;
     }
 
+    public static HashMap<String, Object> getSelectHashMap(Editor editor) {
+        HashMap<String, Object> altMap = new HashMap<>();
+
+        altMap.put("dataTextOption", editor.getLayout().getTableLoop().getDataTextOption());
+        altMap.put("dataSelectLoop", editor.getLayout().getTableLoop().getDataSelectLoop());
+        altMap.put("dataValueOption", editor.getLayout().getTableLoop().getDataValueOption());
+
+        return altMap;
+    }
 }

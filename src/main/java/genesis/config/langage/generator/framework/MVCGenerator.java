@@ -6,6 +6,7 @@ import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
 import genesis.config.langage.generator.project.ProjectMetadataProvider;
 import genesis.engine.TemplateEngine;
+import genesis.model.ColumnMetadata;
 import genesis.model.TableMetadata;
 import utils.FileUtils;
 
@@ -134,7 +135,7 @@ public class MVCGenerator implements GenesisGenerator {
         return engine.render(result, metadataFinally);
     }
 
-    public void generateListView(Framework framework, Language language, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
+    public void generateListView(ColumnMetadata[] columnMetadatas, ColumnMetadata metadata, Framework framework, Language language, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
         if (language.getId() != framework.getLangageId()) {
             throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
         }
@@ -150,7 +151,7 @@ public class MVCGenerator implements GenesisGenerator {
         String secondResult = engine.simpleRender(firstResult, intermed);
 
         // Rendue final
-        HashMap<String, Object> metadataFinally = getAllListViewHashMap(framework, editor, tableMetadata, projectName, groupLink);
+        HashMap<String, Object> metadataFinally = getAllListViewHashMap(columnMetadatas, metadata, framework, editor, tableMetadata, projectName, groupLink);
         String result = engine.render(secondResult, metadataFinally);
 
         StringBuilder resultCleaned = new StringBuilder(result);
@@ -162,7 +163,7 @@ public class MVCGenerator implements GenesisGenerator {
         FileUtils.createFile(engine.simpleRender(fileSavePath, metadataFinally), engine.simpleRender(fileName, metadataFinally), engine.simpleRender(fileExtension, metadataFinally), result);
     }
 
-    public void generateCreateView(Framework framework, Language language, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
+    public void generateCreateView(ColumnMetadata[] columnMetadatas, ColumnMetadata metadata, Framework framework, Language language, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
         if (language.getId() != framework.getLangageId()) {
             throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
         }
@@ -178,7 +179,7 @@ public class MVCGenerator implements GenesisGenerator {
         String secondResult = engine.simpleRender(firstResult, intermed);
 
         // Rendue final
-        HashMap<String, Object> metadataFinally = getAllCreateViewHashMap(framework, editor, tableMetadata, projectName, groupLink);
+        HashMap<String, Object> metadataFinally = getAllCreateViewHashMap(columnMetadatas, metadata, framework, editor, tableMetadata, projectName, groupLink);
         String result = engine.render(secondResult, metadataFinally);
 
         StringBuilder resultCleaned = new StringBuilder(result);
@@ -192,13 +193,13 @@ public class MVCGenerator implements GenesisGenerator {
     }
 
     @Override
-    public String generateView(Framework framework, Language language, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
+    public String generateView(ColumnMetadata[] columnMetadatas, ColumnMetadata metadata, Framework framework, Language language, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
         if (language.getId() != framework.getLangageId()) {
             throw new RuntimeException("Incompatibility detected: the language '" + language.getName() + "' (provided ID: " + language.getId() + ") is not compatible with the framework '" + framework.getName() + "' (required language ID: '" + framework.getLangageId() + "').");
         }
 
-        generateListView(framework, language, editor, tableMetadata, projectName, groupLink);
-        generateCreateView(framework, language, editor, tableMetadata, projectName, groupLink);
+        generateListView(columnMetadatas, metadata, framework, language, editor, tableMetadata, projectName, groupLink);
+        generateCreateView(columnMetadatas, metadata, framework, language, editor, tableMetadata, projectName, groupLink);
 
         return "";
     }

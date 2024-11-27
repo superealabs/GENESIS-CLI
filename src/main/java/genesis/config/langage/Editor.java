@@ -76,6 +76,11 @@ public class Editor {
         private String dataLoop;
         private String dataKeys;
         private String dataValues;
+        private String dataForeignValues;
+
+        private String dataTextOption;
+        private String dataSelectLoop;
+        private String dataValueOption;
 
         private String dataCancelId;
         private String dataModificationId;

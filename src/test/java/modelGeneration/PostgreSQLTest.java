@@ -10,6 +10,7 @@ import genesis.config.langage.generator.project.ProjectGenerator;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.connexion.providers.PostgreSQLDatabase;
+import genesis.model.ColumnMetadata;
 import genesis.model.TableMetadata;
 import org.junit.jupiter.api.Test;
 import utils.FileUtils;
@@ -75,14 +76,17 @@ public class PostgreSQLTest {
 //                System.out.println("\n====== GENERATED ======\n" + layout);
 
                 String templateContent = "th:each=${lowerCase(className)} : <#${/#>${lowerCase(classNameLink)}<#}/#>";
+                ColumnMetadata[] columnMetadata = tableMetadata.getColumns();
+                for (ColumnMetadata metadata : columnMetadata) {
+                    HashMap<String, Object> metadataFinally = getAllListViewHashMap(columnMetadata, metadata, framework, editor, tableMetadata, "test", "labs");
 
-                HashMap<String, Object> metadataFinally = getAllListViewHashMap(framework, editor, tableMetadata, "test", "labs");
-                String result = engine.render(templateContent, metadataFinally);
+                    String result = engine.render(templateContent, metadataFinally);
 
-                StringBuilder resultCleaned = new StringBuilder(result);
-                engine.dropCommentary(resultCleaned);
+                    StringBuilder resultCleaned = new StringBuilder(result);
+                    engine.dropCommentary(resultCleaned);
 
-                System.out.println(resultCleaned);
+                    System.out.println(resultCleaned);
+                }
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

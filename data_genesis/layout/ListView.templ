@@ -29,14 +29,14 @@
                         <thead class="thead-light">
                         <tr>
                             {{#each fields}}
-                            <th>{{#if this.isForeignKey}} #{this.columnTable.columnName} {{/if}} #{this.name}</th>
+                            <th>#{this.name}</th>
                             {{/each}}{{removeLine}}
                         </tr>
                         </thead>
                         <tbody>
                         <tr $[dataLoop]>
                             {{#each fields}}
-                            <td class="text-truncate align-middle mt-3" $[dataValues]> $[dataKeys] </td>
+                            <td class="text-truncate align-middle mt-3" {{#if this.isForeignKey}} $[dataForeignValues] {{else}} $[dataValues] {{/if}}> $[dataKeys] </td>
                             {{#if @last}}
                             <td class="align-middle">
                                 <div class="row">
@@ -79,9 +79,9 @@
                                                                     {{/each}}{{removeLine}}
                                                                     {{removeLine}}
                                                                 </div>
-                                                                <button type="submit" class="btn btn-primary">Confirm
-                                                                </button>
                                                             </div>
+                                                            <button type="submit" class="btn btn-primary">Confirm
+                                                            </button>
                                                             </form>
                                                         </div>
                                                     </div>
@@ -129,9 +129,9 @@
                                                                <div class="log-lg-3 col-md-6 order-0">
                                                                     <p>Do you want to undo the changes made to this element?</p>
                                                                </div>
-                                                               <button type="submit" class="btn btn-danger">Delete
-                                                               </button>
                                                            </div>
+                                                           <button type="submit" class="btn btn-danger">Delete
+                                                           </button>
                                                            </form>
                                                        </div>
                                                    </div>

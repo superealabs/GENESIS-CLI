@@ -3,6 +3,7 @@ package genesis.config.langage.generator.framework;
 import genesis.config.langage.Editor;
 import genesis.config.langage.Framework;
 import genesis.config.langage.Language;
+import genesis.config.langage.generator.project.ProjectMetadataProvider;
 import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.engine.TemplateEngine;
@@ -57,47 +58,77 @@ public class FrameworkMetadataProvider {
         return fields;
     }
 
-    public static HashMap<String, Object> getForeignInformation(ColumnMetadata columnMetadatum, TableMetadata tableMetadata, Editor editor){
-        HashMap<String, Object> foreignInformation = new HashMap<>();
-        ColumnMetadata[] columnMetadata = tableMetadata.getColumns();
-        Map<String, Object> fieldHashMap = getFieldHashMap(columnMetadatum);
+    public static ColumnMetadata getColumnAfterPK(ColumnMetadata[] columnMetadata) {
+        ColumnMetadata metadata = new ColumnMetadata();
+        boolean nextColumnIsMetadata = false;
 
-        for (ColumnMetadata columnMetadata1 : columnMetadata) {
-            foreignInformation.putAll(fieldHashMap);
-            foreignInformation.put("fieldName", columnMetadata1.getName());
+        for (ColumnMetadata column : columnMetadata) {
+            if (nextColumnIsMetadata) {
+                metadata = column;
+                break;
+            }
+
+            if (column.isPrimary()) {
+                nextColumnIsMetadata = true;
+            }
         }
 
-        return foreignInformation;
+        return metadata;
     }
 
-    public static List<String> getUpdateInputsList(TableMetadata tableMetadata,Editor editor) throws Exception {
-        List<String> inputContents = new ArrayList<>();
-        Map<String, Object> updates = editor.getUpdate().getInput();
-        ColumnMetadata[] columnMetadata = tableMetadata.getColumns();
+    public static HashMap<String, Object> getSelectHashMap(ColumnMetadata[] columnMetadonnee, ColumnMetadata columnMetadata) {
+        HashMap<String, Object> metadata = new HashMap<>();
+        ColumnMetadata data = getColumnAfterPK(columnMetadonnee);
 
-        for (ColumnMetadata columnMetadatum : columnMetadata) {
+        metadata.put("foreignPrimaryName", data.getName());
+        metadata.put("fieldName", columnMetadata.getName());
+        metadata.put("foreignName", columnMetadata.getReferencedColumn());
+
+        return metadata;
+    }
+
+    public static List<String> getUpdateInputsList(ColumnMetadata[] columnMetadatas, ColumnMetadata metaDonnee, TableMetadata tableMetadata,Editor editor) throws Exception {
+        List<String> inputContents = new ArrayList<>();
+        String select = editor.getUpdate().getSelect();
+        ColumnMetadata[] columns = tableMetadata.getColumns();
+        Map<String, Object> updates = editor.getUpdate().getInput();
+        HashMap<String, Object> datas = getSelectHashMap(columnMetadatas, metaDonnee);
+        HashMap<String, Object> selectHashMap = ProjectMetadataProvider.getSelectHashMap(editor);
+
+        for (ColumnMetadata columnMetadatum : columns) {
             if (!columnMetadatum.isPrimary()) {
-                String updatesInput = engine.render(updates.get(columnMetadatum.getPrimaryType()).toString(), Map.of("fieldName", columnMetadatum.getName()));
-                inputContents.add(updatesInput);
+                if (columnMetadatum.getReferencedTable() == null) {
+                    String updatesInput = engine.render(updates.get(columnMetadatum.getPrimaryType()).toString(), Map.of("fieldName", columnMetadatum.getName()));
+                    inputContents.add(updatesInput);
+                } else {
+                    String foreignUpdateInput = engine.altSimpleRender(select, selectHashMap);
+                    foreignUpdateInput = engine.render(foreignUpdateInput,datas);
+                    inputContents.add(foreignUpdateInput);
+                }
             }
-//            else if (!columnMetadatum.isForeign()) {
-//                String foreignUpdateInput = engine.render(updates.get(columnMetadatum.getReferencedTable()).toString(), Map.of("fieldName", columnMetadatum.getName()));
-//                inputContents.add(foreignUpdateInput);
-//            }
         }
 
         return inputContents;
     }
 
-    public static List<String> getCreateInputsList(TableMetadata tableMetadata, Editor editor) throws Exception {
+    public static List<String> getCreateInputsList(ColumnMetadata[] columnMetadatas, ColumnMetadata metaDonnee, TableMetadata tableMetadata, Editor editor) throws Exception {
         List<String> inputContents = new ArrayList<>();
+        String select = editor.getInsert().getSelect();
+        ColumnMetadata[] columns = tableMetadata.getColumns();
         Map<String, Object> creates = editor.getInsert().getInput();
-        ColumnMetadata[] columnMetadata = tableMetadata.getColumns();
+        HashMap<String, Object> datas = getSelectHashMap(columnMetadatas, metaDonnee);
+        HashMap<String, Object> selectHashMap = ProjectMetadataProvider.getSelectHashMap(editor);
 
-        for (ColumnMetadata columnMetadatum : columnMetadata) {
+        for (ColumnMetadata columnMetadatum : columns) {
             if (!columnMetadatum.isPrimary()) {
-                String createInput = engine.render(creates.get(columnMetadatum.getPrimaryType()).toString(), Map.of("fieldName", columnMetadatum.getName()));
-                inputContents.add(createInput);
+                if (columnMetadatum.getReferencedTable() == null) {
+                    String updatesInput = engine.render(creates.get(columnMetadatum.getPrimaryType()).toString(), Map.of("fieldName", columnMetadatum.getName()));
+                    inputContents.add(updatesInput);
+                } else {
+                    String foreignUpdateInput = engine.altSimpleRender(select, selectHashMap);
+                    foreignUpdateInput = engine.render(foreignUpdateInput,datas);
+                    inputContents.add(foreignUpdateInput);
+                }
             }
         }
 
@@ -334,11 +365,11 @@ public class FrameworkMetadataProvider {
         return metadata;
     }
 
-    public static HashMap<String, Object> getAllCreateViewHashMap(Framework framework, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
+    public static HashMap<String, Object> getAllCreateViewHashMap(ColumnMetadata[] columnMetadatas, ColumnMetadata metaDonnee, Framework framework, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
         HashMap<String, Object> metadata = new HashMap<>();
 
-        List<String> createInput = getCreateInputsList(tableMetadata, editor);
         HashMap<String, Object> fieldsCreateMap = getPrimaryModelDaoHashMap(framework, tableMetadata);
+        List<String> createInput = getCreateInputsList(columnMetadatas, metaDonnee, tableMetadata, editor);
         HashMap<String, Object> languageMetadata = getHashMapIntermediaire(tableMetadata, projectName, groupLink);
         HashMap<String, Object> primaryListViewHashMap = getListViewHashMap(editor, tableMetadata, projectName, groupLink);
 
@@ -351,11 +382,11 @@ public class FrameworkMetadataProvider {
         return metadata;
     }
 
-    public static HashMap<String, Object> getAllListViewHashMap(Framework framework, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
+    public static HashMap<String, Object> getAllListViewHashMap(ColumnMetadata[] columnMetadatas, ColumnMetadata metaDonnee, Framework framework, Editor editor, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
         HashMap<String, Object> metadata = new HashMap<>();
 
-        List<String> updatesInput = getUpdateInputsList(tableMetadata, editor);
         HashMap<String, Object> fieldsUpdateMap = getPrimaryModelDaoHashMap(framework, tableMetadata);
+        List<String> updatesInput = getUpdateInputsList(columnMetadatas, metaDonnee, tableMetadata, editor);
         HashMap<String, Object> languageMetadata = getHashMapIntermediaire(tableMetadata, projectName, groupLink);
         HashMap<String, Object> primaryListViewHashMap = getListViewHashMap(editor, tableMetadata, projectName, groupLink);
 

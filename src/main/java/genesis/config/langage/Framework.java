@@ -54,6 +54,17 @@ public class Framework {
         private String modelDaoFieldContent;
         private String modelDaoConstructors;
         private String modelDaoMethodContent;
+        private ModelDaoAdditionalFiles modelDaoAdditionalFiles;
+    }
+
+    @Getter
+    @Setter
+    public static class ModelDaoAdditionalFiles {
+        private String content;
+        private String fileType;
+        private String fileName;
+        private String extension;
+        private String destinationPath;
     }
 
     @Getter

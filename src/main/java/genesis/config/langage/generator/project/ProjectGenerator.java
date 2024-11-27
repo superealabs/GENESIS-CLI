@@ -1,5 +1,6 @@
 package genesis.config.langage.generator.project;
 
+import com.mysql.cj.xdevapi.Column;
 import genesis.config.Constantes;
 import genesis.config.langage.*;
 import genesis.config.langage.generator.framework.GenesisGenerator;
@@ -8,6 +9,7 @@ import genesis.connexion.Credentials;
 import genesis.connexion.Database;
 import genesis.connexion.providers.PostgreSQLDatabase;
 import genesis.engine.TemplateEngine;
+import genesis.model.ColumnMetadata;
 import genesis.model.TableMetadata;
 import utils.FileUtils;
 
@@ -45,12 +47,12 @@ public class ProjectGenerator {
     public ProjectGenerator() {
     }
 
-    private void generateMVCComponents(GenesisGenerator genesisGenerator, Editor editor, Framework framework, Language language, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
+    private void generateMVCComponents(GenesisGenerator genesisGenerator, ColumnMetadata[] columnMetadata, ColumnMetadata metadata, Editor editor, Framework framework, Language language, TableMetadata tableMetadata, String projectName, String groupLink) throws Exception {
         genesisGenerator.generateModel(framework, language, tableMetadata, projectName, groupLink);
         genesisGenerator.generateDao(framework, language, tableMetadata, projectName, groupLink);
         genesisGenerator.generateService(framework, language, tableMetadata, projectName, groupLink);
         genesisGenerator.generateController(framework, language, tableMetadata, projectName, groupLink);
-        genesisGenerator.generateView(framework, language, editor, tableMetadata, projectName, groupLink);
+        genesisGenerator.generateView(columnMetadata, metadata, framework, language, editor, tableMetadata, projectName, groupLink);
     }
 
     private void renderAndCopyFiles(Project project, HashMap<String, Object> initializeHashMap) throws IOException {
@@ -116,7 +118,10 @@ public class ProjectGenerator {
 
             // Génération des composants MVC pour chaque table
             for (TableMetadata tableMetadata : entities) {
-                generateMVCComponents(genesisGenerator, editor, framework, language, tableMetadata, projectName, groupLink);
+                ColumnMetadata[] columnMetadata = tableMetadata.getColumns();
+                for (ColumnMetadata metadata : columnMetadata) {
+                    generateMVCComponents(genesisGenerator, columnMetadata, metadata, editor, framework, language, tableMetadata, projectName, groupLink);
+                }
             }
 
             // Initialisation des HashMap pour les templates
