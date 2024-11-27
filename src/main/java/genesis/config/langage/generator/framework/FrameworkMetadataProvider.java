@@ -249,6 +249,7 @@ public class FrameworkMetadataProvider {
                 "projectName", projectName,
                 "packageValue", packageDefault,
                 "daoName", database.getDaoName().get(framework.getLanguageId()) == null ? "" : database.getDaoName().get(framework.getLanguageId()),
+                "addOptions", database.getAddOptions().get(framework.getLanguageId()) == null ? "" : database.getAddOptions().get(framework.getLanguageId()),
                 "connectionString", connectionString)
         );
 

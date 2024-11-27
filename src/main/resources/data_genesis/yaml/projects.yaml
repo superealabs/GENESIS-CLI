@@ -178,8 +178,9 @@
         builder.Services.AddDiscoveryClient(builder.Configuration);{{/if}}
         
         // Add services to the container.
-        builder.Services.AddDbContext<${majStart(projectName)}Context>(options =>
-            options.Use${daoName}(builder.Configuration.GetConnectionString("DefaultConnection")));
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        builder.Services.AddDbContext<WebApiNetContext>(options =>
+            options.Use${daoName}(connectionString${addOptions}));
         
         // Adding repositories ...
         {{#each entities}}

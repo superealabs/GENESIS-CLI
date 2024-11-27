@@ -60,11 +60,10 @@ builder.Configuration["eureka:instance:ipAddress"] = localIpAddress;
 builder.Services.AddDiscoveryClient(builder.Configuration);
 
 // Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<WebApiNetContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 4, 2))
-    ));
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 // Adding repositories ...
 builder.Services.AddScoped<IHouseRepository, HouseRepository>();

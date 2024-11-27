@@ -25,6 +25,7 @@ public abstract class Database {
     private String sid;
     private Map<Integer, String> connectionString;
     private Map<Integer, String> daoName;
+    private Map<Integer, String> addOptions;
     private String driver;
     private String port;
     private Map<String, String> types;

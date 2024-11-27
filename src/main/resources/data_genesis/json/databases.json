@@ -21,6 +21,9 @@
     "daoName": {
       "2": "MySql"
     },
+    "addOptions": {
+      "2": ", ServerVersion.AutoDetect(connectionString)"
+    },
     "driver": "com.mysql.cj.jdbc.Driver",
     "port": "3306",
     "types": {
@@ -62,6 +65,9 @@
     },
     "daoName": {
       "2": "Npgsql"
+    },
+    "addOptions": {
+      "2": ""
     },
     "driver": "org.postgresql.Driver",
     "port": "5432",
@@ -120,6 +126,9 @@
     "daoName": {
       "2": "SqlServer"
     },
+    "addOptions": {
+      "2": ""
+    },
     "driver": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
     "port": "1433",
     "types": {
@@ -161,6 +170,9 @@
     },
     "daoName": {
       "2": "Oracle"
+    },
+    "addOptions": {
+      "2": ""
     },
     "driver": "oracle.jdbc.driver.OracleDriver",
     "port": "1521",

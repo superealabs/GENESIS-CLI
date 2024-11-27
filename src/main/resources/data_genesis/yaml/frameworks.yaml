@@ -906,8 +906,7 @@
                   - Path=${this.path}
                   - Method=${this.method}
         
-              {{/each}}
-        {{#if useEurekaServer}}
+              {{/each}}{{#if useEurekaServer}}
         eureka:
           client:
             service-url:
