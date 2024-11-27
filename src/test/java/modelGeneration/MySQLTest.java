@@ -26,10 +26,10 @@ public class MySQLTest {
                 .setDatabaseName("test_db")
                 .setSchemaName("test_db")
                 .setUser("root")
-                .setPwd("Nomena321@")
-                .setTrustCertificate(true)
-                .setUseSSL(true)
-                .setAllowPublicKeyRetrieval(true);
+                .setPwd("Nomena321@");
+//                .setTrustCertificate(true)
+//                .setUseSSL(true)
+//                .setAllowPublicKeyRetrieval(true);
     }
 
     @Test
@@ -39,9 +39,9 @@ public class MySQLTest {
 
     @Test
     void MySQLxJavaSpringMVC() throws IOException {
-        Database[] databases = FileUtils.fromJson(Database[].class, FileUtils.getFileContent(Constantes.DATABASE_JSON));
-        Language[] languages = FileUtils.fromJson(Language[].class, FileUtils.getFileContent(Constantes.LANGUAGE_JSON));
-        Framework[] frameworks = FileUtils.fromYaml(Framework[].class, FileUtils.getFileContent(Constantes.FRAMEWORK_YAML));
+        Database[] databases = FileUtils.fromJson(Database[].class, Constantes.DATABASE_JSON);
+        Language[] languages = FileUtils.fromJson(Language[].class, Constantes.LANGUAGE_JSON);
+        Framework[] frameworks = FileUtils.fromYaml(Framework[].class, Constantes.FRAMEWORK_YAML);
 
         MySQLDatabase database = (MySQLDatabase) databases[0];  // MySQL
         Language language = languages[0];                       // Java
@@ -54,7 +54,7 @@ public class MySQLTest {
 
             GenesisGenerator mvcGenerator = new APIGenerator();
             String projectName = "TestProject", groupLink = "com";
-            String destinationFolder = "/Users/nomena/STAGE/GENESIS";
+            String destinationFolder = "/Users/nomena/STAGE/GENESIS/generated";
 
 
             String model = mvcGenerator.generateModel(framework, language, tableMetadata, destinationFolder, projectName, groupLink, false);

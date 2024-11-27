@@ -16,7 +16,7 @@
     "driverType": "",
     "sid": "",
     "connectionString": {
-      "1": "jdbc:mysql://${host}:${port}/${database}?useSSL=${useSSL}",
+      "1": "jdbc:mysql://${host}:${port}/${database}",
       "2": "Server=${host};Port=${port};Database=${database};User Id=${username};Password=${password};"
     },
     "daoName": {
