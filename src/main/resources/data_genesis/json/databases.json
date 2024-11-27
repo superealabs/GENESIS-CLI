@@ -5,7 +5,8 @@
     "dependencies": {
       "1": {
         "groupId": "com.mysql",
-        "artifactId": "mysql-connector-j"
+        "artifactId": "mysql-connector-j",
+        "version": "9.0.0"
       },
       "2": {
         "groupId": "",
@@ -50,7 +51,8 @@
     "dependencies": {
       "1": {
         "groupId": "org.postgresql",
-        "artifactId": "postgresql"
+        "artifactId": "postgresql",
+        "version": "42.7.3"
       },
       "2": {
         "groupId": "",
@@ -110,7 +112,8 @@
     "dependencies": {
       "1": {
         "groupId": "com.microsoft.sqlserver",
-        "artifactId": "mssql-jdbc"
+        "artifactId": "mssql-jdbc",
+        "version": "12.8.1.jre11"
       },
       "2": {
         "groupId": "",
@@ -155,7 +158,8 @@
     "dependencies": {
       "1": {
         "groupId": "com.oracle.database.jdbc",
-        "artifactId": "ojdbc8"
+        "artifactId": "ojdbc8",
+        "version": "23.5.0.24.07"
       },
       "2": {
         "groupId": "",

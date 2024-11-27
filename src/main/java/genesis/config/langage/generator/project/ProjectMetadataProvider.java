@@ -62,7 +62,8 @@ public class ProjectMetadataProvider {
 
             dependencyFileMap.put("DBgroupId", databaseDependency.getGroupId());
             dependencyFileMap.put("DBartifactId", databaseDependency.getArtifactId());
-            dependencyFileMap.put("DBversion", database.getDriverVersion());
+            dependencyFileMap.put("DBversion", databaseDependency.getVersion());
+
         } else {
             dependencyFileMap.put("useDB", false);
             dependencyFileMap.put("DBgroupId", "{{removeLine}}");
