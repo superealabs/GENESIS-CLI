@@ -97,7 +97,8 @@
       "timestamp without time zone": "timestamp",
       "timestamp": "timestamp",
       "bool": "boolean",
-      "time": "time"
+      "time": "time",
+      "tsrange": "string"
     },
     "excludeSchemas": [
       "information_schema",

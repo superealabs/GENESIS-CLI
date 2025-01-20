@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Web Api NET")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8cd6400f2126b483d6e6225778c536b2985ea6eb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b5c802be9dedad6dd6d3a3724cd5dd6f150e3439")]
 [assembly: System.Reflection.AssemblyProductAttribute("WebApiNet")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WebApiNet")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

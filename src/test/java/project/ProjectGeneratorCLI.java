@@ -24,7 +24,7 @@ public class ProjectGeneratorCLI {
                 .setHost("localhost")
                 .setPort("5432")
                 .setSchemaName("public")
-                .setDatabaseName("test_db")
+                .setDatabaseName("mon_refuge_test")
                 .setUser("nomena")
                 .setPwd("root")
                 .setTrustCertificate(true)
@@ -43,15 +43,15 @@ public class ProjectGeneratorCLI {
             var framework = ProjectGenerator.frameworks.get(frameworkId);
             var project = ProjectGenerator.projects.get(projectId);
 
-            String projectName = "WebApiSpring";
-            String groupLink = "com.labs";
+            String projectName = "MonRefuge";
+            String groupLink = "org.labs";
             String projectPort = "8000";
             String logLevel = "INFO";
             String hibernateDdlAuto = "none";
-            String projectDescription = "Test Project";
+            String projectDescription = "Mon Refuge - Backend";
             String frameworkVersion = "3.3.6";
             String languageVersion = "21";
-            String destinationFolder = "/Users/nomena/STAGE/GENESIS/sample-projects/enfin";
+            String destinationFolder = "/Users/nomena/STAGE/GENESIS/sample-projects/";
 
             ProjectGenerator projectGenerator = new ProjectGenerator();
 
@@ -61,8 +61,8 @@ public class ProjectGeneratorCLI {
             frameworkConfiguration.put("frameworkVersion", frameworkVersion);
 
             //===== USE EUREKA SERVER =======//
-            framework.setUseCloud(true);
-            framework.setUseEurekaServer(true);
+            framework.setUseCloud(false);
+            framework.setUseEurekaServer(false);
             frameworkConfiguration.put("eurekaServerURL", "http://localhost:8761/eureka");
             frameworkConfiguration.put("projectNonSecurePort", projectPort);
             //==============================//

@@ -32,6 +32,7 @@ public class GenesisTemplateEngine {
     private static final String FUNCTION_CLOSED_PARENTHESIS = ")";
     private static final String START_COMMENTARY_TAG = "<#";
     private static final String END_COMMENTARY_TAG = "/#>";
+
     private static final Map<String, Function<String, String>> FUNCTIONS_MAP = new HashMap<>();
 
     static {

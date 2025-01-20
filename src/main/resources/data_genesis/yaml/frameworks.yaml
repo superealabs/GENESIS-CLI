@@ -25,17 +25,17 @@
         {{#if useEurekaServer}}@EnableDiscoveryClient{{/if}}
         @SpringBootApplication
         public class ${majStart(projectName)}Application {
-        {{tab}}public static void main(String[] args) {
-        {{tab}}{{tab}}SpringApplication.run(${majStart(projectName)}Application.class, args);
-        {{tab}}}
+            public static void main(String[] args) {
+                SpringApplication.run(${majStart(projectName)}Application.class, args);
+            }
         
-        {{tab}}@Bean
-        {{tab}}public OpenAPI customOpenAPI() {
-        {{tab}}{{tab}}return new OpenAPI()
-        {{tab}}{{tab}}{{tab}}.info(new Info().title("${projectName}")
-        {{tab}}{{tab}}{{tab}}.description("${projectDescription}")
-        {{tab}}{{tab}}{{tab}}.version("0.0.1-SNAPSHOT"));
-        {{tab}}}
+            @Bean
+            public OpenAPI customOpenAPI() {
+                return new OpenAPI()
+                            .info(new Info().title("${projectName}")
+                            .description("${projectDescription}")
+                            .version("0.0.1-SNAPSHOT"));
+            }
         }
       destinationPath: "${destinationFolder}/${majStart(projectName)}/src/main/java/${groupLinkPath}/${lowerCase(projectName)}"
 

@@ -459,11 +459,11 @@ public class ProjectGeneratorHandler {
             if (allTableNames.isEmpty()) {
                 System.out.println("No tables found in the database.");
             } else {
-                System.out.println("\nAvailable entities in the database:");
+                System.out.println("\nAvailable tables in the database:");
                 for (int i = 0; i < allTableNames.size(); i++) {
                     System.out.println((i + 1) + ") " + allTableNames.get(i));
                 }
-                System.out.println("*  Select all entities");
+                System.out.println("*  Select all tables");
             }
         } catch (SQLException e) {
             System.out.println("An error occurred while fetching table names: " + e.getMessage());
@@ -477,17 +477,17 @@ public class ProjectGeneratorHandler {
         }
 
         while (true) {
-            String input = getNonEmptyInput(scanner, "\nEnter the numbers of the entities you want to use, \nseparated by commas (e.g., 1,3,5) or enter * to select all");
+            String input = getNonEmptyInput(scanner, "\nEnter the numbres of the tables you want to use, \nseparated by commas (e.g., 1,3,5) or enter * to select all");
 
             if (input.equals("*")) {
-                System.out.println("All entities selected.");
+                System.out.println("All tables selected.");
                 return new ArrayList<>();
             }
 
             List<String> selectedEntities = validateEntitySelection(input, allTableNames);
 
             if (!selectedEntities.isEmpty()) {
-                System.out.println("Selected entities: " + String.join(", ", selectedEntities) + "\n");
+                System.out.println("Selected tables: " + String.join(", ", selectedEntities) + "\n");
                 return selectedEntities;
             }
 
